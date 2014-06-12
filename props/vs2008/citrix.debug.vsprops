@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<!-- Top level vsprops file used for release builds. -->
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="citrix.debug"
+	InheritedPropertySheets=".\detail\citrix.common.vsprops"
+	>
+  <UserMacro
+		Name="TargetSuffix"
+		Value="_d"
+	/>
+  <UserMacro
+		Name="CitrixBuildType"
+		Value="debug"
+	/>
+</VisualStudioPropertySheet>

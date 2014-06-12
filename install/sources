@@ -1,0 +1,19 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=install
+TARGETTYPE=DYNLINK
+
+UMTYPE=windows
+
+USE_MSVCRT=1
+
+TARGETLIBS=$(SDK_LIB_PATH)\setupapi.lib \
+           $(DDK_LIB_PATH)\newdev.lib \
+           $(DDK_LIB_PATH)\kernel32.lib \
+           $(DDK_LIB_PATH)\user32.lib \
+           $(DDK_LIB_PATH)\advapi32.lib
+ 
+SOURCES=install.c install.rc

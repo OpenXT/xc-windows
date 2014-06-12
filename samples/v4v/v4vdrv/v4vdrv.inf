@@ -1,0 +1,91 @@
+;
+; Copyright (c) 2010 Citrix Systems, Inc.
+; 
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+
+; -- V4VDRV.INF --
+;
+; V4VDRV driver INF file - this is the INF for the v4v sample driver.
+;
+; ----------------------------------------------------------------------
+[Version]
+Signature    = "$Windows NT$"
+Provider 	 = %OpenXT%
+DriverVer    = 04/25/2007,1.0.0.0
+
+[DestinationDirs]
+DefaultDestDir        = 12
+V4VDRV.DriverFiles    = 12 			;%windir%\system32\drivers
+
+;;
+;; Default install sections
+;;
+
+[DefaultInstall]
+OptionDesc          = %V4VDRV_Help%
+CopyFiles           = V4VDRV.DriverFiles
+
+[DefaultInstall.Services]
+AddService          = v4vdrv,,V4VDRV.Service
+
+;;
+;; Default uninstall sections
+;;
+
+[DefaultUninstall]
+DelFiles   = V4VDRV.DriverFiles
+
+[DefaultUninstall.Services]
+DelService = v4vdrv,0x200		; Flags note to stop service first
+
+;;
+;; Services Section
+;;
+
+[UTILDRV.Service]
+DisplayName      = %V4VDRV_Desc%
+Description      = %V4VDRV_Desc%
+ServiceBinary    = %12%\v4vdrv.sys  	;%windir%\system32\drivers\v4vdrv.sys
+ServiceType      = 1					;SERVICE_KERNEL_DRIVER
+StartType        = 3					;SERVICE_DEMAND_START
+ErrorControl     = 1					;SERVICE_ERROR_NORMAL
+AddReg           = V4VDRV.AddService.AddReg
+
+[V4VDRV.AddService.AddReg]
+; ----------------------------------------------------------------------
+; V4VDRV specific reg settings
+;
+;HKR,Parameters,Flags,0x10001,0x0
+
+;;
+;; Copy Files
+;;
+
+[V4VDRV.DriverFiles]
+v4vdrv.sys,,,0x00000040   ; COPYFLG_OVERWRITE_OLDER_ONLY
+
+;;
+;; String Section
+;;
+
+[Strings]
+OpenXT       = "OpenXT Systems, Ince"
+V4VDRV_Desc  = "V4V Sample Driver"
+V4VDRV_Help  = "V4V Sample Driver"

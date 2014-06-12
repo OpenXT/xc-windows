@@ -1,0 +1,23 @@
+include ..\..\config.mk
+TOPDIR=..\..
+
+MSC_WARNING_LEVEL=/W3
+
+TARGETNAME=xengfxsh
+TARGETTYPE=DRIVER_LIBRARY
+
+INCLUDES=$(INCLUDES);..\inc
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENGFX\" -DUNICODE
+
+!if "$(NO_XENUTIL)"=="yes"
+
+C_DEFINES=$(C_DEFINES) -DNO_XENUTIL
+
+!endif
+
+SOURCES= \
+    xengfx_wdk.c \
+    xengfx_vga.c \
+    xengfx_vbe.c \
+    xengfx_core.c

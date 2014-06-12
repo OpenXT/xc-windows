@@ -1,0 +1,12 @@
+rm -rf xenvesa
+
+mkdir -p xenvesa/i386
+cp vesa/xenvesa.inf xenvesa/i386
+cp vesa/xenvesa.cat xenvesa/i386
+cp build/i386/xenvesa.sys xenvesa/i386
+
+mkdir -p xenvesa/amd64
+cp vesa/xenvesa64.inf xenvesa/amd64/xenvesa.inf
+cp vesa/xenvesa64.cat xenvesa/amd64/xenvesa.cat
+cp build/amd64/xenvesa.sys xenvesa/amd64
+

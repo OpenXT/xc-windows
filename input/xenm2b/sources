@@ -1,0 +1,36 @@
+TOPDIR=..\..
+include ..\..\config.mk
+
+NO_XENUTIL=yes
+
+MSC_WARNING_LEVEL=/W3
+
+TARGETNAME=xenm2b
+TARGETPATH=..\..\$(BUILDDIR)
+TARGETTYPE=DRIVER
+
+TARGETLIBS=$(DDK_LIB_PATH)\ntstrsafe.lib \
+           $(DDK_LIB_PATH)\wdmsec.lib
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENM2B\" -DXENINP_DRIVER -DUNICODE
+
+!if "$(NO_XENUTIL)"=="yes"
+
+C_DEFINES=$(C_DEFINES) -DNO_XENUTIL
+
+!else
+
+TARGETLIBS=$(TARGETLIBS) \
+           $(TARGETPATH_ARCH)\xenutil.lib
+
+!endif
+
+INCLUDES=..\..\inc
+
+SOURCES=xenm2b.c \
+        m2bif.c \
+        pdo.c \
+        device.c \
+        hid_defs.c \
+        misc.c \
+        xenm2b.rc

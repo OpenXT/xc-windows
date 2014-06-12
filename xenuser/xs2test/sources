@@ -1,0 +1,18 @@
+USERSPACE=1
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xs2test
+TARGETTYPE=PROGRAM
+
+INCLUDES=$(INCLUDES); ..\xs2
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\user32.lib \
+	..\..\$(BUILDDIR_ARCH)\xs2.lib
+
+USE_MSVCRT=1
+UMTYPE=console
+
+SOURCES=xs2test.c

@@ -1,0 +1,155 @@
+XENGFX
+
+A mini-spec for the proposed new Windows PV Graphics driver.
+
+---------------------------------------
+
+1. Basics:
+
+The new xengfx para-virtual display device will use the existing PCI graphics
+device surfaced by qemu. The emulated display device will behave exactly as
+it does currently in the absence of the new xengfx device driver.
+
+The initial phase will be to implement a Windows XDDM type miniport driver and
+display driver. This will replace xenvesa. The second phase will be to 
+implement a Windows WDDM miniport driver and display DLL. This is of course
+in addition to the backend work in qemu and surfman to support this new pv
+device.
+
+The new xengfx para-virtual drivers will communicate directly with the Surface
+Manager (surfman) in DOM0 via an MMIO, Port I/O and IRQ resources.
+
+During guest VM booting the legacy VGA virtual BIOS will be used via qemu as
+is the case today. During initialization, xengfx via an MMIO write will switch
+the backend mode away from the emulated display device mode to xengfx (direct
+surfman communication) mode.
+
+Upon diplay device resets (for S3 etc), xengfx will set the backend back to
+the emulated display device model. It will then reset the in-guest virtual VGA
+BIOS back to VGA text mode 3 performing all the required operations without
+using INT10 calls.
+
+The PCI config space will populate BAR0 and BAR2 as follows:
+
+BAR0 - Graphics aperture (display memory).
+BAR2 - Memory Mapped I/O XenGfx registers.
+
+2. GART - Video Memory Management:
+
+Video memory buffers will be allocated directly from Windows system memory in
+the guest and programmed into a virtual GART by way of MMIO registers. Standard
+Windows system memory allocation routines can be used though it is probably 
+preferable to use memory outside of the kernel pools (heaps) using
+MmAllocateMappingAddress() and MmMapLockedPagesWithReservedMapping().
+The video buffer(s) can be sized according to the maximum resolution that will
+be required for each child device.
+
+The physical base address presented in BAR0 will contain a backend allocation
+of XGFX_STOLEN_SIZE of video memory for use by legacy VGA/VESA drivers as a
+linear frame buffer. This will be used during boot time and when the xengfx
+driver is not present or operating.
+
+The virtual GART will allow a maximum memory mapping of 256Mb. The
+XGFX_GART_SIZE register will report the actual size of the GART in
+4K pages. The GART will allow any number of frame buffers to be allocated in 
+the video memory space. Frame buffer allocations will be mapped into the
+graphics aperture range specified in BAR0 each time system memory is mapped
+from the GART. Individual or sets of frame buffers can then be associated with
+child devices using the VCRTC registers described in the next section. See
+the accompanying xengfx_hardware_spec.txt for more details on the GART and
+the associated GART registers.
+
+The Windows XP XDDM version of the xengfx driver will support a single monitor
+and will allocate a single frame buffer from the GART during initialization.
+The frame buffer will be sized according to the EDID and stride information
+gotten from the VCRTC registers for the first child device. The single frame
+buffer mapped to the graphics aperture at BAR0+XGFX_STOLEN_SIZE. The original
+stolen size region is left in place since there is no clean way to restore
+it in an XDDM driver (given there is no unload or uninitialize routine).
+The frame buffer will be mapped using the video port VideoPortMapMemory()
+routine (as xenvesa currently does). Note it might be possible to support
+multiple child devices in XDDM using the DualView functionality but this will
+not be implemented in the first version.
+
+The Windows Vista/Win7 WDDM version of the xengfx driver will support multiple
+child devices and multiple frame buffers per device. Video memory allocations
+will use WDDM Linear Aperture-Space Segments which will allow frame buffers
+to be allocated and freed using the GART at any point. There will be no
+restrictions on using the stolen memory range either in WDDM. See the
+following for an overview:
+
+http://msdn.microsoft.com/en-us/library/ff568189(v=VS.85).aspx
+
+3. CRTC - Child Devices/Monitors:
+
+Child devices (monitors) will each be logically associated with virtual CRTC
+register banks (VCRTC). The interrupt for the xengfx device occurs when a
+child device changes state (connected/disconnected). The VCRTC status
+registers indicate the state. The VCRTC command register can be used to
+enable a given VCRTC and by extension a child device.
+
+Each bank will allow setting of display information like resolution, data
+format, stride etc. Frame buffer allocations for a given child device can be
+set using the VCRTC. Each VCRTC will also return an EDID describing the
+attached device. See the accompanying xengfx_hardware_spec.txt for more
+details on the VCRTC registers.
+
+If the xengfx driver is using a single child device as the XDDM driver will,
+VCRTC0 will be used.
+
+4. I/O Ports:
+
+I/O Port resources will be used as absolute addresses to allow access to
+the VGA device for performing VGA mode 3 resets.
+
+Base 0x3800, size 0x40:
+
+This port range will be for accessing the VGA shadow ports to get virtual 
+VGA BIOS information for performing text mode 3 resets. Note that the VGA/VBE
+spin lock can also be acquired via the shadow ports to allow synchronization.
+
+Base 0x01CE, size 0x02:
+
+These are the Bochs virtual VBE BIOS ports used during mode 3 resets to 
+disable any VESA modes that Windows enabled.
+
+5. Interrupts:
+
+The device will be assigned one IRQ resource. The interrupts will be used to
+indicate changes to the state of the child devices associated with each VCRTC.
+The ISR will simply dismiss the interrupt and queue a DPC. It will be up to
+the DPC to determine which VCRTCs have changed, what the state changes were
+and take the appropriate action.
+
+6. MMIO Register Map:
+
+An MMIO resource will be passed to the device using BAR2 in the PCI config
+space for the new device. This MMIO region will contain the registers used
+by xengfx to communicate with the surfman backend. Each register will be
+32 bits wide.
+
+A performance enhancement detail should be noted here. Most of the pages 
+backing the MMIO region do not need to cause traps when written to. For
+example, the PFN values can be setup within the GART range as normal memory
+writes. Once the setup is complete, the XGFX_INVALIDATE_GART register is read.
+This register does trap to the backend where the new GART is flushed and the
+new GART values are used.
+
+See the accompanying xengfx_hardware_spec.txt for more a detailed listing
+of the entire register map.
+  
+7. Modes:
+
+The xengfx backend does not supply mode information to the xengfx driver. 
+However, a list of available modes is something that needs to be provided to
+Windows. To address this, the xengfx driver will build a list of supported
+modes using the following logic:
+
+  - Only 32Bpp modes will be returned to windows.
+  - The highest resolution mode will be gotten from the EDID returned for
+    a given VCRTC and added to the list.
+  - From a list of standard modes, all modes of lower resolution with an 
+    aspect ratio matching the EDID resolution mode with be added to the list.
+  - Modes for 800x600 and 1024x768 will always be added to the list.
+  - Stride information will be calculated off the mode information and the
+    STRIDE_ALIGNMENT requirements.

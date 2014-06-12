@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Default locations for Citrix include directories -->
+  <ImportGroup Label="PropertySheets">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <XenSourceRoot>..\..\xc-windows.hg</XenSourceRoot>
+    <XenClientLibJSONOutputDir>../$(Configuration)</XenClientLibJSONOutputDir>
+    <XenClientLibJSONIntermediateDir>../$(Configuration)</XenClientLibJSONIntermediateDir>
+    <XenClientLibJSONLibDir />
+    <XenGuestAgentOutputDir>$(Configuration)</XenGuestAgentOutputDir>
+    <XenGuestAgentIntermediateDir>$(Configuration)</XenGuestAgentIntermediateDir>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="XenSourceRoot">
+      <Value>$(XenSourceRoot)</Value>
+    </BuildMacro>
+    <BuildMacro Include="XenClientLibJSONOutputDir">
+      <Value>$(XenClientLibJSONOutputDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="XenClientLibJSONIntermediateDir">
+      <Value>$(XenClientLibJSONIntermediateDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="XenClientLibJSONLibDir">
+      <Value>$(XenClientLibJSONLibDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="XenGuestAgentOutputDir">
+      <Value>$(XenGuestAgentOutputDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="XenGuestAgentIntermediateDir">
+      <Value>$(XenGuestAgentIntermediateDir)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

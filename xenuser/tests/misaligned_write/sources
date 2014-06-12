@@ -1,0 +1,18 @@
+USERSPACE=1
+
+include ..\..\..\config.mk
+
+TARGETNAME=misaligned_write
+TARGETPATH=..\..\..\$(BUILDDIR)
+TARGETTYPE=PROGRAM
+
+INCLUDES=$(SDK_INC_PATH)
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\user32.lib
+
+USE_MSVCRT=1
+UMTYPE=console
+386_STDCALL=0
+
+SOURCES=misaligned_write.c

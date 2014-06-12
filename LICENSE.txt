@@ -1,0 +1,10 @@
+The majority of sources in this repository are covered under the MIT software
+license:
+
+http://opensource.org/licenses/MIT
+
+One subproject was derived directly from a Microsoft sample from the 
+Windows Kit 8.0 Samples. It is covered by the MS-LPL license from that kit.
+That license is checked in here as: MS-LPL-v1.1.rtf. The project is:
+
+xengfx\vesa\wddm

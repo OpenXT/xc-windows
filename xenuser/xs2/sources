@@ -1,0 +1,17 @@
+USERSPACE=1
+TOPDIR=..\..
+include ..\..\config.mk
+
+TARGETNAME=xs2
+TARGETTYPE=DYNLINK
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+$(SDK_LIB_PATH)\user32.lib \
+
+NO_NTDLL=1
+USE_MSVCRT=1
+UMTYPE=windows
+
+DLLDEF=xs2.def
+
+SOURCES=xs2.c xs2.rc

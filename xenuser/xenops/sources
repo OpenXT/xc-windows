@@ -1,0 +1,18 @@
+USERSPACE=1
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xenops
+TARGETTYPE=DYNLINK
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+$(SDK_LIB_PATH)\user32.lib \
+
+NO_NTDLL=1
+USE_MSVCRT=1
+UMTYPE=windows
+
+DLLDEF=xenops.def
+
+SOURCES=xenops.c xenops.rc

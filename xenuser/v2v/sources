@@ -1,0 +1,23 @@
+USERSPACE=1
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xenv2v
+TARGETTYPE=DYNLINK
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+$(SDK_LIB_PATH)\user32.lib \
+$(TARGETPATH_ARCH)\xs2.lib \
+$(TARGETPATH_ARCH)\xsutil.lib \
+$(TARGETPATH_ARCH)\xenops.lib \
+
+NO_NTDLL=1
+USE_MSVCRT=1
+UMTYPE=windows
+
+DLLDEF=v2v.def
+
+INCLUDES=$(INCLUDES);..\xs2
+
+SOURCES=v2v.c util.c stream.c v2v.rc

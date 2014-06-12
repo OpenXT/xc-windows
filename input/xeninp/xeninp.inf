@@ -1,0 +1,85 @@
+;
+; XENINP PV Input Device INF file
+;
+; Copyright (c) 2010, Citrix Systems, Inc. - All rights reserved.
+
+;
+; 
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+
+[Version]
+Signature="$CHICAGO$"
+;Class=System
+;ClassGUID={4d36e97d-e325-11ce-bfc1-08002be10318}
+Class = Mouse
+ClassGuid = {4d36e96f-e325-11ce-bfc1-08002be10318}
+Provider=%COMPANY%
+DriverVer=09/20/2010,1.0.0.0000
+CatalogFile=xeninp.cat
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+1 = %DiskId%,,,
+
+[SourceDisksFiles]
+xeninp.sys = 1,,
+
+[Manufacturer]
+%COMPANY% = OpenXT,NTamd64
+
+[OpenXT]
+%Xeninp_Desc% = Xeninp,PCI\VEN_5853&DEV_C110
+
+[OpenXT.NTamd64]
+%Xeninp_Desc% = Xeninp,PCI\VEN_5853&DEV_C110
+
+[Xeninp]
+CopyFiles=Xeninp.CopyFiles
+
+[Xeninp.CopyFiles]
+xeninp.sys
+
+[Xeninp.Services]
+AddService = xeninp, 0x00000002, Xeninp_Service
+Include=msmouse.inf
+;Needs=PS2_Inst.Services
+
+[Xeninp_Service]
+DisplayName    = %Xeninp_Desc%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 1                  ; SERVICE_SYSTEM_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\xeninp.sys
+
+[Strings]
+; Non-Localizable Strings
+REG_SZ         = 0x00000000
+REG_MULTI_SZ   = 0x00010000
+REG_EXPAND_SZ  = 0x00020000
+REG_BINARY     = 0x00000001
+REG_DWORD      = 0x00010001
+SERVICEROOT    = "System\CurrentControlSet\Services"
+
+; Localizable Strings
+DiskId  = "OpenXT Installation Media"
+COMPANY = "OpenXT"
+Xeninp_Desc = "OpenXT Xen Input Driver"

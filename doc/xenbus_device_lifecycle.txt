@@ -1,0 +1,78 @@
+struct xenbus_device lifecycle:
+
+-- They get created from the class probe function when we notice them
+   on the bus.
+
+-- They sit there until something happens.
+
+When the device is disabled, Windows drops in an IRP_MN_REMOVED at the
+top of the stack.  It percolates down, destroying the device stack,
+until it hits the PDO, where it is completed with STATUS_SUCCESS and
+otherwise ignored.  The xenbus_device is unchanged.  Note that when
+xennet is stopped, it drives the frontend state to INITIALISED, so
+that the backend is at INITWAIT.  When the PDO gets the
+IRP_MN_REMOVED, it drives the state to CLOSED, since we know that
+there's nothing layered on top of us.
+
+When the device is ejected, Windows disables it and then flags it as
+pending-eject.  It then waits for the device to actually disappear
+from the bus.
+
+When the device is xm detached, the backend state goes to 5, at which
+point xevtchn.sys tells Windows to start an eject sequence on it.
+This will cause the driver layered above the device to stop, at which
+point the device will disappear from xenbus.  If the device above has
+already stopped then we rely on the frontend having already been
+driven to CLOSED.
+
+One complication here is that Windows throws up a bogus error message
+if a device disappears too quickly after an eject request; I suspect
+there's something in userspace checking that the device stack has
+actually been shut down correctly, and it gets confused if the device
+stack actually disappears before it can get to it.  We work around
+this by not reporting that devices have disappeared until the bus has
+been quiescent (i.e. no IRP_MN_REMOVE, no xenbus events) for at least
+XS_DELAY_REPORT_REMOVAL_US microseconds.
+
+xenbus_device_class structures are never release once they're
+allocated.  It's just too hard to get right, and it's not worth it
+given that most VMs will never have more than three of them over their
+entire lives.
+
+xenbus_device referencing rules:
+
+-- Being on the lists of devices counts as a single reference
+-- Having a live PDO is a single reference
+-- There are a couple of other places where we take short-lived
+   references just to stop it disappearing while we're working on it.
+
+The PDO follows the normal Windows rules (created when we create the
+xenbus_device, destroyed by the first IRP_MN_REMOVE after an
+IRP_MN_QUERY_RELATIONS where it wasn't reported).
+
+
+If the device was present in xenbus last time we scanned it,
+present_in_xenbus will be set.  If the device was reported in response
+to our last QUERY_RELATIONS, reported_to_pnpmgr will be set.  If it
+has received an IRP_MN_EJECT, ejected will be set.  ejected can never
+be cleared once set; you have to xm detach the device and then
+re-attach it.
+
+There's a very small race between the eject watch and actually
+creating the PDO.  If we hit there, then the eject watch can't call
+IoRequestDeviceEject, so it just sets needs_eject and we handle it
+from ProbeThisDevice once it's finished creating the PDO.
+
+We can also have a problem if a device is removed from xenbus, so that
+we start the eject sequence, but then re-inserted before the PDO
+actually disappears.  In that case, we set resurrected in the
+xenbus_device structure, and trigger an immediate re-probe of all of
+xenbus when it finally gets destructed.
+
+
+Very occasionally, a device's backend area will spontaneously
+disappear, almost always as a result of a tools bug during live
+migration or save/restore.  In that case, we flag the device as failed
+and immediately call IoInvalidateDeviceRelations().  The device is not
+reported to PnP manager, and Windows starts a surprise-remove sequence
+against it.

@@ -1,0 +1,62 @@
+;
+; Copyright (c) 2006 XenSource, Inc.
+;	All Rights Reserved
+;
+
+;
+; Copyright (c) 2010 Citrix Systems, Inc.
+; 
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+
+
+NAME xevtchn.sys
+
+EXPORTS
+	xenbus_find_frontend
+	xenbus_find_backend
+	xenbus_read_backend_feature_flag
+	xenbus_read_backend_bin
+	xenbus_read_backend
+
+	v2v_listen
+	v2v_accept
+	v2v_connect
+	v2v_disconnect
+	v2v_get_remote_state
+	v2v_endpoint_state_name
+	v2v_get_receive_event
+	v2v_get_send_event
+	v2v_get_control_event
+	v2v_nc2_get_message
+	v2v_nc2_finish_message
+	v2v_nc2_prep_message
+	v2v_nc2_send_messages
+	v2v_nc2_producer_bytes_available
+	v2v_nc2_remote_requested_fast_wakeup
+	v2v_nc2_request_fast_receive
+	v2v_nc2_cancel_fast_receive
+	v2v_stream_attach
+	v2v_stream_detach
+	v2v_stream_send
+	v2v_stream_recv
+
+	XenevtchnSetDeviceUsage
+
+	DllInitialize PRIVATE

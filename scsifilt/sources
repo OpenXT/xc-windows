@@ -1,0 +1,24 @@
+include ..\config.mk
+TOPDIR=..
+
+TARGETNAME=scsifilt
+TARGETTYPE=DRIVER
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"SCSIFILT\" -D_WIN2K_COMPAT_SLIST_USAGE
+
+TARGETLIBS=$(DDK_LIB_PATH)\ntstrsafe.lib \
+	$(DDK_LIB_PATH)\ntdll.lib \
+	$(TARGETPATH_ARCH)\xevtchn.lib \
+	$(TARGETPATH_ARCH)\xenutil.lib
+
+RUN_WPP = \
+	$(SOURCES) -km -p:scsiflt
+
+SOURCES=scsifilt.c \
+        datapath.c \
+	controlpath.c \
+	rings.c \
+	schedule.c \
+	power.c \
+	redirect_srb.c \
+        scsifilt.rc

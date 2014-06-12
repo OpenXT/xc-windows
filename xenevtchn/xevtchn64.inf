@@ -1,0 +1,109 @@
+; 
+; Xen event channel setup definition file
+; 
+; Copyright (c) 2007 Citrix Systems, Inc.
+; 
+
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+
+ 
+ 
+ 
+[Version] 
+Signature = "$Windows NT$" 
+Class=System
+ClassGUID={4d36e97d-e325-11ce-bfc1-08002be10318} 
+Provider=%OpenXT% 
+CatalogFile=xevtchn.cat
+DriverVer= 03/01/2008,4.2.0.0001
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+0=%DiskDesc%
+
+[SourceDisksFiles]
+xevtchn.sys=0,,
+xenutil.sys=0,,
+
+[Manufacturer]
+%OpenXT%=OpenXT,NTamd64
+
+[OpenXT.NTamd64]
+%XenEventDesc%=XenEvent_Inst,root\xenevtchn
+
+[XenEvent_Inst]
+CopyFiles = @xevtchn.sys
+CopyFiles = @xenutil.sys
+LogConfig = EventChannel
+
+[EventChannel]
+ConfigPriority=NORMAL
+MemConfig=5A000@0-FFFFFFFF(D)
+IRQConfig=L:5,9,10,11
+
+[XenEvent_Inst.Services]
+AddService = xenevtchn,0x00000002,XenEvent_Service,XenEventLogSection
+
+[XenEvent_Inst.HW]
+AddReg = XenEvent_Reg
+
+[XenEvent_Reg]
+HKR,,Security,,"D:P(A;;GA;;;BA)(A;;GA;;;LA)(A;;GA;;;SY)"
+
+[XenEvent_Service]
+ServiceType = %SERVICE_KERNEL_DRIVER% 
+StartType = %SERVICE_BOOT_START% 
+ErrorControl = %SERVICE_ERROR_IGNORE% 
+ServiceBinary = %12%\xevtchn.sys 
+LoadOrderGroup = System Bus Extender
+
+[XenEventLogSection]
+AddReg = XenEventLogRegistry
+
+[XenEventLogRegistry]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\drivers\xevtchn.sys"
+HKR,,TypesSupported,0x0010001,7
+
+[Strings] 
+
+;  *******Localizable Strings******* 
+OpenXT= "OpenXT" 
+DiskDesc= "OpenXT Tools for Virtual Machines" 
+XenEventDesc= "OpenXT PV Bus" 
+
+;  *******Non Localizable Strings******* 
+
+SERVICE_BOOT_START = 0x0 
+SERVICE_SYSTEM_START = 0x1 
+SERVICE_AUTO_START = 0x2 
+SERVICE_DEMAND_START = 0x3 
+SERVICE_DISABLED = 0x4 
+
+SERVICE_KERNEL_DRIVER = 0x1 
+SERVICE_ERROR_IGNORE = 0x0 
+SERVICE_ERROR_NORMAL = 0x1 
+SERVICE_ERROR_SEVERE = 0x2 
+SERVICE_ERROR_CRITICAL = 0x3 
+
+REG_EXPAND_SZ = 0x00020000 
+REG_DWORD = 0x00010001 

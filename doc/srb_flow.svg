@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.44.1"
+   sodipodi:docbase="/local/ssmith/xs-windows-miami.hg/doc"
+   sodipodi:docname="srb_flow.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mend"
+       style="overflow:visible;">
+      <path
+         id="path10750"
+         style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) rotate(180) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path3919"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;">
+      <path
+         id="path3901"
+         style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="365.58558"
+     inkscape:cy="549.28932"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:window-width="1280"
+     inkscape:window-height="928"
+     inkscape:window-x="0"
+     inkscape:window-y="31" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:2,6;stroke-dashoffset:0"
+       d="M 365.67522,-0.21676908 L 365.67522,1054.3825"
+       id="path2758" />
+    <text
+       xml:space="preserve"
+       style="font-size:13.75229645px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="345.08304"
+       y="71.526489"
+       id="text3645"
+       transform="scale(1.146025,0.872582)"><tspan
+         sodipodi:role="line"
+         id="tspan3647"
+         x="345.08304"
+         y="71.526489"
+         style="font-size:36.67279053px">Scsiport context</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:41.03525925px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="34.690525"
+       y="80.968658"
+       id="text3649"
+       transform="scale(1.283553,0.779088)"><tspan
+         sodipodi:role="line"
+         id="tspan3651"
+         x="34.690525"
+         y="80.968658">Slow thread</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:19.76218414px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="625.39056"
+       y="104.43332"
+       id="text3653"
+       transform="scale(0.785856,1.272497)"><tspan
+         sodipodi:role="line"
+         id="tspan3655"
+         x="625.39056"
+         y="104.43332">SRB arrives at StartIO</tspan><tspan
+         sodipodi:role="line"
+         x="625.39056"
+         y="129.13605"
+         id="tspan3657" /></text>
+    <rect
+       style="fill:black;fill-opacity:0;stroke:black;stroke-width:0.87028205;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3659"
+       width="240.54602"
+       height="68.820091"
+       x="254.49358"
+       y="177.50522" />
+    <text
+       xml:space="preserve"
+       style="font-size:22.50366974px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="328.02991"
+       y="193.26723"
+       id="text3685"
+       transform="scale(0.866326,1.1543)"><tspan
+         sodipodi:role="line"
+         id="tspan3687"
+         x="328.02991"
+         y="193.26723">PendingSlow queue</tspan></text>
+    <rect
+       style="fill:black;fill-opacity:0;stroke:black;stroke-width:0.83240861;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3689"
+       width="238.56358"
+       height="76.939186"
+       x="238.31218"
+       y="361.33405" />
+    <rect
+       style="fill:black;fill-opacity:0;stroke:black;stroke-width:0.72081029;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3691"
+       width="242.71581"
+       height="62.908649"
+       x="240.27673"
+       y="769.37988" />
+    <text
+       xml:space="preserve"
+       style="font-size:40.01285553px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="75.342636"
+       y="210.45169"
+       id="text3693"
+       transform="scale(0.630394,1.586309)"><tspan
+         sodipodi:role="line"
+         id="tspan3695"
+         x="75.342636"
+         y="210.45169">Map buffers</tspan><tspan
+         sodipodi:role="line"
+         x="75.342636"
+         y="260.46776"
+         id="tspan3697" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:25.00957108px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="40.643574"
+       y="437.02505"
+       id="text3699"
+       transform="scale(0.739544,1.352184)"><tspan
+         sodipodi:role="line"
+         id="tspan3701"
+         x="40.643574"
+         y="437.02505">No backend interaction</tspan><tspan
+         sodipodi:role="line"
+         x="40.643574"
+         y="468.28702"
+         id="tspan3703">needed</tspan><tspan
+         sodipodi:role="line"
+         x="40.643574"
+         y="499.54898"
+         id="tspan3705" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:25.27982903px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="280.32208"
+       y="378.84805"
+       id="text3707"
+       transform="scale(0.9332,1.071582)"><tspan
+         sodipodi:role="line"
+         id="tspan3709"
+         x="280.32208"
+         y="378.84805">FreshSrbs queue</tspan><tspan
+         sodipodi:role="line"
+         x="280.32208"
+         y="410.44784"
+         id="tspan3711" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:19.4349556px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="337.23041"
+       y="613.47162"
+       id="text3713"
+       transform="scale(0.760092,1.31563)"><tspan
+         sodipodi:role="line"
+         id="tspan3715"
+         x="337.23041"
+         y="613.47162">PendingSrbCompletions queue</tspan><tspan
+         sodipodi:role="line"
+         x="337.23041"
+         y="637.76531"
+         id="tspan3717" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:31.67261696px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="888.10602"
+       y="162.845"
+       id="text3719"
+       transform="scale(0.586348,1.705471)"><tspan
+         sodipodi:role="line"
+         id="tspan3721"
+         x="888.10602"
+         y="162.845">No mapping needed</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:30.05125618px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="635.47174"
+       y="378.57568"
+       id="text3723"
+       transform="scale(0.808938,1.236188)"><tspan
+         sodipodi:role="line"
+         id="tspan3725"
+         x="635.47174"
+         y="378.57568">Prepare SRB</tspan><tspan
+         sodipodi:role="line"
+         x="635.47174"
+         y="416.13975"
+         id="tspan3727" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:22.74093628px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="715.9408"
+       y="399.44107"
+       id="text3729"
+       transform="scale(0.710587,1.407287)"><tspan
+         sodipodi:role="line"
+         id="tspan3731"
+         x="715.9408"
+         y="399.44107">PreparedSrbs queue</tspan><tspan
+         sodipodi:role="line"
+         x="715.9408"
+         y="427.86724"
+         id="tspan3733" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:25.19461632px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="745.92432"
+       y="487.73944"
+       id="text3735"
+       transform="scale(0.680866,1.468717)"><tspan
+         sodipodi:role="line"
+         id="tspan3737"
+         x="745.92432"
+         y="487.73944">SubmitterdSrbs queue</tspan><tspan
+         sodipodi:role="line"
+         x="745.92432"
+         y="519.23271"
+         id="tspan3739" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:29.28996658px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="796.74603"
+       y="597.64172"
+       id="text3741"
+       transform="scale(0.654723,1.527364)"><tspan
+         sodipodi:role="line"
+         id="tspan3743"
+         x="796.74603"
+         y="597.64172">Complete the SRB</tspan></text>
+    <rect
+       style="fill:black;fill-opacity:0;stroke:black;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3745"
+       width="189.90868"
+       height="58.588848"
+       x="488.91382"
+       y="525.06256" />
+    <rect
+       style="fill:black;fill-opacity:0;stroke:black;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3747"
+       width="206.07112"
+       height="62.629459"
+       x="484.87323"
+       y="678.60571" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 555.5839,137.16398 L 488.91383,179.59038"
+       id="path3929" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 583.86817,141.20459 L 591.94939,228.07771"
+       id="path3933" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 242.43661,211.91527 L 123.23861,284.64625"
+       id="path3935" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 121.21831,343.2351 L 226.27417,391.72242"
+       id="path3937" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 103.03556,349.29601 L 98.994949,555.36713"
+       id="path3939" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 98.994949,626.07781 L 234.35539,771.53978"
+       id="path3941" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 484.87322,395.76303 L 549.52298,432.12852"
+       id="path3943" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 589.92909,288.68686 L 581.84787,430.10822"
+       id="path3945" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 569.72604,476.57523 L 569.72604,512.94072"
+       id="path3947" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="M 573.76665,589.71232 L 575.78695,670.52452"
+       id="path3949" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 448.50773,836.18954 L 513.15749,894.77839"
+       id="path3951" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:6,2;stroke-dashoffset:0"
+       d="M 575.78695,745.27581 L 577.80726,872.55503"
+       id="path3953" />
+    <text
+       xml:space="preserve"
+       style="font-size:25.62424469px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="885.63422"
+       y="519.32758"
+       id="text3955"
+       transform="scale(0.654752,1.527296)"><tspan
+         sodipodi:role="line"
+         id="tspan3957"
+         x="885.63422"
+         y="519.32758">Backend completes</tspan><tspan
+         sodipodi:role="line"
+         x="885.63422"
+         y="551.35788"
+         id="tspan3959">the SRB</tspan><tspan
+         sodipodi:role="line"
+         x="885.63422"
+         y="583.38819"
+         id="tspan3961" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:29.07600021px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="968.27521"
+       y="391.92029"
+       id="text3963"
+       transform="scale(0.60606,1.650001)"><tspan
+         sodipodi:role="line"
+         id="tspan3965"
+         x="968.27521"
+         y="391.92029">submit to backend</tspan><tspan
+         sodipodi:role="line"
+         x="968.27521"
+         y="428.26529"
+         id="tspan3967" /></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:0.93768322px;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-opacity:1"
+       d="M 517.22926,914.95028 L 456.55779,953.39838"
+       id="path8810" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot8812"
+       transform="matrix(1.596526,0,0,2.312227,-165.1857,-1203.377)"><flowRegion
+         id="flowRegion8814"><rect
+           id="rect8816"
+           width="193.94928"
+           height="50.507626"
+           x="248.49753"
+           y="912.96112" /></flowRegion><flowPara
+         id="flowPara8818">Pending unmap queue</flowPara><flowPara
+         id="flowPara8820">(slow contexts, not SRBs)</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot8822"
+       transform="matrix(1.33874,0,0,4.097107,-2.789102,-2957.652)"><flowRegion
+         id="flowRegion8824"><rect
+           id="rect8826"
+           width="204.05081"
+           height="52.527931"
+           x="10.101525"
+           y="955.38751" /></flowRegion><flowPara
+         id="flowPara8828">Unmap buffers, release MDL</flowPara><flowPara
+         id="flowPara8830" /></flowRoot>    <rect
+       style="fill:black;fill-opacity:0;stroke:black;stroke-width:0.92935354;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8832"
+       width="228.36513"
+       height="88.964073"
+       x="228.25916"
+       y="904.8446" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 228.29447,939.2251 L 179.80715,967.50937"
+       id="path10784" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot1948"
+       transform="matrix(1.136836,0,0,2.229894,-82.26264,-1172.121)"><flowRegion
+         id="flowRegion1950"><rect
+           id="rect1952"
+           width="248.49753"
+           height="42.426407"
+           x="484.87323"
+           y="947.30634" /></flowRegion><flowPara
+         id="flowPara1954">Slow path context queued for unmap if appropriate</flowPara></flowRoot>  </g>
+</svg>

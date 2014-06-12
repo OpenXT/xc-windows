@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<!-- Definitions of third party include locations used by Citrix code. -->
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="citrix.settings.thirdparty"
+	>
+</VisualStudioPropertySheet>

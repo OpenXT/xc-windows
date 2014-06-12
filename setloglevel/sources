@@ -1,0 +1,12 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=setloglevel
+TARGETTYPE=PROGRAM
+UMTYPE=console
+
+USE_MSVCRT=1
+
+SOURCES=setloglevel.c setloglevel.rc

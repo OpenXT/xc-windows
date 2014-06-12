@@ -1,0 +1,30 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=FixDiskFilters
+TARGETTYPE=PROGRAM
+UMTYPE=console
+
+INCLUDES = ..\inc;$(DDK_INC_PATH);$(ATL_INC_PATH)\atl30;$(MFC_INC_PATH)
+
+TARGETLIBS=$(SDK_LIB_PATH)\advapi32.lib
+
+#uncomment for unicode version, comment for ansi
+#C_DEFINES=/D_UNICODE /DUNICODE
+
+
+#_WIN32_WINNT=0x0600
+
+USECXX_FLAG=/Tp
+USE_MSVCRT=1
+386_STDCALL=0
+USE_STL=1
+USE_NATIVE_EH=1
+MSC_WARNING_LEVEL=/W3
+
+
+SOURCES = FixDiskFilters.cpp \
+          FixDiskFilters.rc
+

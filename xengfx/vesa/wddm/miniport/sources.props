@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ImportFilePath_89F1C443DAE6416487FFF18F82E5E9DE>sources.inc.props</ImportFilePath_89F1C443DAE6416487FFF18F82E5E9DE>
+    <ImportFilePath_89F1C443DAE6416487FFF18F82E5E9DE Condition="!$([System.IO.Path]::IsPathRooted('sources.inc.props'))">$([System.IO.Path]::Combine($(MSBuildProjectDirectory),'sources.inc.props'))</ImportFilePath_89F1C443DAE6416487FFF18F82E5E9DE>
+    <AlternateImportFilePath_67989EF4339645D89CAC59B273A59C13>$([System.IO.Path]::Combine($(MSBuildThisFileDirectory),'sources.inc.props'))</AlternateImportFilePath_67989EF4339645D89CAC59B273A59C13>
+  </PropertyGroup>
+  <Import Project="$(ImportFilePath_89F1C443DAE6416487FFF18F82E5E9DE)" Condition="Exists($(ImportFilePath_89F1C443DAE6416487FFF18F82E5E9DE))" />
+  <Import Project="$(AlternateImportFilePath_67989EF4339645D89CAC59B273A59C13)" Condition="!Exists($(ImportFilePath_89F1C443DAE6416487FFF18F82E5E9DE))" />
+  <PropertyGroup>
+    <INCLUDES>$(INCLUDES);../../inc;../../shared;../../../../inc</INCLUDES>
+    <TARGETNAME>XenGfxDO</TARGETNAME>
+    <TARGET_DESTINATION>XenGfxDO</TARGET_DESTINATION>
+    <TARGETLIBS>$(TARGETLIBS)  			 $(TARGETPATH_ARCH)\xenvesa_shared.lib</TARGETLIBS>
+    <C_DEFINES>$(C_DEFINES) -DXENTARGET=\"XENGFX\" -DUNICODE -DXENVESA -DXEN_CHROMIUM</C_DEFINES>
+    <MINIMUM_NT_TARGET_VERSION>$(_NT_TARGET_VERSION_WIN8)</MINIMUM_NT_TARGET_VERSION>
+    <SOURCES>$(SOURCES)			         ..\BltHw.cxx		 		..\xengfxdo.rc</SOURCES>
+    <MSC_WARNING_LEVEL>$(MSC_WARNING_LEVEL) /W4</MSC_WARNING_LEVEL>
+  </PropertyGroup>
+</Project>

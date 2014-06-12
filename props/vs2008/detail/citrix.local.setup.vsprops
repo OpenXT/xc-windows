@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- Setup local settings with something sensible in case local files miss something. -->
+<VisualStudioPropertySheet 
+	ProjectType="Visual C++" 
+	Version="8.00" 
+	Name="citrix.local.setup"
+	>
+  <!-- Specify build location settings - use default. -->
+  <UserMacro
+		Name="LocalLocationsPropFile"
+		Value=".\locations.build.default.vsprops"
+	/>
+</VisualStudioPropertySheet>

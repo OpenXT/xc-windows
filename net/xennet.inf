@@ -1,0 +1,177 @@
+;
+; Xennet Miniport INF file
+;
+; Copyright (c) 2007, Citrix Systems, Inc. - All rights reserved.
+
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+
+
+
+[Version]
+signature  = "$Windows NT$"
+Class      = Net
+ClassGUID  = {4d36e972-e325-11ce-bfc1-08002be10318}
+Provider   = %OpenXT%
+DriverVer  = 03/01/2008,4.2.0.0001
+CatalogFile= xennet.cat
+
+[ControlFlags]
+ExcludeFromSelect=XEN\vif
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+0=%DiskDesc%
+
+[SourceDisksFiles]
+xennet.sys=0,,
+xennet6.sys=0,,
+
+[Manufacturer]
+%OpenXT% = OpenXT,NTx86.6.0
+
+; Default install section.  Used for pre Vista operating systems
+[OpenXT]
+%Xennet_Desc% = Xennet_Inst,XEN\vif
+
+[Xennet_Inst]
+Characteristics = 0x84 ;NCF_PHYSICAL | NCF_HAS_UI
+CopyFiles = @xennet.sys
+BusType = 1
+AddReg = xennet.reg, common.reg
+
+[Xennet_Inst.Services]
+AddService = Xennet,0x12,Xennet_Service,
+
+[xennet.reg]
+HKR, Ndi, Service, 0, "Xennet"
+HKR, Ndi\Interfaces, UpperRange, 0, "ndis5"
+HKR, Ndi\Interfaces, LowerRange, 0, "ethernet"
+
+[Xennet_Service]
+DisplayName    = %Xennet_Desc%
+ServiceType    = 1 ;SERVICE_KERNEL_DRIVER
+StartType      = 3 ;SERVICE_DEMAND_START
+ErrorControl   = 1 ;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\xennet.sys
+LoadOrderGroup = NDIS
+
+; Default install section for Vista and later operating systems
+[OpenXT.NTx86.6.0]
+%Xennet_Desc% = Xennet6_Inst,XEN\vif
+
+[Xennet6_Inst]
+Characteristics = 0x84   ; NCF_PHYSICAL | NCF_HAS_UI
+CopyFiles = @xennet6.sys
+BusType = 1
+*IfType = 6             ; IF_TYPE_ETHERNET_CSMACD
+*MediaType = 0          ; NdisMedium802_3
+*PhysicalMediaType = 0  ; NdisPhysicalMediumUnspecified
+AddReg = xennet6.reg, common.reg
+
+[Xennet6_Inst.Services]
+AddService = Xennet6,0x12,Xennet6_Service,
+
+[xennet6.reg]
+HKR, Ndi, Service, 0, "Xennet6"
+HKR, Ndi\Interfaces, UpperRange, 0, "ndis5"
+HKR, Ndi\Interfaces, LowerRange, 0, "ethernet"
+
+HKR, Ndi\params\LROIPv4,                          ParamDesc,  0, %LROIPv4%
+HKR, Ndi\params\LROIPv4,                          Type,       0, "enum"
+HKR, Ndi\params\LROIPv4,                          Default,    0, "1"
+HKR, Ndi\params\LROIPv4,                          Optional,   0, "0"
+HKR, Ndi\params\LROIPv4\enum,                     "0",        0, %Disabled%
+HKR, Ndi\params\LROIPv4\enum,                     "1",        0, %Enabled%
+
+HKR, Ndi\params\ForceCsum,                        ParamDesc,  0, "Force checksum calculation"
+HKR, Ndi\params\ForceCsum,                        Type,       0, "enum"
+HKR, Ndi\params\ForceCsum,                        Default,    0, "0"
+HKR, Ndi\params\ForceCsum,                        Optional,   0, "0"
+HKR, Ndi\params\ForceCsum\enum,                   "0",        0, "No"
+HKR, Ndi\params\ForceCsum\enum,                   "1",        0, "Yes"
+
+HKR, Ndi\params\AllowCsumBlank,                   ParamDesc,  0, "Allow blank checksums"
+HKR, Ndi\params\AllowCsumBlank,                   Type,       0, "enum"
+HKR, Ndi\params\AllowCsumBlank,                   Default,    0, "1"
+HKR, Ndi\params\AllowCsumBlank,                   Optional,   0, "0"
+HKR, Ndi\params\AllowCsumBlank\enum,              "0",        0, "No"
+HKR, Ndi\params\AllowCsumBlank\enum,              "1",        0, "Automatic"
+HKR, Ndi\params\AllowCsumBlank\enum,              "2",        0, "Yes"
+
+[Xennet6_Service]
+DisplayName    = %Xennet6_Desc%
+ServiceType    = 1 ;SERVICE_KERNEL_DRIVER
+StartType      = 3 ;SERVICE_DEMAND_START
+ErrorControl   = 1 ;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\xennet6.sys
+LoadOrderGroup = NDIS
+
+[common.reg]
+HKR, Ndi\params\*IPChecksumOffloadIPv4,           ParamDesc,  0, %IPChecksumOffloadIPv4%
+HKR, Ndi\params\*IPChecksumOffloadIPv4,           Type,       0, "enum"
+HKR, Ndi\params\*IPChecksumOffloadIPv4,           Default,    0, "1"
+HKR, Ndi\params\*IPChecksumOffloadIPv4,           Optional,   0, "0"
+HKR, Ndi\params\*IPChecksumOffloadIPv4\enum,      "0",        0, %Disabled%
+HKR, Ndi\params\*IPChecksumOffloadIPv4\enum,      "1",        0, %Enabled-Tx%
+
+HKR, Ndi\params\*TCPChecksumOffloadIPv4,          ParamDesc,  0, %TCPChecksumOffloadIPv4%
+HKR, Ndi\params\*TCPChecksumOffloadIPv4,          Type,       0, "enum"
+HKR, Ndi\params\*TCPChecksumOffloadIPv4,          Default,    0, "3"
+HKR, Ndi\params\*TCPChecksumOffloadIPv4,          Optional,   0, "0"
+HKR, Ndi\params\*TCPChecksumOffloadIPv4\enum,     "0",        0, %Disabled%
+HKR, Ndi\params\*TCPChecksumOffloadIPv4\enum,     "1",        0, %Enabled-Tx%
+HKR, Ndi\params\*TCPChecksumOffloadIPv4\enum,     "2",        0, %Enabled-Rx%
+HKR, Ndi\params\*TCPChecksumOffloadIPv4\enum,     "3",        0, %Enabled-TxRx%
+
+HKR, Ndi\params\*UDPChecksumOffloadIPv4,          ParamDesc,  0, %UDPChecksumOffloadIPv4%
+HKR, Ndi\params\*UDPChecksumOffloadIPv4,          Type,       0, "enum"
+HKR, Ndi\params\*UDPChecksumOffloadIPv4,          Default,    0, "3"
+HKR, Ndi\params\*UDPChecksumOffloadIPv4,          Optional,   0, "0"
+HKR, Ndi\params\*UDPChecksumOffloadIPv4\enum,     "0",        0, %Disabled%
+HKR, Ndi\params\*UDPChecksumOffloadIPv4\enum,     "1",        0, %Enabled-Tx%
+HKR, Ndi\params\*UDPChecksumOffloadIPv4\enum,     "2",        0, %Enabled-Rx%
+HKR, Ndi\params\*UDPChecksumOffloadIPv4\enum,     "3",        0, %Enabled-TxRx%
+
+HKR, Ndi\params\*LSOv1IPv4,                       ParamDesc,  0, %LSOv1IPv4%
+HKR, Ndi\params\*LSOv1IPv4,                       Type,       0, "enum"
+HKR, Ndi\params\*LSOv1IPv4,                       Default,    0, "1"
+HKR, Ndi\params\*LSOv1IPv4,                       Optional,   0, "0"
+HKR, Ndi\params\*LSOv1IPv4\enum,                  "0",        0, %Disabled%
+HKR, Ndi\params\*LSOv1IPv4\enum,                  "1",        0, %Enabled%
+
+[Strings]
+OpenXT                 = "OpenXT"
+Xennet_Desc            = "OpenXT PV Ethernet Adapter"
+Xennet6_Desc           = "OpenXT PV Ethernet Adapter [NDIS6]"
+DiskDesc               = "OpenXT Tools for Virtual Machines"
+IPChecksumOffloadIPv4  = "Offload IP Checksum"
+TCPChecksumOffloadIPv4 = "Offload TCP Checksum"
+UDPChecksumOffloadIPv4 = "Offload UDP Checksum"
+LSOv1IPv4              = "Large Send Offload"
+LROIPv4                = "Large Receive Offload"
+Disabled               = "Disabled"
+Enabled                = "Enabled"
+Enabled-Rx             = "Enabled (Receive Only)"
+Enabled-Tx             = "Enabled (Transmit Only)"
+Enabled-TxRx           = "Enabled (Transmit and Receive)"
+

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="UserMacros">
+    <!-- These are the empty location values that may be used in local settings. -->
+    <LocalOutputDir>D:\output</LocalOutputDir>
+    <LocalIntermediateDir>D:\intermediate</LocalIntermediateDir>
+    <LocalLocationsPropFile></LocalLocationsPropFile>
+  </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="detail\citrix.settings.thirdparty.props" />
+    <Import Project="detail\citrix.settings.default.props" />
+    <!-- This may define location properties, and LocalLocationsPropFile (see below) -->
+    <Import Condition=" Exists('$(LocalPropsDir)citrix.local.props') " Project="$(LocalPropsDir)citrix.local.props" />
+  </ImportGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <!--
+    <BuildMacro Include="LocalLocationsPropFile">
+      <Value>$(LocalLocationsPropFile)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LocalOutputDir">
+      <Value>$(LocalOutputDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LocalIntermediateDir">
+      <Value>$(LocalIntermediateDir)</Value>
+    </BuildMacro>
+    -->
+  </ItemGroup>
+  <!-- If LocalLocationsPropFile has been defined locally, import it. -->
+  <Import Condition=" '$(LocalLocationsPropFile)'!='' " Project="detail\$(LocalLocationsPropFile)" />
+</Project>

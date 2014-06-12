@@ -1,0 +1,22 @@
+TOPDIR=..
+include ..\config.mk
+
+TARGETNAME=xenvbd
+TARGETTYPE=DRIVER
+INCLUDES=$(INCLUDES);..\xenhdrs
+
+TARGETLIBS=$(DDK_LIB_PATH)\scsiport.lib \
+           $(DDK_LIB_PATH)\scsiwmi.lib \
+	   $(TARGETPATH_ARCH)\xevtchn.lib \
+	   $(TARGETPATH_ARCH)\xenutil.lib
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENVBD\"
+
+SOURCES=\
+	xenvbd.c \
+	xen.c \
+	xenvbd.rc \
+	inquiry.c \
+	mode.c \
+	filterio.c
+

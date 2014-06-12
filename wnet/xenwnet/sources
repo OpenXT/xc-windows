@@ -1,0 +1,27 @@
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xenwnet
+TARGETTYPE=DRIVER
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENWNET\" -DXEN_WIRELESS
+
+TARGETLIBS=$(DDK_LIB_PATH)\ndis.lib \
+           $(DDK_LIB_PATH)\ntstrsafe.lib \
+	       $(TARGETPATH_ARCH)\xevtchn.lib \
+	       $(TARGETPATH_ARCH)\xenutil.lib
+
+INCLUDES=$(INCLUDES);..
+
+SOURCES=\
+    miniport.c \
+    xennet.c \
+    ..\settings.c \
+    ..\utf8.c \
+    xenwnet.rc \
+    receiver.c \
+    transmitter.c \
+	wlan.c \
+    ..\receiver_common.c
+

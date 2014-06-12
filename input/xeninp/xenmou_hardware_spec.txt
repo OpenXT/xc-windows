@@ -1,0 +1,137 @@
+XenMou is a PCI device which may be present at any BDF in the system.
+The Xen PCI Vendor ID 5853 and Device ID C110 will be assigned for this
+device.  It will be an Input Device Class, Mouse Subclass (0x0902).
+
+It contains 1 BAR:
+
+BAR0 is non prefetchable memory of 8k+ bytes (2+ pages) 
+	containgin MMIO registers and mouse event data.
+
+The device can also generate an interrupt.
+
+Registers:
+
+Global Registers (Range 0x00000 - 0x00FFF)
+
+The global registers control features of the xenmou adapter that
+reflect the entire device.
+
+0x00000 - XMOU_MAGIC:
+  Magic number. This register always reads 0x584D4F55
+  
+  Type: Read-Only
+
+0x00004 - XMOU_REV:
+  Revision number. This register reads 0x1 for this revision.
+  
+  Type: Read-Only
+
+0x00100 - XMOU_CONTROL:
+  Control register to change backend settings.
+  
+  Bit 0:  XMOU_EN Set to enable the xenmou device.
+  Bit 1:  INT_EN  Global bit to enable interrupts from the device.
+  Bits 2 - 31: Unused.
+  
+  Type: Read-Write
+  
+0x00104 - XMOU_EVENT_SIZE:
+  Size in bytes of the individual event data structures in the event register
+  range.
+  
+  Type: Read-Only
+  
+0x00108 - XMOU_EVENT_NPAGES:
+  Number of pages that make up the the event register range.
+  
+  Type: Read-Only
+  
+0x0010C - XMOU_ACCELERATION:
+  Acceleration scalar factor ranging from 1 to 20. The value for the default
+  mouse speed is 10.
+  
+  Type: Write-Only
+  
+0x000110 - XMOU_ISR:
+  Interrupt status register. Write to dismiss interrupt.
+  
+  Bit 0:   INT  Indicates if this device is currently generating an interrupt.
+  Bits 1 - 31: Unused.
+  
+  Type: Read-Only
+
+
+Event Registers (Range 0x01000 - 0x0nFFF)
+
+The event registers occupy XMOU_EVENT_NPAGES pages of 4096 bytes.  There are
+(PAGE_SIZE/XMOU_EVENT_SIZE - 1) individual event data structures per page. 
+The individual event data structures are each XMOU_EVENT_SIZE bits in size
+(XMOU_EVENT_SIZE is always 64 or greater bits).  The first event data
+structure on the first page is unique in that it holds the read and write
+pointer indexing into the other event data structures.
+
+0x01000 - XMOU_READ_PTR:
+  Current read offset index to the next event data structures to read (in 
+  XMOU_EVENT_SIZE units).
+  
+  Type: Read-Write
+  
+0x01004 - XMOU_WRITE_PTR:
+  Current write offset index to the event data structures one beyond the last
+  one written to (in XMOU_EVENT_SIZE units).
+  
+  Type: Read-Only
+  
+The event registers data structures starting at (0x01000 + XMOU_EVENT_SIZE)
+form a logical ring spanning XMOU_EVENT_NPAGES pages.  The offset pointers
+above are indices into the ring.  If the write pointer is less than the read
+pointer then the ring has wrapped.  When the read pointer is not equal to the
+write pointer, there are events to read.  The pointers being equal always
+means there are no events to read, that is read == write never means that
+the ring is full with (PAGE_SIZE/XMOU_EVENT_SIZE - 1) events.  A full ring
+will have a maximum of (PAGE_SIZE/XMOU_EVENT_SIZE - 2) events in it.  The 
+ring may wrap at this point, controlled by the underlying virtual HW.  When
+events have been consumed, the xenmou driver software moves the read pointer
+forward up to the write pointer.  Driver software never moves the write
+pointer.
+
+Each of the event registers is formatted in the following manner, starting
+with the first event register:
+
+0x01000 + (XMOU_EVENT_SIZE) - XMOU_FLAG_REV_FIELD:
+  This 32 bit field contains 16 bits of flags indicating what type of mouse
+  event is being reported. The second 16 bits report the revision ID of the
+  individual structure that is always <= XMOU_REV.
+  
+  The FENCE flag will be set to indicate a fence event that conveys no data
+  but indicates all events following the last event occured contemperaneously.
+  This holds to for single events as well as groups of events.
+  
+  Bit 0:  ABSOLUTE Absolute mouse movement event.
+  Bit 1:  RELATIVE Relative mouse movement event.
+  Bit 2:  FENCE Fence event.
+  Bit 3:  LEFT_BUTTON_DOWN
+  Bit 4:  LEFT_BUTTON_UP
+  Bit 5:  RIGHT_BUTTON_DOWN
+  Bit 6:  RIGHT_BUTTON_UP
+  Bit 7:  MIDDLE_BUTTON_DOWN
+  Bit 8:  MIDDLE_BUTTON_UP
+  Bit 9:  HWHEEL Horizontal wheel movement event.
+  Bit 10:  VWHEEL Vertical wheel movement event.
+  Bits 11 - 15: Unused.
+  Bits 16 - 31: Unsigned short values specifying the revision number.
+  
+0x01000 + (XMOU_EVENT_SIZE + 4) - XMOU_DATA_FIELD:
+  This 32 bit field contains data associated with a given mouse event.
+  
+  For ABSOLUTE the field contains two 16b values:
+    Bits 0 - 15:  X absolute co-ordinate between 0 and 65535
+    Bits 16 - 31: Y absolute co-ordinate between 0 and 65535
+    
+  For RELATIVE the field contains two 16b values:
+    Bits 0 - 15:  X relative motion between -32768 and +32767
+    Bits 16 - 31: Y relative motion between -32768 and +32767
+    
+  For HWHEEL and VWHEEL the field is a single 32b field with wheel data.
+  
+  Type: Read-Only

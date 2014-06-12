@@ -1,0 +1,20 @@
+USERSPACE=1
+TOPDIR=..\..\..
+
+include ..\..\..\config.mk
+
+TARGETNAME=is_rdp
+TARGETTYPE=PROGRAM
+
+INCLUDES=$(INCLUDES); ..\..\xs
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\user32.lib \
+	$(TARGETPATH_ARCH)\xsutil.lib
+
+NO_NTDLL=1
+USE_MSVCRT=1
+UMTYPE=console
+386_STDCALL=0
+
+SOURCES=is_rdp.c

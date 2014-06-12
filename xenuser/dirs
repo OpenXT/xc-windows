@@ -1,0 +1,11 @@
+DIRS=xs2 \
+     xs \
+     util \
+     xstest \
+     xs2test \
+     xstest_dyn \
+     winagent \
+     xenstore_client \
+     xenops \
+     tests \
+     v2v

@@ -1,0 +1,32 @@
+Description of the handshake between xenvbd/scsifilt and blkback/blktap
+=======================================================================
+
+02/07/2009: version 1.0	(pauldu)
+
+Multi-page Handshake
+--------------------
+
+xenvbd/scsifilt  are capable of creating a multi-page shared VM ring. This ring
+can  clearly  not  be  advertized  to  the  backend  using  the standard single
+'ring-ref'  xenstore  key.  Thus a new multi-page handshake is used. This takes
+the  form  of  a  'ring-page-order'  xenstore  key. The value of this tells the
+backend  how  many ring grant references to expect: e.g. a value of 0 indicates
+2^0  =  1  reference,  a  value  of  2  indicates  2^2 = 4 references. Multiple
+references  are  passed  in xenstore keys named 'ring-refX' where X is an index
+ranging from 0..2^<ring-page-order>.
+
+Backwards Compatibility
+-----------------------
+
+Clearly the frontend driver needs to know how big a ring the backend driver can
+cope  with,  or  indeed whether it can handle multi-page rings at all. Thus the
+frontend driver looks for the 'max-ring-page-order' key, which the backend must
+create  before moving into the INIT_WAIT state. If this key is not present then
+the  frontend  driver assumes the backend is not multi-page aware and will only
+create  a  single  page ring, which it advertises using the 'ring-ref' key (nor
+does  it  create  the  'ring-page-order'  key).  If the key is present then the
+frontend  will  create  a ring that is between 0 and 2^<max-ring-page-order> in
+length  (using only whole powers of 2, of course) and advertise it as described
+above.
+
+

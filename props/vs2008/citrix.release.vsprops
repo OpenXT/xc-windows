@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<!-- Top level vsprops file used for release builds. -->
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="citrix.release"
+	InheritedPropertySheets=".\detail\citrix.common.vsprops"
+	>
+  <UserMacro
+		Name="TargetSuffix"
+		Value=""
+	/>
+  <UserMacro
+		Name="CitrixBuildType"
+		Value="release"
+	/>
+</VisualStudioPropertySheet>

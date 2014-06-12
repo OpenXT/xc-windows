@@ -1,0 +1,15 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=sync
+TARGETTYPE=PROGRAM
+UMTYPE=windows
+
+USE_MSVCRT=1
+
+TARGETLIBS=$(SDK_LIB_PATH)\user32.lib \
+	$(TARGETPATH_ARCH)\xsutil.lib
+
+SOURCES=sync.c sync.rc

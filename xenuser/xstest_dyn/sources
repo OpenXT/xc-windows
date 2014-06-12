@@ -1,0 +1,18 @@
+USERSPACE=1
+
+include ..\..\config.mk
+
+TARGETNAME=xstest_dyn
+TARGETPATH=..\..\$(BUILDDIR)
+TARGETTYPE=PROGRAM
+
+INCLUDES=$(SDK_INC_PATH); ..\..\inc
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\user32.lib \
+	..\..\$(BUILDDIR_ARCH)\xsutil.lib
+
+USE_MSVCRT=1
+UMTYPE=console
+
+SOURCES=xstest.c

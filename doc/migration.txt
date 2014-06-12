@@ -1,0 +1,40 @@
+To do a save/restore or migration:
+
+-- Xend and dom0 do some stuff which is irrelevant for our purposes.
+
+-- Xend sets control/shutdown to suspend
+
+-- We notice that via the SuspendThreadWatchCb in xenevtchn/suspend.c,
+   which notifies SuspendThread.
+
+-- The SuspendThread stops the machine with QuiesceSystem and tells
+   the hypervisor to suspend us.
+
+-- Some more magic happens which we don't care about, and we get
+   reinstantiated in a new domain.
+
+-- The suspend thread runs the early suspend handlers, in the order
+   they were registered.  At this point, you know that no other cpus
+   are doing anything beyond waiting for you to unblock them, no
+   interrupts are running, and nobody holds any locks.  Things like
+   the APIC may not be available to some of these handlers.
+
+-- The suspend thread unquiesces the machine and drops all locks, then
+   runs the late suspend handlers, in the order they were registered.
+   The system is running pretty much normally at this point, including
+   all cpus, userspace, etc.
+
+The following resources are lost across a suspend/resume:
+
+-- Event channels and event channel bindings
+-- Grant references
+-- Grant caches
+
+and the backends completely forget who you are.
+
+The following resources are preserved:
+
+-- Evtchn debug callback handlers
+-- Xenstore watches are restored automatically by the xenbus suspend
+   handler.
+-- Anything purely internal to the Windows VM e.g. memory, threads.

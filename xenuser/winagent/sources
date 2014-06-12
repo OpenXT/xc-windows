@@ -1,0 +1,49 @@
+USERSPACE=1
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xenservice
+TARGETTYPE=PROGRAM
+
+#uncomment for unicode version, comment for ansi
+#C_DEFINES=/D_UNICODE /DUNICODE
+
+INCLUDES=$(INCLUDES);..\xs2;$(TOPDIR)\xenvss\inc\win2003;$(ATL_INC_PATH)\atl30
+
+TARGETLIBS=$(SDK_LIB_PATH)\ws2_32.lib \
+	       $(SDK_LIB_PATH)\ole32.lib \
+	       $(SDK_LIB_PATH)\oleaut32.lib \
+	       $(SDK_LIB_PATH)\wbemuuid.lib \
+	       $(SDK_LIB_PATH)\setupapi.lib \
+	       $(TARGETPATH_ARCH)\xs2.lib \
+	       $(TARGETPATH_ARCH)\xsutil.lib \
+           $(SDK_LIB_PATH)\IPHlpAPI.lib \
+           $(SDK_LIB_PATH)\user32.lib \
+           $(SDK_LIB_PATH)\shell32.lib \
+           $(SDK_LIB_PATH)\version.lib \
+           $(SDK_LIB_PATH)\wintrust.lib \
+           $(SDK_LIB_PATH)\crypt32.lib \
+           $(SDK_LIB_PATH)\Iphlpapi.lib \
+           $(SDK_LIB_PATH)\powrprof.lib
+	
+USECXX_FLAG=/Tp
+USE_MSVCRT=1
+UMTYPE=windows
+UMENTRY=winmain
+386_STDCALL=0
+USE_STL=1
+USE_NATIVE_EH=1
+MSC_WARNING_LEVEL=/W3
+
+SOURCES=NicInfo.cpp \
+        TSInfo.cpp \
+	stdafx.cpp \
+	WMIAccessor.cpp \
+	XSAccessor.cpp \
+	XService.cpp \
+	clipboard.cpp \
+	errors.cpp \
+	volumes.cpp \
+	winagent.rc \
+	messages.mc

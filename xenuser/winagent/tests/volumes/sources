@@ -1,0 +1,19 @@
+USERSPACE=1
+
+include ..\..\..\..\config.mk
+
+TARGETNAME=volumes
+TARGETPATH=..\..\..\..\$(BUILDDIR)
+TARGETTYPE=PROGRAM
+
+INCLUDES=$(SDK_INC_PATH);..\..\..\..\inc
+
+TARGETLIBS=..\..\..\..\$(BUILDDIR_ARCH)\xsutil.lib
+
+USECXX_FLAG=/Tp
+USE_MSVCRT=1
+UMTYPE=console
+USE_STL=1
+USE_NATIVE_EH=1
+
+SOURCES=test_v.cpp

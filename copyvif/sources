@@ -1,0 +1,22 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=copyvif
+TARGETTYPE=PROGRAM
+UMTYPE=windows
+
+USE_MSVCRT=1
+
+# Need to be unicode to avoid clobbering non-ascii characters in things
+# which we're copying.
+C_DEFINES=$(C_DEFINES) -D_UNICODE -DUNICODE
+
+TARGETLIBS=$(SDK_LIB_PATH)\user32.lib \
+	$(TARGETPATH_ARCH)\xsutil.lib \
+	$(SDK_LIB_PATH)\iphlpapi.lib
+
+SOURCES=copyvif.c copyvif.rc
+
+

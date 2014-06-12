@@ -1,0 +1,21 @@
+TOPDIR=..\..
+include ..\..\config.mk
+
+MSC_WARNING_LEVEL=/W3
+
+TARGETNAME=xeninp
+TARGETPATH=..\..\$(BUILDDIR)
+TARGETTYPE=DRIVER
+
+LINKER_FLAGS=$(LINKER_FLAGS) /DEF:xeninp.def
+
+TARGETLIBS=$(DDK_LIB_PATH)\ntstrsafe.lib \
+           $(DDK_LIB_PATH)\wdmsec.lib
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENINP\" -DXENINP_DRIVER -DUNICODE
+
+INCLUDES=..\..\inc
+
+SOURCES=xeninp.c \
+        xeninp.rc 
+

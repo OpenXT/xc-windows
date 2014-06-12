@@ -1,0 +1,32 @@
+include ..\..\..\config.mk
+TOPDIR=..\..\..
+
+MSC_WARNING_LEVEL=/W3
+
+TARGETNAME=xengfxmp
+TARGETTYPE=MINIPORT
+
+INCLUDES=$(INCLUDES);..\..\inc
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENGFX\" -DUNICODE
+
+TARGETLIBS=$(DDK_LIB_PATH)\videoprt.lib \
+           $(DDK_LIB_PATH)\ntoskrnl.lib \
+           $(DDK_LIB_PATH)\ntstrsafe.lib \
+           $(DDK_LIB_PATH)\hal.lib \
+           $(TARGETPATH_ARCH)\xengfxsh.lib
+           
+!if "$(NO_XENUTIL)"=="yes"
+
+C_DEFINES=$(C_DEFINES) -DNO_XENUTIL
+
+!else
+
+TARGETLIBS=$(TARGETLIBS) \
+           $(TARGETPATH_ARCH)\xenutil.lib           
+
+!endif
+
+SOURCES= \
+    xengfxmp.c \
+    xengfxmp.rc

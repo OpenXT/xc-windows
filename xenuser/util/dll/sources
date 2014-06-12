@@ -1,0 +1,25 @@
+USERSPACE=1
+TOPDIR=..\..\..
+
+include ..\..\..\config.mk
+
+TARGETNAME=xsutil
+TARGETTYPE=DYNLINK
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+$(SDK_LIB_PATH)\user32.lib \
+$(SDK_LIB_PATH)\wtsapi32.lib \
+..\..\..\$(BUILDDIR_ARCH)\xs2.lib
+
+NO_NTDLL=1
+USE_MSVCRT=1
+UMTYPE=windows
+386_STDCALL=0
+
+DLLDEF=xsutil.def
+
+INCLUDES=$(INCLUDES);..\..\xs2;
+
+C_DEFINES=$(C_DEFINES) -DXSUTIL_EXPORTS
+SOURCES=util.c xsutil.rc
+

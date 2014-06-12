@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- Build output in external location, using standard layout there. -->
+<VisualStudioPropertySheet 
+	ProjectType="Visual C++" 
+	Version="8.00" 
+	Name="locations.build.outside"
+	OutputDirectory="$(LocalOutputDir)\$(SolutionName)\$(ConfigurationName)"
+	IntermediateDirectory="$(LocalIntermediateDir)\$(SolutionName)\$(ProjectName)\$(ConfigurationName)"
+	>
+</VisualStudioPropertySheet>

@@ -1,0 +1,25 @@
+USERSPACE=1
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xs
+TARGETTYPE=DYNLINK
+
+#uncomment for unicode version, comment for ansi
+#C_DEFINES=/D_UNICODE /DUNICODE
+
+INCLUDES=$(INCLUDES);..\xs2
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\user32.lib \
+	$(SDK_LIB_PATH)\advapi32.lib
+
+NO_NTDLL=1
+USE_MSVCRT=1
+UMTYPE=windows
+386_STDCALL=0
+
+DLLDEF=xs.def
+
+SOURCES=xs.c xs.rc

@@ -1,0 +1,25 @@
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xennet
+TARGETTYPE=DRIVER
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENNET\"
+
+TARGETLIBS=$(DDK_LIB_PATH)\ndis.lib \
+           $(DDK_LIB_PATH)\ntstrsafe.lib \
+	   $(TARGETPATH_ARCH)\xevtchn.lib \
+	   $(TARGETPATH_ARCH)\xenutil.lib
+
+INCLUDES=$(INCLUDES);..
+
+SOURCES=\
+    miniport.c \
+    xennet.c \
+    ..\settings.c \
+    xennet.rc \
+    receiver.c \
+    transmitter.c \
+    ..\receiver_common.c
+

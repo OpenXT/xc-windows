@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!-- Default local settings if $(LocalPropsDir) not defined (typically as environment variable). -->
+<VisualStudioPropertySheet 
+	ProjectType="Visual C++" 
+	Version="8.00" 
+	Name="citrix.local"
+	>
+</VisualStudioPropertySheet>

@@ -1,0 +1,17 @@
+USERSPACE=1
+TOPDIR=..\..\..
+
+include ..\..\..\config.mk
+
+TARGETNAME=xenops_test
+TARGETTYPE=PROGRAM
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\user32.lib \
+	$(TARGETPATH_ARCH)\xenops.lib \
+	$(TARGETPATH_ARCH)\xsutil.lib
+
+USE_MSVCRT=1
+UMTYPE=console
+
+SOURCES=xenops.c

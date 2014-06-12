@@ -1,0 +1,217 @@
+The canonical copy of this document is in Mercurial at
+trunk/xs-windows.hg:doc/xenstore_controls_network_settings.txt.
+
+
+From Midnight Ride onwards, it will be possible to control certain key
+Windows networking settings via xenstore keys.  Each NIC in the VM
+will be controlled independently via independent areas in the store,
+which will in turn by controllable via the xenstore-data parameter of
+the xapi VM object.  The area for a NIC with MAC address
+01:02:CC:DD:EE:FF will be vm-data/vif/01_02_CC_DD_EE_FF
+i.e. vm-data/vif/{mac} where {mac} is the ethernet MAC address of the
+interface as _ separated upper-case hexadecimal bytes.  The MAC
+address used will be the one provided via by the backend, even if the
+guest is configured to use a different one for that interface.
+
+Terminology: In this document, a setting is a thing which can be set
+for a particular interface (e.g. an IP address or a DNS server list).
+An instance of a setting is a setting which has been set for a
+particular VM, along with the value to which it has been set (e.g. IP
+address = 1.2.3.4 or DNS server list = 5.6.7.8,10.11.12.13).
+
+The settings available are divided into three groups: tcpip, nbt, and
+xenserver.  Instances of settings in group {x} will be placed in
+vm-data/vif/{mac}/{x} (so one of vm-data/vif/{mac}/tcpip,
+vm-data/vif/{mac}/nbt, or vm-data/vif/{mac}/xenserver).  At the xenbus
+level, any setting can be set independently of any other, regardless
+of grouping (although not all such combinations will be meaningful).
+
+Each setting instance will have its own area in the store within the
+setting group area.  The instance area can have any name which is
+valid according to the usual xenbus rules and which does not contain a
+'/' character; the actual name for the area does not matter (provided
+there are no collisions).  Each setting instance area will contain at
+least two keys:
+
+name -- the name of the setting.  This is a case insensitive 7-bit
+	ASCII string.  It may not contain any characters which are not
+	letters, numbers, underscores (``_''), spaces, or asterisks
+	(``*'').
+
+type -- the type of the setting (defined below)
+
+There may also be further keys providing the value of the setting
+instance.  Setting instances are only guaranteed to be checked when
+the VM is booted, although they may also be checked at other times.
+They are also sticky: once a setting instance has been provided via
+xenstore, it will be remembered by the VM unless explicitly cleared.
+Settings can be cleared by creating a setting instance of type remove.
+
+Many of these settings can also be controlled from inside the VM.  The
+behaviour is undefined if a setting which has an extant xenstore
+setting instance is modified from inside the guest.  Xenstore setting
+instances will override any settings which were created inside the
+guest before the instance was created.
+
+Setting types correspond roughly to Windows registry value types.  The
+following types are available:
+
+string -- The setting is a simple UTF-8 string, corresponding to
+	  REG_SZ.  The string is given by a key called ``data'' in the
+	  xenstore area.
+
+multi_sz -- A list of zero or more UTF-8 strings.  The strings are
+	    stored in xenstore keys in the xenstore area whose names
+	    are consecutive integers starting at 0.  For example, the
+	    string list {red, green, blue} would be encoded as three
+	    xenstore keys: 0=red, 1=green, 2=blue.  The list is
+	    terminated by the first gap in the sequence (so e.g. if 0,
+	    1, 2, and 4 are set, but 3 is not, the list contains three
+	    elements whose values are the contents of the 0, 1, and 2
+	    keys).  Corresponds to a REG_MULTI_SZ.
+
+dword -- The setting is a simple integer between 0 and 2**32-1,
+	 inclusive, given as a base 10 number by a key called ``data''
+	 in the xenstore area.  Corresponds to little-endian
+	 REG_DWORD.
+
+remove -- This isn't a real setting, but causes any existing setting
+	  to be cleared.  This includes settings which have been set
+	  inside the guest.  No additional data.
+
+Other types may also be defined, but their behaviour is deliberately
+undocumented.
+
+Invalid setting instances (e.g. those without a name or type, or where
+a mandatory data key is missing) will be ignored.
+
+Note that strings in xenstore must be in UTF-8, even though the
+corresponding registry types are UTF-16.  If UTF-8 is expected, but
+the data does not decode as valid UTF-8 (as defined by RFC3629), the
+setting instance will be ignored.  The UTF-8 string must not include
+any UTF-16 surrogates (0xd800 to 0xdfff, inclusive), a byte order
+marker (0xfffe), or the Unicode invalid character 0xffff.
+
+
+
+
+The following settings are defined:
+
+name: MTU
+group: tcpip
+type: dword
+
+The interface MTU, specified in bytes.
+
+
+name: EnableDhcp
+group: tcpip
+type: dword
+
+This should be either 0 or 1.  If it's set to 0, DHCP is disabled on
+the interface.  Otherwise, it's enabled.
+
+
+name: DefaultGateway
+group: tcpip
+type: multi_sz
+
+A list of default gateways, in the order in which they should be
+tried, as dotted-quad IP addresses.  This overrides any value obtained
+from DHCP.
+
+
+name: IPAddress
+group: tcpip
+type: multi_sz
+
+A list of IP addresses to use on this interface, in dotted-quad
+format.  The length of this list must be the same as the length of the
+SubnetMask parameter, and they must be specified together.  Overrides
+any value obtained from DHCP.
+
+
+name: SubnetMask
+group: tcpip
+type: multi_sz
+
+A list of IP subnet masks, in dotted-quad format.  Each entry in the
+list is matched with the entry in the same location in the IPAddress
+setting instance (which must exist whenever this setting has an
+instance).  Overrides any value obtained from DHCP.
+
+
+name: NameServer
+group: tcpip
+type: string
+
+A comma-separated list of IP addresses in dotted-quad form which will
+be used as DNS servers.  Overrides any value obtained from DHCP for
+this connection.  The actual name server list used will be the union
+of the name server lists for all connections.
+
+
+name: NameServer
+group: nbt
+type: string
+
+The IP address of the WINS name server, in dotted-quad format.
+Overrides any value obtained from DHCP.
+
+
+name: *TCPChecksumOffloadIPv4
+group: xenserver
+type: dword
+
+Controls TCP checksum offloading for this interface.  Should be an
+integer between 0 and 3 inclusive:
+
+0 -- Disable all TCP checksum offload
+1 -- Disable TCP receive checksum offload
+2 -- Disable TCP transmit checksum offload
+3 -- Enable both transmit and receive TCP checksum offload
+
+
+name: *UDPChecksumOffloadIPv4
+group: xenserver
+type: dword
+
+Controls UDP checksum offloading for this interface.  Should be an
+integer between 0 and 3 inclusive:
+
+0 -- Disable all UDP checksum offload
+1 -- Disable UDP receive checksum offload
+2 -- Disable UDP transmit checksum offload
+3 -- Enable both transmit and receive UDP checksum offload
+
+
+name: *LSOv1IPv4
+group: xenserver
+type: dword
+
+Controls large send offload for this interface.  Must be either 0 or
+1, where 0 disables large send offload and 1 enables it.
+
+
+name: AllowCsumBlank
+group: xenserver
+type: dword
+
+Controls checksum calculation on inter-domain traffic which remains
+within a single XenServer host.  Can be set to one of:
+
+0 -- Always calculate checksums on inter-domain traffic.
+1 -- Try to determine whether checksums are necessary automatically
+     based on the running services.
+2 -- Never calculate checksums on inter-domain traffic.
+
+
+
+All of these settings will have the same behaviour on every supported
+version of Midnight Ride, and will continue to have that behaviour on
+versions of Windows supported by Midnight Ride on releases of
+XenServer after Midnight Ride.
+
+Other settings may also have some effects.  These are not guaranteed
+to remain effective in future versions of XenServer, and their behaviour
+may differ across different versions of Windows.

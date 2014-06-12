@@ -1,0 +1,15 @@
+include ..\..\..\config.mk
+TOPDIR=..\..\..
+
+MSC_WARNING_LEVEL=/W3
+
+TARGETNAME=xendisp
+TARGETTYPE=GDI_DRIVER
+
+C_DEFINES=$(C_DEFINES) -DUNICODE
+
+TARGETLIBS=$(DDK_LIB_PATH)\ntoskrnl.lib
+
+SOURCES= \
+    xendisp.c \
+    xendisp.rc

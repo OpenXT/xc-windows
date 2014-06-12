@@ -1,0 +1,8 @@
+Places where the version number shows up:
+
+-- xevtchn.inf, xevtchn64.inf
+-- inc/verinfo.h
+-- xenvbd.inf, xenvbd64.inf
+-- xennet.inf, xennet64.inf
+-- install/xensetup.nsi
+-- xennet GEN_VENDOR_DRIVER_VERSION

@@ -1,0 +1,18 @@
+USERSPACE=1
+TOPDIR=..\..\..
+
+include ..\..\..\config.mk
+_NT_TARGET_VERSION=$(_NT_TARGET_VERSION_WINXP)
+
+TARGETNAME=v2v_test
+TARGETTYPE=PROGRAM
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\user32.lib \
+	$(TARGETPATH_ARCH)\xenv2v.lib \
+	$(TARGETPATH_ARCH)\xsutil.lib \
+
+USE_MSVCRT=1
+UMTYPE=console
+
+SOURCES=v2v_test.c

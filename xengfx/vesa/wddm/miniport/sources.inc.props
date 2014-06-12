@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TARGETTYPE>DRIVER</TARGETTYPE>
+    <TARGETLIBS>$(DDK_LIB_PATH)\displib.lib               $(DDK_LIB_PATH)\ntoskrnl.lib              $(DDK_LIB_PATH)\hal.lib</TARGETLIBS>
+    <INCLUDES>$(DDK_INC_PATH);                          $(SDK_INC_PATH);                  		..\..\shared;					  		..\..\inc;						  		..\inc;						      		..\shared;</INCLUDES>
+    <SOURCES>..\BDD.cxx                                ..\BDD_DDI.cxx                            ..\BDD_DMM.cxx                            ..\memory.cxx                             ..\BltFuncs.cxx                           ..\BDD_Util.cxx</SOURCES>
+  </PropertyGroup>
+</Project>

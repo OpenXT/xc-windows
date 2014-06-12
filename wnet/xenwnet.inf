@@ -1,0 +1,160 @@
+;
+; Xenwnet Miniport INF file
+;
+; Copyright (c) 2010, Citrix Systems, Inc. - All rights reserved.
+;
+
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+
+
+[Version]
+signature  = "$Windows NT$"
+Class      = Net
+ClassGUID  = {4d36e972-e325-11ce-bfc1-08002be10318}
+Provider   = %OpenXT%
+DriverVer  = 04/29/2010,1.0.0.0001
+CatalogFile= xenwnet.cat
+
+[ControlFlags]
+ExcludeFromSelect=XEN\vwif
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+0=%DiskDesc%
+
+[SourceDisksFiles]
+xenwnet.sys=0,,
+xenwnet6.sys=0,,
+
+[Manufacturer]
+%OpenXT% = OpenXT,NTx86.6.0
+
+; Default install section.  Used for pre Vista operating systems
+[OpenXT]
+%Xenwnet_Desc% = Xenwnet_Inst,XEN\vwif
+
+[Xenwnet_Inst]
+Characteristics = 0x84 ;NCF_PHYSICAL | NCF_HAS_UI
+CopyFiles = @xenwnet.sys
+BusType = 1
+AddReg = xenwnet.reg, common.reg
+
+[Xenwnet_Inst.Services]
+AddService = Xenwnet,0x12,Xenwnet_Service,
+
+[xenwnet.reg]
+HKR, Ndi, Service, 0, "Xenwnet"
+HKR, Ndi\Interfaces, UpperRange, 0, "ndis5"
+HKR, Ndi\Interfaces, LowerRange, 0, "ethernet,wlan"
+
+[Xenwnet_Service]
+DisplayName    = %Xenwnet_Desc%
+ServiceType    = 1 ;SERVICE_KERNEL_DRIVER
+StartType      = 3 ;SERVICE_DEMAND_START
+ErrorControl   = 1 ;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\xenwnet.sys
+LoadOrderGroup = NDIS
+
+; Default install sections for Vista and later operating systems
+[OpenXT.NTx86.6.0]
+%Xenwnet_Desc% = Xenwnet6_Inst,XEN\vwif
+
+[Xenwnet6_Inst]
+Characteristics = 0x84   ; NCF_PHYSICAL | NCF_HAS_UI
+CopyFiles = @xenwnet6.sys
+BusType = 1
+*IfType = 71            ; IF_TYPE_IEEE80211
+*MediaType = 16         ; NdisMediumNative802_11
+*PhysicalMediaType = 9  ; NdisPhysicalMediumNative802_11
+AddReg = xenwnet6.reg, common.reg
+
+[Xenwnet6_Inst.Services]
+AddService = Xenwnet6,0x12,Xenwnet6_Service,
+
+[xenwnet6.reg]
+HKR, Ndi, Service, 0, "Xenwnet6"
+HKR, Ndi\Interfaces, UpperRange, 0, "ndis5"
+HKR, Ndi\Interfaces, LowerRange, 0, "ethernet,wlan"
+
+HKR, Ndi\params\ForceCsum,                        ParamDesc,  0, "Force checksum calculation"
+HKR, Ndi\params\ForceCsum,                        Type,       0, "enum"
+HKR, Ndi\params\ForceCsum,                        Default,    0, "0"
+HKR, Ndi\params\ForceCsum,                        Optional,   0, "0"
+HKR, Ndi\params\ForceCsum\enum,                   "0",        0, "No"
+HKR, Ndi\params\ForceCsum\enum,                   "1",        0, "Yes"
+
+HKR, Ndi\params\AllowCsumBlank,                   ParamDesc,  0, "Allow blank checksums"
+HKR, Ndi\params\AllowCsumBlank,                   Type,       0, "enum"
+HKR, Ndi\params\AllowCsumBlank,                   Default,    0, "1"
+HKR, Ndi\params\AllowCsumBlank,                   Optional,   0, "0"
+HKR, Ndi\params\AllowCsumBlank\enum,              "0",        0, "No"
+HKR, Ndi\params\AllowCsumBlank\enum,              "1",        0, "Automatic"
+HKR, Ndi\params\AllowCsumBlank\enum,              "2",        0, "Yes"
+
+[Xenwnet6_Service]
+DisplayName    = %Xenwnet6_Desc%
+ServiceType    = 1 ;SERVICE_KERNEL_DRIVER
+StartType      = 3 ;SERVICE_DEMAND_START
+ErrorControl   = 1 ;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\xenwnet6.sys
+LoadOrderGroup = NDIS
+
+[common.reg]
+HKR, Ndi\params\*IPChecksumOffloadIPv4,           ParamDesc,  0, %IPChecksumOffloadIPv4%
+HKR, Ndi\params\*IPChecksumOffloadIPv4,           Type,       0, "enum"
+HKR, Ndi\params\*IPChecksumOffloadIPv4,           Default,    0, "1"
+HKR, Ndi\params\*IPChecksumOffloadIPv4,           Optional,   0, "0"
+HKR, Ndi\params\*IPChecksumOffloadIPv4\enum,      "0",        0, %Disabled%
+HKR, Ndi\params\*IPChecksumOffloadIPv4\enum,      "1",        0, %Enabled-Tx%
+
+HKR, Ndi\params\*TCPChecksumOffloadIPv4,          ParamDesc,  0, %TCPChecksumOffloadIPv4%
+HKR, Ndi\params\*TCPChecksumOffloadIPv4,          Type,       0, "enum"
+HKR, Ndi\params\*TCPChecksumOffloadIPv4,          Default,    0, "3"
+HKR, Ndi\params\*TCPChecksumOffloadIPv4,          Optional,   0, "0"
+HKR, Ndi\params\*TCPChecksumOffloadIPv4\enum,     "0",        0, %Disabled%
+HKR, Ndi\params\*TCPChecksumOffloadIPv4\enum,     "1",        0, %Enabled-Tx%
+HKR, Ndi\params\*TCPChecksumOffloadIPv4\enum,     "2",        0, %Enabled-Rx%
+HKR, Ndi\params\*TCPChecksumOffloadIPv4\enum,     "3",        0, %Enabled-TxRx%
+
+HKR, Ndi\params\*UDPChecksumOffloadIPv4,          ParamDesc,  0, %UDPChecksumOffloadIPv4%
+HKR, Ndi\params\*UDPChecksumOffloadIPv4,          Type,       0, "enum"
+HKR, Ndi\params\*UDPChecksumOffloadIPv4,          Default,    0, "3"
+HKR, Ndi\params\*UDPChecksumOffloadIPv4,          Optional,   0, "0"
+HKR, Ndi\params\*UDPChecksumOffloadIPv4\enum,     "0",        0, %Disabled%
+HKR, Ndi\params\*UDPChecksumOffloadIPv4\enum,     "1",        0, %Enabled-Tx%
+HKR, Ndi\params\*UDPChecksumOffloadIPv4\enum,     "2",        0, %Enabled-Rx%
+HKR, Ndi\params\*UDPChecksumOffloadIPv4\enum,     "3",        0, %Enabled-TxRx%
+
+[Strings]
+OpenXT                 = "OpenXT"
+Xenwnet_Desc           = "OpenXT PV Wireless Adapter"
+Xenwnet6_Desc          = "OpenXT PV Wireless Adapter [NDIS6]"
+DiskDesc               = "OpenXT Tools for Virtual Machines"
+IPChecksumOffloadIPv4  = "Offload IP Checksum"
+TCPChecksumOffloadIPv4 = "Offload TCP Checksum"
+UDPChecksumOffloadIPv4 = "Offload UDP Checksum"
+Disabled               = "Disabled"
+Enabled                = "Enabled"
+Enabled-Rx             = "Enabled (Receive Only)"
+Enabled-Tx             = "Enabled (Transmit Only)"
+Enabled-TxRx           = "Enabled (Transmit and Receive)"

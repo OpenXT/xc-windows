@@ -1,0 +1,20 @@
+!include sources.inc
+
+INCLUDES=$(INCLUDES);../../inc;../../shared;../../../../inc
+TARGETNAME=XenGfxDO
+TARGET_DESTINATION=XenGfxDO
+
+TARGETLIBS = $(TARGETLIBS) \
+			 $(TARGETPATH_ARCH)\xenvesa_shared.lib
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENGFX\" -DUNICODE -DNO_XENUTIL -DXENVESA -DXEN_CHROMIUM
+
+MINIMUM_NT_TARGET_VERSION=$(_NT_TARGET_VERSION_WIN8)
+
+SOURCES=$(SOURCES)			\
+        ..\BltHw.cxx		\
+		..\xengfxdo.rc \
+
+
+MSC_WARNING_LEVEL=$(MSC_WARNING_LEVEL) /W4
+

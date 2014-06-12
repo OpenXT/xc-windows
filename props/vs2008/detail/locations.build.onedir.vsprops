@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<!-- Build output in one location, with binaries differentiated by suffix. -->
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="locations.build.onedir"
+	OutputDirectory="$(LocalOutputDir)"
+	IntermediateDirectory="$(LocalIntermediateDir)\$(ProjectName)$(TargetSuffix)"
+	>
+  <Tool
+    Name="VCLinkerTool"
+    OutputFile="$(OutDir)\$(ProjectName)$(TargetSuffix).exe"
+	/>
+</VisualStudioPropertySheet>

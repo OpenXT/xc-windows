@@ -1,0 +1,98 @@
+;
+; XENGFX Miniport/Display INF file
+;
+; Copyright (c) 2010, Citrix Systems, Inc. - All rights reserved.
+
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+
+
+[Version]
+signature   = "$CHICAGO$"
+Class       = Display
+ClassGUID   = {4D36E968-E325-11CE-BFC1-08002BE10318}
+Provider    = %COMPANY% 
+DriverVer   = 07/23/2010,1.0.0.0000
+CatalogFile = xengfx-lh.cat
+
+[DestinationDirs]
+DefaultDestDir  = 11
+Xengfx.Miniport = 12
+Xengfx.Display  = 11
+
+[SourceDisksNames]
+1 = %DiskId%
+
+[SourceDisksFiles]
+xengfxmp.sys = 1
+xendisp.dll = 1
+
+[Manufacturer]
+%COMPANY% = OpenXT,NTamd64
+
+[OpenXT]
+%Xengfx_Desc% = Xengfx,PCI\VEN_5853&DEV_C147
+%Xengfx_Desc% = Xengfx,PCI\VEN_5853&DEV_C147&SUBSYS_00005853
+
+[OpenXT.NTamd64]
+%Xengfx_Desc% = Xengfx,PCI\VEN_5853&DEV_C147
+%Xengfx_Desc% = Xengfx,PCI\VEN_5853&DEV_C147&SUBSYS_00005853
+
+[Xengfx]
+FeatureScore=FC
+CopyFiles=Xengfx.Miniport,Xengfx.Display
+Reboot
+
+[Xengfx.Miniport]
+xengfxmp.sys
+
+[Xengfx.Display]
+xendisp.dll
+
+[Xengfx.Services]
+AddService = xengfxmp,0x00000002,Xengfx_Service
+
+[Xengfx_Service]
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 0                  ; SERVICE_ERROR_IGNORE
+LoadOrderGroup = Video
+ServiceBinary  = %12%\xengfxmp.sys
+
+[Xengfx.SoftwareSettings]
+AddReg = Xengfx_SoftwareDeviceSettings
+
+[Xengfx_SoftwareDeviceSettings]
+HKR,, InstalledDisplayDrivers,     %REG_MULTI_SZ%, xendisp
+HKR,, VgaCompatible,               %REG_DWORD%,    0
+HKR,, VideoDebugLevel,             %REG_DWORD%,    3
+HKR,, Acceleration.Level,          %REG_DWORD%,    5
+HKR,, VBE_USWC,                    %REG_DWORD%,    1
+
+[Strings]
+REG_SZ         = 0x00000000
+REG_MULTI_SZ   = 0x00010000
+REG_EXPAND_SZ  = 0x00020000
+REG_BINARY     = 0x00000001
+REG_DWORD      = 0x00010001
+SERVICEROOT    = "System\CurrentControlSet\Services"
+DiskId         = "OpenXT Installation Media"
+COMPANY        = "OpenXT"
+Xengfx_Desc    = "OpenXT Xen Graphics Display Driver"

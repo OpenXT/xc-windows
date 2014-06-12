@@ -1,0 +1,57 @@
+USERSPACE=1
+
+include ..\..\..\config.mk
+
+TARGETNAME=v4vapp
+TARGETPATH=..\..\..\$(BUILDDIR)
+TARGETTYPE=PROGRAM
+
+# To use __cdecl calling convention...
+#386_STDCALL=0
+
+UMENTRY=main
+UMTYPE=console
+UMBASE=0x400000
+USE_NATIVE_EH=1
+USE_LIBCMT=1
+
+# Standard defines for UNICODE and debug builds. _CONSOLE is from
+# a basic VC8 DLL project. Note WIN32/_WIN64 are predefined by the WDK environment.
+C_DEFINES=$(C_DEFINES) -D_CONSOLE -DUNICODE -D_UNICODE
+C_DEFINES=$(C_DEFINES) -DV2V_APP
+
+!if "$(DDKBUILDENV)"=="chk"
+
+C_DEFINES=$(C_DEFINES) -D_DEBUG
+
+!elseif "$(DDKBUILDENV)"=="fre"
+
+C_DEFINES=$(C_DEFINES) -DNDEBUG
+
+!endif
+
+INCLUDES=$(DDK_INC_PATH); \
+		 $(INCLUDES);     \
+		 ../inc;../../../inc;../../../xenhdrs
+
+TARGETLIBS=\
+    $(SDK_LIB_PATH)\advapi32.lib \
+    $(SDK_LIB_PATH)\kernel32.lib \
+    $(SDK_LIB_PATH)\user32.lib   \
+    $(SDK_LIB_PATH)\uuid.lib     \
+	$(SDK_LIB_PATH)\rpcrt4.lib   \
+	$(TARGETPATH)\*\xs2.lib      \
+	$(TARGETPATH)\*\xenv2v.lib
+        
+SOURCES= \
+	v4vapp.c    \
+	v4vtest.c   \
+	v4vlca.c    \
+	v4vdgram.c  \
+	v4vdfile.c  \
+	v4vstrm.c   \
+	v4vdctl.c   \
+    v4vapp.rc
+
+
+

@@ -1,0 +1,16 @@
+include ..\..\config.mk
+TOPDIR=..\..
+
+MSC_WARNING_LEVEL=/W3
+
+TARGETNAME=xenvesa-miniport
+TARGETTYPE=MINIPORT
+
+TARGETLIBS=$(DDK_LIB_PATH)\videoprt.lib \
+           $(DDK_LIB_PATH)\ntoskrnl.lib
+
+USER_C_FLAGS = $(USER_C_FLAGS) /showIncludes
+SOURCES= \
+    xenvesa-miniport.c \
+    xenvesa-miniport.rc \
+    xenvesa-registry.c

@@ -1,0 +1,26 @@
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xennet6
+TARGETTYPE=DRIVER
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENNET\" -DNDIS_MINIPORT_DRIVER -DNDIS60_MINIPORT=1 -DBINARY_COMPATIBLE=0
+
+TARGETLIBS=$(DDK_LIB_PATH)\ndis.lib \
+           $(DDK_LIB_PATH)\ntstrsafe.lib \
+	   $(TARGETPATH_ARCH)\xevtchn.lib \
+	   $(TARGETPATH_ARCH)\xenutil.lib
+
+INCLUDES=$(INCLUDES);..
+
+SOURCES=\
+    adapter.c \
+    main.c \
+    miniport.c \
+    receiver.c \
+    ..\settings.c \
+    transmitter.c \
+    xennet.rc \
+    ..\receiver_common.c \
+    nbl_hash.c

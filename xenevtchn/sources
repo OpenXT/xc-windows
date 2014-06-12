@@ -1,0 +1,34 @@
+TOPDIR=..
+
+# We can't write $(TOPDIR)\config.mk because build can't cope with variables
+# in include directives.
+include ..\config.mk
+
+TARGETNAME=xevtchn
+TARGETTYPE=EXPORT_DRIVER
+INCLUDES = $(INCLUDES);..\xenhdrs
+
+TARGETLIBS=$(DDK_LIB_PATH)\ntdll.lib \
+           $(DDK_LIB_PATH)\ntstrsafe.lib \
+	   $(TARGETPATH_ARCH)\xenutil.lib
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XEVTCHN\" "-DXSAPI="
+
+SOURCES= \
+    xenevtchn.c \
+    user.c \
+    pnp.c \
+    power.c \
+    xenevtchn.rc \
+    dumpdev.c \
+    dma.c \
+    personality.c \
+    xendev.c \
+    v2v.c \
+    v2vstrm.c \
+    v2vutl.c \
+    xevtchn_msgs.mc
+
+RUN_WPP= \
+    $(SOURCES) -km -p:xenevtchn
+

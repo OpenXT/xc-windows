@@ -1,0 +1,214 @@
+Relevant entry points:
+
+-- XenvbdProcessPnpIrp
+-- XenvbdStartIO
+-- sm_data_watch
+-- XenvbdTargetBackendStateChanged
+-- device_area_changed_cb
+
+
+XenvbdProcessPnpIrp:
+
+MapDeviceObjectToTarget(pdo)
+if (targetInfo != NULL) {
+   OsTarget->EjectIrp = Irp;
+   OsTarget->Flags |= EJECT_PENDING;
+   XenvbdDetermineInstalled();
+}
+
+StartIO:
+
+if (targetInfo == NULL)
+   fail;
+if (XENVBD_IS_CLOSED() && not_an_inquiry)
+   fail;
+do_stuff_with_target();
+
+sm_data_watch:
+
+x = read_inquiry_data();
+old = target->inquiry_data;
+target->inquiry_data = x;
+SyncWithScsiport();
+release(old);
+
+XenvbdTargetBackendStateChanged:
+
+x = read_backend_state();
+if (error || x == CLOSING || x == CLOSED)
+   do nothing;
+y = read_frontend_state();
+if (error || y == CLOSING || y == CLOSED)
+   do nothing;
+z = target->pdo;
+if (z)
+   IoRequestDeviceEject(z);
+
+device_area_changed_cb:
+
+XenvbdDetermineInstalled();
+
+
+
+Basically, the only control path operation which can occur on multiple
+threads is XenvbdDetermineInstalled(), which protects itself by using
+atomics to notice when it's multiply invoked and not doing anything on
+extra calls.  Data-path is all protected by the scsiport big lock.
+
+In other words, the only races worth worrying about are between a data
+operation and XenbusFindVbds() or around the OsTargets array.
+
+
+Important locking rules:
+
+-- An OS_TARGET cannot be released while it's pointed at by an entry
+   in OsTargets[].
+-- Likewise, a TARGET_INFO cannot be released while pointed at
+   by an entry in targetInfo[].
+-- OsTargets only ever changes under the OsTargetsMux.
+-- If targetInfo[i] is valid, OsTargets[i] must also be valid.  You
+   must synchronise with scsiport between clearing targetInfo[i] and
+   OsTargets[i].  The os_target member of a targetInfo is always
+   valid.
+-- Inquiry data is protected by inq_mux.  You must hold that mutex
+   when reading or changing it (unless you've unhooked the target and
+   cancelled the SM data watch, which only happens during device
+   shutdown).
+
+
+Lifecycle stuff
+---------------
+
+
+From: Steven Smith [mailto:sos22@hermes.cam.ac.uk] On Behalf Of Steven
+Smith
+Sent: Wednesday, November 07, 2007 6:10 AM
+To: Peter Johnston
+Cc: Steven Smith
+Subject: Re: xenvbd:XenbusDestroyTarget
+
+> In XenbusDestroyTarget, before we free TargetInfo, shouldn't we also
+> free XenvbdDeviceExtension->OsTargets[TargetInfo->TargetId] ?
+No, for at least three reasons:
+
+1) OsTargets[i] is NULL by the time DestroyTarget() gets invoked.
+   (Usually.  It's actually possible for a new device to get
+   hot-plugged and take its place before the target is finally
+   destroyed)
+2) If you look at XenvbdHandleMissingTarget(), you'll find that we
+   need to keep the OS_TARGET around for a bit so that we can do the
+   eject work item.
+3) We release the OS_TARGET from XenvbdEjectWorker.
+
+
+The tear down for xenvbd targets is complicated, to say the least,
+mostly because scsiport doesn't give you all of the callbacks you want
+(e.g. there's no notification when it tears down the WDM device
+object), and those it does give you tend to be called with interrupts
+off.  There's also a bug in Windows which means you get nasty error
+messages if you complete EJECT IRPs too quickly.
+
+The scheme we've come up with goes like this:
+
+-- You have a TARGET_INFO for every target currently on the xenbus.
+-- You have an OS_TARGET for everything which might have a WDM object.
+-- If you notice a backend go to state CLOSING, you do an
+   IoRequestDeviceEject on the appropriate WDM object.
+-- If you get an EJECT IRP, you set EJECT_PENDING and trigger a
+   re-probe of xenbus.  The probe code, in FindVbds, notices the flag
+   and moves the frontend to state CLOSED.
+-- Eventually, the backend will disappear completely, which will be
+   noticed by FindVbds, which will call HandleMissingTarget().
+-- HandleMissingTarget() unhooks the target from targetInfo,
+   synchronises with scsiport, unhooks the OS target from OsTargets,
+   calls DestroyTarget(), and queues the eject worker item.
+-- The eject worker item waits a second and then completes any EJECT
+   IRP we might have pending against this target.
+
+There are a bunch of corner cases if, for instance, you plug a device
+back in before we notice that it's gone, but that's the general idea.
+
+Synchronisation with scsiport is a bit tricky.  The approach we use is
+basically a very heavy memory barrier: by the time SyncWithScsiport()
+completes, it is guaranteed that any pointers cached by a scsiport
+callback before SyncWithScsiport() started have been discarded, and
+any writes have been finished.  This means that we can stop scsiport
+from using a target by clearing targetInfo[] and calling
+SyncWithScsiport().  The implementation is actually quite simple[1]:
+we set a flag saying that we need to synchronise, raise the interrupt,
+and then wait for a scsiport callback to clear the flag.  Scsiport
+callbacks are all run under a big lock, so by being careful about
+clearing the flag we can make that correct.
+
+This is conceptually similar to RCU or passive serialization, except
+that it:
+
+-- Doesn't rely on hooks in the OS scheduler.
+-- Actively tries to make sure that scsiport has finished what it's
+   doing, rather than passively waiting for the current generation to
+   finish.
+-- Tries to look like a barrier rather than an MRSW lock.
+-- Is naturally fine grained, whereas the other schemes are
+   system-wide.  (Although the current implementation is HBA-wide,
+   which isn't really any better.)
+
+[1] In principle, it's simple.  It's kind of tricky if you can have
+multiple processors in SyncWithScsiport() at the same time.
+
+
+
+SRB flow
+--------
+
+We potentially need to perform the following operations on a SRB:
+
+-- Map buffers (needs to be done from the slow thread)
+-- Allocate grefs (needs to be done from scsiport context)
+-- Push to backend (needs to be done from scsiport context)
+-- Complete to scsiport (needs to be done from scsiport context)
+
+When a request arrives, it is put in the PendingSlowSrbs queue.  The
+slow thread picks the SRB up, maps the buffer, demultiplexes to the
+per-target FreshSrb queue, and raises the event channel.  The event
+channel handler then allocates the gref, moving the SRB to the
+PreparedSrb queue.  It then submits the srb to the backend, and moves
+it to the SubmittedSrb queue.  Eventually, the backend completes the
+SRB, at which point the event channel handler runs again and completes the
+SRB to scsiport.  Scsiport then completes the IRP, and eventually the MDL
+is released, unmapping the buffer.
+
+Refinements:
+
+-- Some SRBs don't need to talk to the backend.  These can be handled
+   entirely by the slow thread, in which case the slow thread takes
+   them from the PendingSlow queue, handles them, moves them to
+   PendingComplete, and raises the event channel.  They then get
+   completed by the event channel handler.  It's not obvious whether
+   this is actually a performance win, but it shouldn't cost anything
+   and it simplifies the implementation.
+
+-- Some SRBs don't need to have buffers mapped.  In that case,
+   XenvbdStartIO() handles preparing them and transferring to
+   PreparedSrbs itself, rather than going through FreshSrbs and the
+   slow thread.
+
+Suspend/resume: when we come back from suspend, all of the SRBs on the
+block ring are no longer there.  We therefore move everything from
+SubmittedSrbs to PreparedSrbs.
+
+Reordering requests: Reordering requests isn't a disaster, but it's
+generally best avoided, since it means you don't get as much benefit
+from the OS disk scheduler, and it can lead to unfairness and
+starvation if you're not careful.
+
+
+Testing
+-------
+
+Things to test:
+
+-- Hibernation, after any non-trivial change
+
+-- Running out of bounce buffers, if you've done anything with the
+   bounce buffer logic.  The easiest way of doing this is to turn down
+   the number of bounce buffers and run the NT4.0 version of sqliosim.

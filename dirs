@@ -1,0 +1,23 @@
+DIRS=removedev \
+     xenutil \
+     xenevtchn \
+     net \
+     wnet \
+     xenvbd \
+     xenuser \
+     xenv4v \
+     enableuninst \
+     installdriver \
+     install \
+     setloglevel \
+     getlogs \
+     scsifilt \
+     query_balloon \
+     xenvesa \
+     sync \
+     sockpipe \
+     uninst_pending \
+     copyvif \
+     fixdiskfilters \
+     input \
+     xengfx

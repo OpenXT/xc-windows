@@ -1,0 +1,402 @@
+On real display hardware a GART maps system memory into a graphics aperture,
+which is also visible through a BAR. One or more CRTCs scan the memory in the
+graphics aperture and present the data to monitors. This device aims to
+present a similar interface which should be easy to code against, an very easy
+to implement in a virtualized enviroment.
+
+A GART (preloaded with some quantity of e820 reserved memory) maps addresses in
+the graphics aperture to system memory, and allows more system memory to be
+mapped into the graphics aperture.
+
+A set of VCRTCs can scan rasters in this graphics aperture and may or may not be
+connected to a vMonitor. In the backend VCRTCs and vMonitors can be mapped and
+unmapped onto the real hardwares CRTCS and Monitors via a variety of hardware
+specific techniques.
+
+XenGFX is a PCI device which may be present at any BDF in the system.
+
+It contains 3 BARs:
+
+BAR0 is prefetchable memory of size (XGFX_GART_SIZE*4Mb)
+     and contains the Graphics Aperture.
+
+BAR2 is non prefetchable memory of an unspecified size, and 
+     contains MMIOs and the GART.
+
+BAR4 contains an value/index 32 bit io port pair to enable
+     access of BAR2 from 16bit real-mode code.
+     It also contains convenience registers facilitating
+     writing of real-mode drivers.
+
+The device can also generate an interrupt and do DMA.
+
+BAR0:
+	Access to memory at offset o in BAR0 will target guest 
+physical memory at GART[o >> 12] | (o & 0xfff). If the GART entry
+is invalid then the results of a read or write are undefined, but
+should not cause any, guest visible, exceptions.
+
+
+BAR2:
+	Bar 2 contains the GART and the MMIO registers
+
+
+Registers:
+
+Global Registers (Range 0x000000 - 0x0FFFFF)
+
+The global registers control features of the xengfx adapter that
+reflect the entire device.
+
+0x000000 - XGFX_MAGIC:
+  Magic number. This register always reads 0x58464758.
+  
+  Type: Read-Only
+
+0x000004 - XGFX_REV:
+  Revision number. This register always reads 0x1.
+  
+  Type: Read-Only
+
+0x000100 - XGFX_CONTROL:
+  Control register to change backend settings.
+  
+  Bit 0:  HIRES_EN  Set to connect the output of the xengfx adapter to the virtual
+				    display rather than the legacy emulated vga adapter.
+  Bit 1:  INT_EN    Global bit to enable interrupts from the device.
+  Bits 2 - 31: Reserved.
+  
+  Type: Read-Write
+  
+0x000104 - XGFX_ISR:
+  Interrupt status register. Write to dismiss interrupt.
+  
+  Bit 0:   INT  Indicates if this device is currently generating an interrupt.
+  Bits 1 - 31: Reserved.
+  
+  Type: Read-Write-to-Clear
+
+0x000200 - XGFX_GART_SIZE:
+  Reports the size of the GART in number of 4K pages. This limits 
+  the quantity of memory that may be mapped by the graphics card to
+  (4Mb * XGFX_GART_SIZE).
+  
+  Type: Read-Only
+  
+0x000204 - XGFX_INVALIDATE_GART:
+  A read from this register will flush any and all caches that the
+  xengfx adapter has made of gart entries. When the read returns,
+  the changes in the GART will be reflected in BAR0.
+  
+  Type: Read-Only
+
+0x000208 - XGFX_STOLEN_BASE:
+  The pfn of the first page of stolen graphics memory stolen graphics memory
+  is marked reserved in the e820 map and is for the use of xengfx adapter.
+
+  Type: Read-Only
+
+0x00020C - XGFX_STOLEN_SIZE:
+  The number of pfns of stolen graphics memory
+  
+  Type: Read-Only
+
+0x000210 - XGFX_STOLEN_CLEAR:
+  Clear preallocated graphics memory (stolen memory).
+
+  Bit 0: Write 1 to start clearing. Read 0 indicate completion.
+
+  Type: Read-Write
+
+0x000300 - XGFX_NVCRTC:
+  The number of banks of VCRTCs.
+  
+  Type: Read-Only
+
+0x000400 - XGFX_RESET:
+  Reading from this register resets the XENGFX device back to power on
+  defaults. The GART is also reset back to power on defaults.
+
+  Type: Read-Only
+
+0x001000 - XGFX_MADVISE:
+  When the XenGFX hardware is emulated. Informs the emulation layer whether the
+  driver implementation is likely to map framebuffer pages using their original
+  RAM addresses, or using their aperture addresses.
+
+  Bit 0: Set to 1 if the driver commonly maps RAM pages.
+         Clear if the driver commonly maps aperture pages.
+
+  Type: Write-Only
+
+0x002000 to 0x002FFF - XGFX_BIOS_RESERVED
+  These registers are reserved exclusively for use by the BIOS.
+  Reads and writes to these registers have no side-effects.
+  Their power on values are undefined, and they are not reset
+  by reads from the XGFX_RESET register.
+
+  Type: Read-Write
+
+
+VCRTC Registers (Range 0x100000 - 0x1FFFFF)
+
+There are XGFX_NVCRTC banks of VCRTC registers. Each is able to scan a raster in
+the graphics aperture and drive a virtual monitor. VCRTCs need not be connected
+to a virtual monitor. At startup all VCRTCs will be disabled, so a driver is
+free to ignore any of them. If the driver wishes to drive only one display it
+should drive the first VCRTC only. In general surfman will identify active
+VCRTCs when looking for vcrtcs to attach vmonitors to and map to real monitors.
+
+0x1n0000 - XGFX_VCRTCn_STATUS:
+  Read specific bits below which indicate the current status of the VCRTC.
+  
+  Bit 0: HOTPLUG   Set indicates the VCRTC is connected to a virtual monitor.
+  Bit 1: ONSCREEN  Set indicates the VCRTC is connected to a real monitor 
+	   			   (ie the virtual monitor, is currently displayed on a 
+				   real monitor).
+  Bit 2: RETRACE   Set indicates vertical retrace is in progress.
+  Bits 3 - 31: Reserved.
+  
+  Type: Read-Only
+  
+0x1n0004 - XGFX_VCRTCn_STATUS_CHANGE:
+  Each bit in this register is a flip flop.  The flip fop is set when
+  the corresponding bit in XGFX_VCRTCn_STATUS changes, and cleared when
+  the CPU writes a 1 in the corresponding bit location to this register.
+ 
+  Bit 0: D_HOTPLUG   Set indicates virtual monitor connected or removed.
+  Bit 1: D_ONSCREEN	 Set indicates virtual monitor mapped or removed from 
+				     real monitor.
+  Bit 2: D_RETRACE   Set indicates vertical retrace occured. [NB: this 
+				     bit may not be implemented].
+  Bits 3 - 31: reserved will read zero
+  
+  Type: Read-Write-to-Clear
+  
+0x1n0008 - XGFX_VCRTCn_STATUS_INT:
+  This register is ANDed with XGFX_VCRTCn_STATUS_CHANGE to generate the interrupt
+  for this VCRTC, the VCRTC interrupt lines are ORed together and anded with
+  with INT_EN to generate the adapter's interrupt line.
+  
+  Bit 0: HOTPLUG_INT_EN   Enable/disable virtual monitor connect/disconnect 
+					      interrupts.
+  Bit 1: ONSCREEN_INT_EN  Enable/disable mapping of real monitor interrupts.
+  Bit 2: RETRACE_INT_EN	  Enable/disable vertical retrace interrupts.
+					      [NB: this may not be implemented]
+  Bits 3 - 31: Reserved.
+  
+  Type: Read-Write
+  
+0x1n000C - XGFX_VCRTCn_SCANLINE:
+  This register reports the current scanline counter value for the VCRTC
+  [NB: This may not be implemented in which case it will report -1].
+
+  Type: Read-Only
+  
+0x1n0010 - XGFX_VCRTCn_CURSOR_STATUS:
+  Status register for reporting cursor status and capabilities.
+  
+  Bit 0: SUPPORTED  Set to 1 if HW cursor supported on this VCRTC.
+  Bits 1 - 31: Reserved.
+  
+  Type: Read-Only
+  
+0x1n0014 - XGFX_VCRTCn_CURSOR_CONTROL:
+  Command register for controlling cursor.
+  
+  Bit 0: SHOW  Set to 1 to show cursor, set to 0 to hide cursor.
+  Bits 1 - 31: Reserved, must be zero.
+  
+  Type: Read-Write
+  
+0x1n0018 - XGFX_VCRTCn_CURSOR_MAXSIZE:
+  Indicates the maximum cursor size supported for this VCRTC. If this value
+  is not suitable for a given platform, a software cursor will have to be 
+  used. Note that 32bpp is implied.
+
+  Bits 0 - 15:  Maximum height in scan lines.
+  Bits 16 - 31: Maximum width in pixels.
+  
+  Type: Read-Only
+  
+0x1n001C - XGFX_VCRTCn_CURSOR_SIZE:
+  Indicates the current size of the cursor for this VCRTC, 32bpp implied.
+  
+  Bits 0 - 15:  Height in scan lines.
+  Bits 16 - 31: Width in pixels.
+  
+  Type: Read-Write
+  
+0x1n0020 - XGFX_VCRTCn_CURSOR_BASE:
+  Offset into GART of cursor bitmap in ARGB format starting from the top
+  left. The backend MAY choose to only read the cursor from the GART when
+  this register is written to; alternatively it may read it every frame.
+  Accordingly this register should be written to every time the cursor
+  is modified.
+        
+  Type: Read-Write
+  
+0x1n0024 - XGFX_VCRTCn_CURSOR_POS:
+  Sets the current cursor position co-oridates with the top left as the
+  origin. Note the X and Y values are signed 2's complement values allowing
+  negative co-oridates to indicate the cursor is partially off the screen to
+  the left and/or top.
+  
+  Bits 0 - 15:  Y position in scan lines.
+  Bits 16 - 31: X position in pixels.
+  
+  Type: Read-Write
+  
+0x1n1000 - XGFX_VCRTCn_EDID_REQUEST:
+  Request the EDID from the monitor connected to this VCRTC. 
+  The EDID data read from the monitor will appear memory mapped
+  at XGFX_VCRTCn_EDID.
+
+  Bit 0: REQUEST Write 1 to start transfer. Read 0 indicates that
+  EDID data transfer has completed. EDID data is memory mapped and can
+  be read from XGFX_VCRTCn_EDID.
+  Bits 1 - 31: Reserved.
+
+  Type: 32-bit Read-Write
+  
+0x1n2000 - XGFX_VCRTCn_CONTROL:
+  Command register for setting VCRTC state.
+  
+  Bit 0: ENABLE  Set for enable this VCRTC.
+  Bits 1 - 31: Reserved.
+  
+  Type: Read-Write, Posted on XGFX_VCRTCn_BASE
+  
+0x1n2004 - XGFX_VCRTCn_VALID_FORMAT:
+  This register lists the formats which this VCRTC supports. The register
+  value will not change for the lifetime of a domain. (meaning that it 
+  might change is the VM is migrated).  A one in this corresponding bit
+  position indicates that the VCRTC will accept data in that format.  If
+  no usable formats are found, the XGFX_FORMAT_RGBX8888 format can be used
+  as a fall-back (the virtual hw will transform this format into another
+  supported format).
+  
+  Bit 0: XGFX_FORMAT_RGB555
+  Bit 1: XGFX_FORMAT_BGR555
+  Bit 2: XGFX_FORMAT_RGB565
+  Bit 3: XGFX_FORMAT_BGR565
+  Bit 4: XGFX_FORMAT_RGB888
+  Bit 5: XGFX_FORMAT_BGR888
+  Bit 6: XGFX_FORMAT_RGBX8888
+  Bit 7: XGFX_FORMAT_BGRX8888
+  Bits 8 - 31: Reserved.
+  
+  Type: Read-Only
+  
+0x1n2008 - XGFX_VCRTCn_FORMAT:
+  Driver should write exactly one bit (that is set in XGFX_VCRTCn_VALID_FORMAT)
+  into this register to indicate the format that the framebuffer is in. 
+  
+  Type: Read-Write, Posted on XGFX_VCRTCn_BASE
+  
+0x1n2010 - XGFX_VCRTCn_MAX_HORIZONTAL:
+  Maximum value of VCRTC_HORIZONTAL_ACTIVE (in width-in-pixels - 1). This value
+  remains constant the lifetime of the domain.
+  
+  Type: Read-Only
+
+0x1n2014 - XGFX_VCRTCn_HORIZONTAL_ACTIVE:
+  Horizontal active period, the horizontal resolution of the framebuffer
+  (in width-in-pixels - 1).
+  
+  Type: Read-Write, Posted on XGFX_VCRTCn_BASE
+  
+0x1n2018 - XGFX_VCRTCn_MAX_VERTICAL:
+  Maximum value of the VCRTC_VERTICAL_ACTIVE (in height-in-scanlines - 1). This value
+  remains constant the lifetime of the domain.
+  
+  Type: Read-Only
+
+0x1n201C - XGFX_VCRTCn_VERTICAL_ACTIVE:
+  Horizontal vertical period, the vertical resolution of the framebuffer
+  (in height-in-scanlines - 1).
+  
+  Type: Read-Write, Posted on XGFX_VCRTCn_BASE
+  
+0x1n2020 - XGFX_VCRTCn_STRIDE_ALIGNMENT:
+  Indicates the restrictions on values of the stride for this VCRTC. Value will
+  remain constant for the lifetime of the domain. Each bit that reads 1 in this
+  register must be written 0 in XGFX_VCRTCn_STRIDE and XGFX_VCRTCn_BASE. Ie if
+  this register reads 0x1f then XGFX_VCRTCn_STRIDE and XGFX_VCRTCn_BASE must be
+  a multiple of 0x20.
+		
+  Type: Read-Only
+  
+0x1n2024 - XGFX_VCRTCn_STRIDE:
+  The stride of the framebuffer, in bytes. 
+  
+  Type: Read-Write, Posted on XGFX_VCRTCn_BASE
+
+0x1n3000 - XGFX_VCRTCn_BASE:
+  Address (offset in bytes) in the graphics aperture where the frame buffer
+  starts. The same restrictions on alignment apply for this register. Writes
+  to this register cause all Posted writes for this VCRTC to be flushed.
+  
+  Type: Read-Write
+
+0x1n4000 - XGFX_VCRTCn_LINEOFFSET:
+  Offset in bytes from the start of the frame buffer (XGFX_VCRTCn_BASE) where
+  the first pixel to be displayed is located. This value must be at least
+  pixel-aligned.
+  
+  Type: Read-Write, Posted during start of vertical blank
+
+0x1n5000 - XGFX_VCRTCn_EDID:
+  4096-byte area where the EDID for the monitor currently connected to this
+  VCRTC is mapped, if available. Contain zeroes otherwise.
+  Use XGFX_VCRTCn_EDID_REQUEST to trigger EDID data copy from the monitor.
+  
+  Type: Read-Only
+
+GART Registers (Range 0x200000 - 0x200000 + ( XGFX_GART_SIZE << 12 )
+
+Each GART register is 32b wide, and contains the PFN of 4Kb page of memory
+to be mapped. GART[n] maps memory in the graphics aperture at offset (n<<12).
+
+The following top bits of the GART register are reserved (non-address bits):
+  Bit 31: When set indicated the GART register entry is valid, cleared for invalid.
+  Bit 30: Reserved, must be zero.
+
+On startup the first XGFX_STOLEN_SIZE registers of the GART will
+be filled in as follows
+
+for (i=0; i < XGFX_STOLEN_SIZE; ++i)
+	GART[i] = 0x80000000 | (XGFX_STOLEN_BASE + i);
+
+These GART entries may be overwritten and the pfns reused.  The pfns
+XGFX_STOLEN_BASE to XGFX_STOLEN_BASE+XGFX_STOLEN_SIZE are marked reserved in
+the E820 map.
+
+
+BAR4:
+
+BAR4 specifies IO space port access to XenGFX.
+
+0x0000 - XGFX_MMIO_INDEX:
+  This register contains an offset into the BAR2 of the	card to be used by
+  XGFX_MMIO_DATA. The lower 2 bits of this register must be written zero.
+
+  Type: 32-bit Read-Write
+
+0x0004 - XGFX_MMIO_DATA:
+  Reads and writes to this register	are equivalent to reads and writes 
+  in BAR2 at an offset of XGFX_MMIO_INDEX.
+
+  Type: 32-bit Read-Write
+  
+
+
+Interrupts:
+
+The bit INT in XGFX_ISR will be set if any of the bits in
+(XGFX_VCRTCn_STATUS_CHANGE & XGFX_VCRTCn_STATUS_INT) are set.
+
+if INT_EN in XGFX_CONTROL is set and the PCI_COMMAND register allows
+an interrupt wil be generated. It can be cleared by writing to the 
+appriorate XGFX_VCRTCn_STATUS_CHANGE register.
+

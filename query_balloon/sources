@@ -1,0 +1,12 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=query_balloon
+TARGETTYPE=PROGRAM
+UMTYPE=console
+
+USE_MSVCRT=1
+
+SOURCES=query_balloon.c query_balloon.rc

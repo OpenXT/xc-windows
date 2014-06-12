@@ -1,0 +1,221 @@
+;
+; Copyright (c) 2014 Citrix Systems, Inc.
+; 
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+
+NAME XENUTIL.SYS
+
+EXPORTS
+	;; xsapi.h
+	___XenTrace
+
+	;; scsiboot.h
+	GetOperatingMode
+	SetOperatingMode
+	_XmAllocateMemory
+	_XmAllocateZeroedMemory
+	XmAllocatePhysMemory
+	XmFreeMemory
+	Xmsnprintf
+	Xmvsnprintf
+	Xmasprintf
+	Xmvasprintf
+	XenPVFeatureEnabled
+	XenCreateRegistryKey
+	XenOpenRegistryKey
+	XenReadRegistryValue
+	XenMoveRegistryValues
+	XenSetRegistryValueFromXenstore
+
+	XmSpawnThread
+	XmKillThread
+	XmThreadWait
+
+	_XmCheckXenutilVersionString
+
+	XenTraceSetLevels
+	HvmGetLogRingSize
+	HvmGetLogRing
+	XmExtractTailOfLog
+	_cpuid
+	XenCpuid
+	CheckXenHypervisor
+	XenTraceFlush
+	UnplugIoemu
+
+	;; vbd_special.h
+	XmInitMemory
+	InitOldUnplugProtocol
+	XenPVEnabled
+
+	;; Event channels
+	EvtchnSetVector
+	EvtchnGetVector
+	EvtchnAllocUnbound
+	EvtchnAllocUnboundDpc
+	EvtchnConnectRemotePort
+	EvtchnBindVirq
+	EvtchnClose
+	EvtchnPortStop
+	EvtchnNotifyRemote
+	EvtchnRaiseLocally
+	xenbus_write_evtchn_port
+	xenbus_read_evtchn_port
+
+	; initialisation
+	xenbus_await_initialisation
+
+	; xenbus
+	xenbus_write
+	xenbus_write_bin
+	xenbus_read
+	xenbus_read_bin
+	xenbus_ls
+	__xenbus_transaction_start_ntstatus
+	__xenbus_transaction_start_void
+	xenbus_transaction_start = __xenbus_transaction_start_ntstatus
+	__xenbus_transaction_end
+	xenbus_transaction_end = __xenbus_transaction_end_anonymous
+	xenbus_printf
+	xenbus_read_int
+	XenbusStateName
+	__XenbusWaitForBackendStateChange
+	__XenbusWaitForBackendStateChangeAnonymous
+	XenbusWaitForBackendStateChange = __XenbusWaitForBackendStateChangeAnonymous
+	__xenbus_watch_path_anonymous
+	__xenbus_watch_path
+	xenbus_watch_path = __xenbus_watch_path_anonymous
+	xenbus_watch_path_event
+	xenbus_redirect_watch
+	xenbus_unregister_watch
+	xenbus_trigger_watch
+	xenbus_read_feature_flag
+	xenbus_write_feature_flag
+	xenbus_read_domain_id
+	xenbus_read_state
+	xenbus_change_state
+	xenbus_read_grant_ref
+	xenbus_write_grant_ref
+	xenbus_driver_on
+	xenbus_driver_off
+	xenbus_mtc_allow_divergency
+
+	; Suspend handlers
+	EvtchnRegisterSuspendHandler
+	EvtchnUnregisterSuspendHandler
+	EvtchnAllocateSuspendToken
+	EvtchnReleaseSuspendToken
+
+	;; vbd_special.h
+	EvtchnHandleInterrupt
+	EvtchnStart
+	EvtchnStop
+	__HvmSetCallbackIrq
+	EvtchnLaunchSuspendThread
+	__XenevtchnInitIoHole
+	__XenevtchnShutdownIoHole
+	__XenevtchnIsMyIoHole
+
+	XenGetPhysicalAddress
+	EvtchnReadRegistryParametersDword
+
+	;; scsiboot.h
+	XenutilGetVersionInfo
+	XenutilGetOsVersionDuringAustere
+
+	;; Legacy APIs
+	EvtchnPortMask
+	EvtchnPortUnmask
+	xenbus_write_state
+	XenbusReadInteger
+
+	;; debug callbacks
+	__EvtchnSetupDebugCallbackAnonymous
+	__EvtchnSetupDebugCallback
+	EvtchnSetupDebugCallback = __EvtchnSetupDebugCallback
+	EvtchnReleaseDebugCallback
+	RegisterBugcheckCallbacks
+	DeregisterBugcheckCallbacks
+	InitDebugHelpers
+	DisconnectDebugVirq
+	PrintAddress
+
+	__XenTrace
+	
+	;; diagnostics
+	DiagsAcpiDump
+	DiagsGetE820
+	DiagsPciConfig
+
+	SuspendPreInit
+	KillSuspendThread
+	_readcr3
+	HvmGetXenTime
+	xenbus_remove
+	XenbusIsFrozen
+	XenbusSetFrozen
+	xen_EVTCHN_PORT
+	xenbus_fail_transaction
+	xm_strtoll
+	XenevtchnInitXenbus
+	CleanupHvm
+	CleanupDebugHelpers
+	CleanupXenbus
+	AddPageToPhysmap
+	XenevtchnAllocIoMemory
+	XenevtchnAllocIoPFN
+	XenevtchnReleaseIoPFN
+	XenSetSystemPowerState
+	XenGetSystemPowerState
+
+	__hypercall2
+	__hypercall3
+	__hypercall6
+
+	; grant tables
+	GnttabInit
+	GnttabCleanup
+	GnttabGetGrantRef
+	GnttabGrantForeignAccessRef
+	GnttabGrantForeignAccess
+	GnttabEndForeignAccess
+	GnttabAllocCache
+	GnttabFreeCache
+	GnttabGrantForeignAccessCache
+	GnttabEndForeignAccessCache
+
+	GntmapMapGrants
+	GntmapUnmapGrants
+	GntmapMdl
+
+	BalloonIsEmpty
+	BalloonFreeze
+	BalloonThaw
+	BalloonQuery
+	BalloonInit
+
+	_XenQueueWork
+
+	SetWppTrace
+
+	XmPrepForS3
+	XmRecoverFromS3
+
+	DllInitialize PRIVATE

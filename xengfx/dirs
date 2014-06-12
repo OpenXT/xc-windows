@@ -1,0 +1,4 @@
+DIRS=shared \
+     xddm \
+     wddm
+    

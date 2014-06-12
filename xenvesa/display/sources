@@ -1,0 +1,14 @@
+include ..\..\config.mk
+TOPDIR=..\..
+
+MSC_WARNING_LEVEL=/W3
+
+TARGETNAME=xenvesa-display
+TARGETTYPE=GDI_DRIVER
+
+TARGETLIBS=$(DDK_LIB_PATH)\ntoskrnl.lib
+
+SOURCES= \
+    helper.c \
+    xenvesa-display.c \
+    xenvesa-display.rc

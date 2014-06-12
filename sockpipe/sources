@@ -1,0 +1,31 @@
+TARGETNAME=sockpipe
+TARGETPATH=obj
+TARGETTYPE=PROGRAM
+UMTYPE=console
+
+INCLUDES = $(DDK_INC_PATH);
+TARGETLIBS=$(DDK_LIB_PATH)\kernel32.lib $(DDK_LIB_PATH)\ws2_32.lib
+
+_NT_TARGET_VERSION=$(_NT_TARGET_VERSION_WIN2K)
+
+C_DEFINES=$(C_DEFINES)
+
+# Uncomment the following line to enable logging.
+
+C_DEFINES=$(C_DEFINES) -DLOGGING_ENABLED=1
+
+UMENTRY=main
+
+USE_LIBCMT=1
+
+SOURCES= \
+    sockpipe.cpp        \
+    Circle.cpp          \
+    connectoid.cpp      \
+    logger.cpp          \
+    pipereader.cpp      \
+    sockreader.cpp      \
+    spinlock.cpp        \
+    stdafx.cpp          \
+    threadcontrol.cpp   \
+

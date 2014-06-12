@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings to build applications with output in single directory -->
+<!-- LocalOutputDir and LocalIntermediateDir MUST have been defined previously -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="locations.check.local.props" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutDir>$(LocalOutputDir)\</OutDir>
+    <IntDir>$(LocalIntermediateDir)\$(TargetName)\</IntDir>
+    <_PropertySheetDisplayName>locations.build.onedir</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <!--
+    <BuildMacro Include="LocalOutputDir">
+      <Value>$(LocalOutputDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LocalIntermediateDir">
+      <Value>$(LocalIntermediateDir)</Value>
+    </BuildMacro>
+    -->
+  </ItemGroup>
+</Project>

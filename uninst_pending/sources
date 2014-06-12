@@ -1,0 +1,16 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=uninst_pending
+TARGETTYPE=PROGRAM
+UMTYPE=windows
+
+USE_MSVCRT=1
+
+TARGETLIBS=$(SDK_LIB_PATH)\user32.lib \
+	$(SDK_LIB_PATH)\setupapi.lib
+
+SOURCES=uninst_pending.c
+

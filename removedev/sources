@@ -1,0 +1,17 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=removedev
+TARGETTYPE=PROGRAM
+UMTYPE=windows
+
+MSC_WARNING_LEVEL=/W3 /WX
+
+USE_MSVCRT=1
+
+TARGETLIBS=$(SDK_LIB_PATH)\user32.lib \
+           $(SDK_LIB_PATH)\setupapi.lib
+           
+SOURCES=removedev.c removedev.rc

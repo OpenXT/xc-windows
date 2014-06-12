@@ -1,0 +1,17 @@
+USERSPACE=1
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME=installdriver
+TARGETTYPE=PROGRAM
+UMTYPE=windows
+
+TARGETLIBS = $(SDK_LIB_PATH)\newdev.lib \
+	         $(SDK_LIB_PATH)\setupapi.lib
+
+USE_MSVCRT=1
+
+SOURCES = installdriver.c \
+          installdriver.rc
+

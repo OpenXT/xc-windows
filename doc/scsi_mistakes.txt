@@ -1,0 +1,55 @@
+Commands which are mandatory for a SCSI block device:
+
+-- INQUIRY, including EVPD pages 0 and 83
+-- FORMAT UNIT
+-- READ 6 (optional according to WHQL, because it's obsolete in later
+	   versions of the SCSI spec.)
+-- READ 10
+-- READ CAPACITY 10
+-- REPORT LUNS
+-- REQUEST SENSE
+-- SEND DIAGNOSTIC
+-- TEST UNIT READY
+
+WHQL's SCSI conformance test also requires:
+
+-- MODE SENSE 6.
+-- INQUIRY page 80, with non-zero length
+-- INQUIRY page 83, with identifiers type 1, 2, and 3.
+-- RESERVE 6
+-- RELEASE 6
+
+We currently implement:
+
+-- INQUIRY, VPD pages 0, 80, and 83, but 83 is empty and 80 gives a
+   serial number of ' '.  That's good enough for WHQL, and is
+   compliant with the SCSI spec.
+-- MODE SENSE 6
+-- READ CAPACITY 10
+-- READ CAPACITY 16
+-- READ 10
+-- READ 16
+-- WRITE 10
+-- WRITE 16
+-- SYNCHRONISE CACHE
+-- TEST UNIT READY
+-- REPORT LUNS
+
+-- VERIFY 10, badly
+
+We're therefore missing:
+
+-- A proper INQUIRY page 83
+-- RESERVE 6
+-- RELEASE 6
+-- REQUEST SENSE
+
+-- START STOP UNIT
+-- FORMAT UNIT
+-- READ 6
+-- SEND DIAGNOSTIC
+-- Most of VERIFY
+
+Of which everything before the gap is required for WHQL.
+
+

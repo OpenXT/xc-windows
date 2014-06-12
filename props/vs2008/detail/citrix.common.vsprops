@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="citrix.common"
+	InheritedPropertySheets=".\citrix.settings.thirdparty.vsprops;.\citrix.settings.default.vsprops;.\citrix.local.setup.vsprops;$(LocalPropsDir)citrix.local.vsprops;$(LocalLocationsPropFile)"
+	>
+<!-- Ensures appropriate vsprops files are loaded in correct order. -->
+</VisualStudioPropertySheet>

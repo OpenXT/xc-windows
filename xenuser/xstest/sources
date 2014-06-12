@@ -1,0 +1,18 @@
+USERSPACE=1
+TOPDIR=..\..
+
+include ..\..\config.mk
+
+TARGETNAME=xstest
+TARGETTYPE=PROGRAM
+
+INCLUDES=$(INCLUDES); ..\xs
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\user32.lib \
+	..\..\$(BUILDDIR_ARCH)\xs.lib
+
+USE_MSVCRT=1
+UMTYPE=console
+
+SOURCES=xstest.c

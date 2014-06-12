@@ -1,0 +1,29 @@
+TOPDIR=..
+include ..\config.mk
+
+TARGETNAME=xenv4v
+TARGETTYPE=DRIVER
+INCLUDES=$(INCLUDES);..\xenhdrs
+
+TARGETLIBS=$(DDK_LIB_PATH)\csq.lib \
+           $(DDK_LIB_PATH)\ntstrsafe.lib \
+           $(DDK_LIB_PATH)\wdmsec.lib \
+           $(DDK_LIB_PATH)\scsiport.lib \
+           $(DDK_LIB_PATH)\scsiwmi.lib \
+	       $(TARGETPATH_ARCH)\xevtchn.lib \
+	       $(TARGETPATH_ARCH)\xenutil.lib
+
+C_DEFINES=$(C_DEFINES) -DXENTARGET=\"XENV4V\" -DXENV4V_DRIVER -DUNICODE
+
+SOURCES=\
+	xenv4v.c \
+	create.c \
+	ioctl.c \
+	rw.c \
+	send.c \
+	csq.c \
+	hypercall.c \
+	ring.c \
+	xenv4v.rc
+	
+

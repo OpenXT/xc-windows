@@ -1,0 +1,30 @@
+include ..\..\..\config.mk
+TOPDIR=..\..\..
+
+MSC_WARNING_LEVEL=/W3
+
+TARGETNAME=xend3d
+TARGETTYPE=DYNLINK
+
+UMTYPE=windows
+USE_LIBCMT=1
+DLLDEF=xend3d.def
+
+INCLUDES=$(INCLUDES);..\..\inc;..\inc
+
+C_DEFINES=$(C_DEFINES) \
+          -DWIN32 \
+          -DDIRECT3D_VERSION=0x0900 \
+          -DDIRECTDRAW_VERSION=0x0900
+           
+TARGETLIBS=$(TARGETLIBS) \
+           $(DDK_LIB_PATH)\kernel32.lib \
+           $(DDK_LIB_PATH)\gdi32.lib \
+           $(DDK_LIB_PATH)\advapi32.lib \
+           $(DDK_LIB_PATH)\dxguid.lib
+
+SOURCES= \
+    xend3d.c \
+    dllmain.c \
+    utils.c \
+    xend3d.rc
