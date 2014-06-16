@@ -1,7 +1,7 @@
 //
 // v4vkm.h - Xen Windows XenGfx v4v
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

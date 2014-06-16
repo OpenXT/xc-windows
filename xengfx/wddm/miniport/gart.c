@@ -1,7 +1,7 @@
 //
 // gart.c - Xen Windows PV WDDM Miniport Driver GART routines.
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

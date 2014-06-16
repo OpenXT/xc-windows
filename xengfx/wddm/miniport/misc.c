@@ -1,7 +1,7 @@
 //
 // misc.c - Xen Windows PV WDDM Miniport Driver misc helper routines.
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

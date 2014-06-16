@@ -1,7 +1,7 @@
 //
 // debug.c - Xen Windows PV WDDM Miniport Driver debugging support.
 //
-// Copyright (c) 2011 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2011 Citrix, Inc.
 //
 
 /*

@@ -1,7 +1,7 @@
 //
 // xeninp.h - Xen Windows PV Input Driver
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 #ifndef XENINP_H

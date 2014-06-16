@@ -1,7 +1,7 @@
 //
 // xengfx_wdk.c - WDK support routines
 //
-// Copyright (c) 2008 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2008 Citrix, Inc.
 //
 
 /*

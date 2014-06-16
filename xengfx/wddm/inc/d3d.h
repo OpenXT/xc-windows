@@ -3,7 +3,7 @@
 //
 // D3D Definitions shared between the display and miniport drivers.
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

@@ -1,7 +1,7 @@
 //
 // xenvesa-registry.c - Xen Windows Miniport Driver Registry helper routines.
 //
-// Copyright (c) 2012 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2012 Citrix, Inc.
 //
 
 /*

@@ -1,7 +1,7 @@
 //
 // xenvesa.c - Xen Windows Vesa Miniport Driver
 //
-// Copyright (c) 2008 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2008 Citrix, Inc.
 //
 
 /*

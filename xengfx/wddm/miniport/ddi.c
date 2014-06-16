@@ -1,7 +1,7 @@
 //
 // ddi.c - Xen Windows PV WDDM Miniport Driver DDI routines.
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

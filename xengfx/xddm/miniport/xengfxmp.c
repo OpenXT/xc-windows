@@ -1,7 +1,7 @@
 //
 // xengfxmp.c - Xen Windows PV XDDM Miniport Driver
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

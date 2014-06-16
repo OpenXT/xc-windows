@@ -1,7 +1,7 @@
 //
 // dllmain.c - Xen Windows WDDM Display DLL utilities.
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

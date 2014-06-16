@@ -2,7 +2,7 @@
 // helper.h - Xen Windows Vesa Display Driver helper to
 // communicate with miniport and provide debugging support etc.
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

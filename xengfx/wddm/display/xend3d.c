@@ -1,7 +1,7 @@
 //
 // xengfxd3d.c - Xen Windows PV WDDM D3D Display Driver
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

@@ -4,7 +4,7 @@
 // Funtionality shared between xengfx driver versions
 // implemented in the xengfxsh.lib
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

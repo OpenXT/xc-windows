@@ -1,7 +1,7 @@
 //
 // input.h - Xen Windows PV Mouse Driver user mode interface
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

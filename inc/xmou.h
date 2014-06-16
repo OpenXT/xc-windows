@@ -1,7 +1,7 @@
 //
 // xmou.h - Xen Virutal Mouse/Input Hardware
 //
-// Copyright (c) 2012 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2012 Citrix, Inc.
 //
 
 /*

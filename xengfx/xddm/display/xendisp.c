@@ -1,7 +1,7 @@
 //
 // xendisp.c - XENGFX Windows PV Display Driver
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

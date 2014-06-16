@@ -1,7 +1,7 @@
 //
 // xengfx_vga.c - VGA support routines
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*

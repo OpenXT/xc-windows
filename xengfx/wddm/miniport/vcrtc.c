@@ -1,7 +1,7 @@
 //
 // vcrtc.c - Xen Windows PV WDDM Miniport Driver vCRTC management routines.
 //
-// Copyright (c) 2010 Citrix, Inc. - All rights reserved.
+// Copyright (c) 2010 Citrix, Inc.
 //
 
 /*
