@@ -24,7 +24,7 @@ $ver3 = $argtable["BuildNumber"]
 $tag = $argtable["BuildTag"]
 $branch = $argtable["BuildBranch"]
 $MSBuild = $argtable["MSBuild"]
-$giturl = $argtable["SrcUrl"]
+$giturl = $argtable["GitUrl"]
 
 #Set some important variables
 $mywd = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -77,7 +77,7 @@ Write-Host "Building Win8 64 bit bits"
 Push-Location
 
 $gitsrc = $giturl + "/" + "xc-vusb.git"
-Invoke-Expression ("git clone -n $gitsrc 2>&1") #Do checkout
+Invoke-Expression ("git clone -n " + $gitsrc + " 2>&1") #Do checkout
 
 if ($LastExitCode -eq 0){
 # If a branch has been specified in the config, checkout HEAD of that branch over tag info
