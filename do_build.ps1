@@ -86,12 +86,16 @@ if ($LastExitCode -eq 0){
 		Push-Location -Path "xc-vusb"
 		Write-Host ("Checking out: " + $branch + " For: xc-vusb")
 		Invoke-Expression ("git fetch origin 2>&1") #Do checkout
-		Invoke-Expression ("git checkout -q origin/$branch -b $branch 2>&1") #Do checkout
-		
-		#If error, just do a checkout defaulted to master
-		if($?){
-			Invoke-Expression ("git checkout -q -b $branch 2>&1") #Do checkout
-		}
+        
+        if ($branch.CompareTo("master") -eq 0) {
+            Invoke-Expression ("git checkout -q $branch 2>&1") #Do checkout
+        } else {
+            Invoke-Expression ("git checkout -q origin/$branch -b $branch 2>&1") #Do checkout 
+            #If error, just do a checkout defaulted to master
+            if($?){
+                Invoke-Expression ("git checkout -q -b $branch 2>&1") #Do checkout
+            }
+        }        
 		
 		Pop-Location
 	}elseif ($tag.Length -gt 0)
