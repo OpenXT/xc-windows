@@ -24,6 +24,7 @@ $ver3 = $argtable["BuildNumber"]
 $tag = $argtable["BuildTag"]
 $branch = $argtable["BuildBranch"]
 $MSBuild = $argtable["MSBuild"]
+$giturl = $argtable["GitUrl"]
 
 #Set some important variables
 $mywd = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -75,7 +76,8 @@ Write-Host "Building Win8 64 bit bits"
 & ".\dowin8build.bat" $VSDir $mywd $cfg "x64"
 Push-Location
 
-Invoke-Expression ("git clone -n git://git.xci-test.com/xenclient/xc-vusb.git 2>&1") #Do checkout
+$gitsrc = $giturl + "/" + "xc-vusb.git"
+Invoke-Expression ("git clone -n " + $gitsrc + " 2>&1") #Do checkout
 
 if ($LastExitCode -eq 0){
 # If a branch has been specified in the config, checkout HEAD of that branch over tag info
@@ -84,12 +86,16 @@ if ($LastExitCode -eq 0){
 		Push-Location -Path "xc-vusb"
 		Write-Host ("Checking out: " + $branch + " For: xc-vusb")
 		Invoke-Expression ("git fetch origin 2>&1") #Do checkout
-		Invoke-Expression ("git checkout -q origin/$branch -b $branch 2>&1") #Do checkout
-		
-		#If error, just do a checkout defaulted to master
-		if($?){
-			Invoke-Expression ("git checkout -q -b $branch 2>&1") #Do checkout
-		}
+        
+        if ($branch.CompareTo("master") -eq 0) {
+            Invoke-Expression ("git checkout -q $branch 2>&1") #Do checkout
+        } else {
+            Invoke-Expression ("git checkout -q origin/$branch -b $branch 2>&1") #Do checkout 
+            #If error, just do a checkout defaulted to master
+            if($?){
+                Invoke-Expression ("git checkout -q -b $branch 2>&1") #Do checkout
+            }
+        }        
 		
 		Pop-Location
 	}elseif ($tag.Length -gt 0)
