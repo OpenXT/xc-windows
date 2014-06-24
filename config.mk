@@ -29,6 +29,10 @@ C_DEFINES=-DNTSTRSAFE_LIB
 # Userspace stuff needs to be built for windows 2000 or it won't run
 # (you get ``... is not a valid Win32 application.'' popups, and
 # access denied errors from CreateProcess).
+#
+# I assume that was to make it work on W2K. We really don't care about
+# that and setting _NT_TARGET_VERSION_WIN2K prevents building with the 
+# 7.1 WDK.
 !if defined(USERSPACE)
-_NT_TARGET_VERSION=$(_NT_TARGET_VERSION_WIN2K)
+_NT_TARGET_VERSION=$(_NT_TARGET_VERSION_WINXP)
 !endif

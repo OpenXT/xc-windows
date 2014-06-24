@@ -379,13 +379,14 @@ CASSERT(sizeof(DOT11_MAC_DATA_HEADER) == 32);
 
 #define DOT11_ASSOCIATION_PARAMS_REVISION_1 1
 
+/*
 typedef struct DOT11_ASSOCIATION_PARAMS {
   NDIS_OBJECT_HEADER Header;
   DOT11_MAC_ADDRESS  BSSID;
   ULONG              uAssocRequestIEsOffset;
   ULONG              uAssocRequestIEsLength;
 } DOT11_ASSOCIATION_PARAMS, *PDOT11_ASSOCIATION_PARAMS;
-
+*/
 
 #pragma pack(pop)
 
