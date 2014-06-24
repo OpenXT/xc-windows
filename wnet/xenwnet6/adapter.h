@@ -54,8 +54,8 @@
                                             NDIS_MAC_OPTION_TRANSFERS_NOT_PEND |    \
                                             NDIS_MAC_OPTION_NO_LOOPBACK) 
 
-#define OID_DOT11_ASSOCIATION_PARAMS \
-         NWF_DEFINE_OID( 159, NWF_OPERATIONAL_OID, NWF_MANDATORY_OID )
+//#define OID_DOT11_ASSOCIATION_PARAMS \
+//         NWF_DEFINE_OID( 159, NWF_OPERATIONAL_OID, NWF_MANDATORY_OID )
 
 typedef struct SuspendHandler* PSUSPEND_HANDLER;
 typedef struct grant_cache* PGRANT_CACHE;
