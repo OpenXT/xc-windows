@@ -3,7 +3,7 @@ REM %2 - Build base directory
 REM %3 - Release or debug build - fre|chk
 REM %4 - Build architecture - x86|x64
 
-call %1\bin\setenv.bat %1 %3 WLH %4
+call %1\bin\setenv.bat %1 %3 WLH %4 || exit /b 1
 
 cd /d %2
 
@@ -17,5 +17,10 @@ set temp=%2\tmp
 
 set USERNAME=OpenXT
 
-build -bcezgw
+# beware https://github.com/OpenXT/xc-windows/issues/3 if you want to make
+# this faster by removing the c and z flags to get incremental builds
+build -begwcz 2>&1 || exit /b 2
+
+
+
 
