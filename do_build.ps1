@@ -1,3 +1,7 @@
+$ErrorActionPreference = 'stop'
+$ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+Import-Module $ScriptDir\..\BuildSupport\invoke.psm1
+Import-Module $ScriptDir\..\BuildSupport\checked-copy.psm1
 #Helper Functions
 function enable-read-execute([string]$file)
 {
@@ -6,6 +10,8 @@ function enable-read-execute([string]$file)
     $acl.SetAccessRule($ar)
     Set-Acl $file $acl
 }
+
+
 
 #Get parameters
 $args | Foreach-Object {$argtable = @{}} {if ($_ -Match "(.*)=(.*)") {$argtable[$matches[1]] = $matches[2];}}
@@ -25,6 +31,9 @@ $tag = $argtable["BuildTag"]
 $branch = $argtable["BuildBranch"]
 $MSBuild = $argtable["MSBuild"]
 $giturl = $argtable["GitUrl"]
+$gitbin = $argtable["GitBin"]
+$crosssign = $argtable["CrossSign"]
+$compile = $true # can be set to false if you just want to get to signing quickly
 
 #Set some important variables
 $mywd = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -44,10 +53,8 @@ Write-Host ("Building Xen Tools version: " + $verstr + " in: " + $mywd)
 enable-read-execute -file ".\dostampinf.bat"
 enable-read-execute -file ".\dobuild.bat"
 enable-read-execute -file ".\dowin8build.bat"
-enable-read-execute -file ".\docrosssign.bat"
 enable-read-execute -file ".\doverifysign.bat"
 enable-read-execute -file ".\dotestsign.bat"
-enable-read-execute -file ".\findddk.bat"
 
 # If no specific license is specified, grab the default EULA
 if ($licfile.Length -lt 1)
@@ -58,96 +65,96 @@ if ($licfile.Length -lt 1)
 # Modify the findddk.bat to use the DDK specified for the build. If you suspect this is a hack
 # you would be correct my friend...
 Set-Content -Path ".\findddk.bat" -Value ("set ddk_path=" + $ddkdir)
+if ($compile) {
+    Invoke-CommandChecked "Timestamping INF files"  ".\dostampinf.bat" $ddkdir $mywd $verstr
+    Invoke-CommandChecked "Building 32 bit bits" ".\dobuild.bat" $ddkdir $mywd $cfg "x86"
+    Invoke-CommandChecked "Building 64 bit bits" ".\dobuild.bat" $ddkdir $mywd $cfg "x64"
+    Invoke-CommandChecked "Building Win8 32 bit bits" ".\dowin8build.bat" $VSDir $mywd $cfg "x86"
+    Invoke-CommandChecked "Building Win8 64 bit bits" ".\dowin8build.bat" $VSDir $mywd $cfg "x64"
+}
 
-# Timestamp the INF files
-Write-Host "Timestamping INF files"
-& ".\dostampinf.bat" $ddkdir $mywd $verstr
-
-# Build both 32b and 64b targets, Win7 and Win8
-Write-Host "Building 32 bit bits"
-& ".\dobuild.bat" $ddkdir $mywd $cfg "x86"
-Write-Host "Building 64 bit bits"
-& ".\dobuild.bat" $ddkdir $mywd $cfg "x64"
-
-# Build Win8 stuff
-Write-Host "Building Win8 32 bit bits"
-& ".\dowin8build.bat" $VSDir $mywd $cfg "x86"
-Write-Host "Building Win8 64 bit bits"
-& ".\dowin8build.bat" $VSDir $mywd $cfg "x64"
 Push-Location
 
+# TODO: use the logic in openxt.git/windows/winbuild-all.ps1 to do git clones rather than 
+# have this logic that duplicates it. Cope with the way that will checkout xc-vusb one
+# level higher, i.e. as a peer of xc-windows not a subdirecory of xc-windows.
 $gitsrc = $giturl + "/" + "xc-vusb.git"
-Invoke-Expression ("git clone -n " + $gitsrc + " 2>&1") #Do checkout
+$doclone = true
+# skip the clone if it has already been done
+if (Test-Path ("xc-vusb\.git")) {
+    $nfiles = (Get-ChildItem "xc-vusb").Count
+    # it is possible a failure during an earlier clone resulted in a directory,
+    # possibly with a .git subdirectory, so if we see that we still need to clone
+    if ([int]$nfiles -gt 1) {
+        $doclone = false
+    }
+}
 
-if ($LastExitCode -eq 0){
-# If a branch has been specified in the config, checkout HEAD of that branch over tag info
-	if ($branch.Length -gt 0)
-	{
-		Push-Location -Path "xc-vusb"
-		Write-Host ("Checking out: " + $branch + " For: xc-vusb")
-		Invoke-Expression ("git fetch origin 2>&1") #Do checkout
-        
+if ($doclone) {
+    Invoke-CommandChecked "git clone xc-vusb" $gitbin "-n" $gitsrc
+    Invoke-CommandChecked "git fetch origin" $gitbin fetch origin
+    if ($branch.Length -gt 0) {
+        Push-Location -Path "xc-vusb"
+        Write-Host ("Checking out: " + $branch + " For: xc-vusb")
         if ($branch.CompareTo("master") -eq 0) {
-            Invoke-Expression ("git checkout -q $branch 2>&1") #Do checkout
+            Invoke-CommandChecked "git checkout" $gitbin checkout -q $branch
         } else {
-            Invoke-Expression ("git checkout -q origin/$branch -b $branch 2>&1") #Do checkout 
-            #If error, just do a checkout defaulted to master
-            if($?){
-                Invoke-Expression ("git checkout -q -b $branch 2>&1") #Do checkout
+            & $gitbin checkout -q origin/$branch -b $branch
+	    # standard practice on XT is to fall back to master for
+	    # branches that do not exist.
+            if (-Not ($LastExitCode -eq 0)) {
+                 Invoke-CommandChecked "git checkout" $gitbin -q -b $branch
             }
-        }        
-		
-		Pop-Location
-	}elseif ($tag.Length -gt 0)
-	{
-		Push-Location -Path "xc-vusb"
-		Write-Host ("Checking out: " + $tag + " For: xc-vusb")
-		Invoke-Expression ("git checkout -q -b " + $tag + " " + $tag + " 2>&1") #Do checkout
-		Pop-Location
-	}
-} else {
-	return 2
+        } 
+        Pop-Location 
+    } elseif ($tag.Length -gt 0) {
+       Push-Location -Path "xc-vusb"
+       Write-Host ("Checking out: " + $tag + " For: xc-vusb")
+       Invoke-CommandChecked "git checkout tag for xc-vusb" -q -b $tag $tag 
+       Pop-Location
+    } else {
+       throw "No branch or tag for xc-vusb checkout"
+    }
 }
 
 #Build xc-vusb
 $usbBuild = "Win7 $type"
-& $MSBuild xc-vusb\Drivers\xenvusb\xenvusb.sln /p:Configuration=$usbBuild
-& $MSBuild xc-vusb\Drivers\xenvusb\xenvusb.sln /p:Configuration=$usbBuild /p:Platform="x64"
+if ($compile) {
+    Invoke-CommandChecked "xc-vusb msbuild 32 bit" $MSBuild xc-vusb\Drivers\xenvusb\xenvusb.sln /p:Configuration=$usbBuild
+    Invoke-CommandChecked "xc-vusb msbuild 64 bit" $MSBuild xc-vusb\Drivers\xenvusb\xenvusb.sln /p:Configuration=$usbBuild /p:Platform="x64"
+}
 
 New-Item -Path ".\xc-vusb\build\x86" -Type Directory -Force
 New-Item -Path ".\xc-vusb\build\x64" -Type Directory -Force
  
 if ($type.ToLower().CompareTo("debug") -eq 0) {
-    Copy-Item ".\xc-vusb\Drivers\xenvusb\xenvusb.inf" ".\xc-vusb\build\x86\"
-    Copy-Item ".\xc-vusb\Drivers\xenvusb\Win7Debug\xenvusb.sys" ".\xc-vusb\build\x86\"    
-    Copy-Item ".\xc-vusb\Drivers\xenvusb\xenvusb64.inf" ".\xc-vusb\build\x64\"
-    Copy-Item ".\xc-vusb\Drivers\xenvusb\x64\Win7Debug\xenvusb.sys" ".\xc-vusb\build\x64\"
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb.inf" ".\xc-vusb\build\x86\"
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\Win7Debug\xenvusb.sys" ".\xc-vusb\build\x86\"    
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb64.inf" ".\xc-vusb\build\x64\"
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\x64\Win7Debug\xenvusb.sys" ".\xc-vusb\build\x64\"
 } else {
-    Copy-Item ".\xc-vusb\Drivers\xenvusb\xenvusb.inf" ".\xc-vusb\build\x86\"
-    Copy-Item ".\xc-vusb\Drivers\xenvusb\Win7Release\xenvusb.sys" ".\xc-vusb\build\x86\"    
-    Copy-Item ".\xc-vusb\Drivers\xenvusb\xenvusb64.inf" ".\xc-vusb\build\x64\"
-    Copy-Item ".\xc-vusb\Drivers\xenvusb\x64\Win7Release\xenvusb.sys" ".\xc-vusb\build\x64\"
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb.inf" ".\xc-vusb\build\x86\"
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\Win7Release\xenvusb.sys" ".\xc-vusb\build\x86\"    
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb64.inf" ".\xc-vusb\build\x64\"
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\x64\Win7Release\xenvusb.sys" ".\xc-vusb\build\x64\"
 }
 
-Push-Location
-& ".\docrosssign.bat" $mywd $certname
-Pop-Location
-
+if ($crosssign) {
+    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname $certname -signtool ("'"+$signtool+"'") -crosssign $crosssign
+} else {
+    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname $certname -signtool ("'"+$signtool+"'")
+}
+ 
 #Only do verification if not doing a developer build
 if($developer -ne $true){
     #Verify the drivers are signed using default signtool through %PATH% or use a specific one
     if ($signtool.Length -lt 1)
     {
-        & ".\doverifysign.bat"
+        Invoke-CommandChecked "doverifysign without signtool" ".\doverifysign.bat"
     }
     else
     {
-        & ".\doverifysign.bat" $signtool
-    }
-    if (!($?))
-    {
-        Write-Host "Signature verification failed"
-        return $false
+        Invoke-CommandChecked "doverifysign with signtool"  ".\doverifysign.bat" 
     }
 }
 
@@ -155,12 +162,12 @@ Pop-Location
 
 # Change dir and copy the default EULA or specified license to install folder
 Push-Location -Path "install"
-Copy-Item -Path $licfile -Destination ".\license.txt" -Force -Verbose
+Checked-Copy $licfile ".\license.txt" 
 
 # Package the NSIS installer - need the individual version numbers here
 Write-Host "Building driver installer"
 
-& makensis "/DINSTALL_XENVESA" "/DINSTALL_XENVESA8" ("/DVERMAJOR=" + $ver0) ("/DVERMINOR=" + $ver1) ("/DVERMICRO=" + $ver2) ("/DVERBUILD=" + $ver3) "xensetup.nsi"
+Invoke-CommandChecked "makensis" makensis "/DINSTALL_XENVESA" "/DINSTALL_XENVESA8" ("/DVERMAJOR=" + $ver0) ("/DVERMINOR=" + $ver1) ("/DVERMICRO=" + $ver2) ("/DVERBUILD=" + $ver3) "xensetup.nsi"
 
 if (!(Test-Path -Path ".\xensetup.exe" -PathType Leaf))
 {

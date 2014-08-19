@@ -54,7 +54,7 @@ echo		Configuration - %XEN_CONFIG%
 echo		Platform      - %PLATFORM_NAME%
 echo
 
-msbuild /m /t:clean /t:build /p:Configuration=%XEN_CONFIG% /p:Platform=%PLATFORM_NAME% WindowsEight.sln  
+msbuild /m /t:clean /t:build /p:Configuration=%XEN_CONFIG% /p:Platform=%PLATFORM_NAME% WindowsEight.sln  || exit /b 1
 GOTO SET_DIR
 
 :ERROR
