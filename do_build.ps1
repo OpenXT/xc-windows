@@ -103,14 +103,14 @@ if ($doclone) {
 	    # standard practice on XT is to fall back to master for
 	    # branches that do not exist.
             if (-Not ($LastExitCode -eq 0)) {
-                 Invoke-CommandChecked "git checkout" $gitbin -q -b $branch
+                 Invoke-CommandChecked "git checkout" $gitbin checkout -q -b $branch
             }
         } 
         Pop-Location 
     } elseif ($tag.Length -gt 0) {
        Push-Location -Path "xc-vusb"
        Write-Host ("Checking out: " + $tag + " For: xc-vusb")
-       Invoke-CommandChecked "git checkout tag for xc-vusb" $gitbin -q -b $tag $tag 
+       Invoke-CommandChecked "git checkout tag for xc-vusb" $gitbin checkout -q -b $tag $tag 
        Pop-Location
     } else {
        throw "No branch or tag for xc-vusb checkout"
