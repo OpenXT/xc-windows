@@ -79,19 +79,19 @@ Push-Location
 # have this logic that duplicates it. Cope with the way that will checkout xc-vusb one
 # level higher, i.e. as a peer of xc-windows not a subdirecory of xc-windows.
 $gitsrc = $giturl + "/" + "xc-vusb.git"
-$doclone = true
+$doclone = $true
 # skip the clone if it has already been done
 if (Test-Path ("xc-vusb\.git")) {
     $nfiles = (Get-ChildItem "xc-vusb").Count
     # it is possible a failure during an earlier clone resulted in a directory,
     # possibly with a .git subdirectory, so if we see that we still need to clone
     if ([int]$nfiles -gt 1) {
-        $doclone = false
+        $doclone = $false
     }
 }
 
 if ($doclone) {
-    Invoke-CommandChecked "git clone xc-vusb" $gitbin "-n" $gitsrc
+    Invoke-CommandChecked "git clone xc-vusb" $gitbin clone "-n" $gitsrc
     Invoke-CommandChecked "git fetch origin" $gitbin fetch origin
     if ($branch.Length -gt 0) {
         Push-Location -Path "xc-vusb"
@@ -110,7 +110,7 @@ if ($doclone) {
     } elseif ($tag.Length -gt 0) {
        Push-Location -Path "xc-vusb"
        Write-Host ("Checking out: " + $tag + " For: xc-vusb")
-       Invoke-CommandChecked "git checkout tag for xc-vusb" -q -b $tag $tag 
+       Invoke-CommandChecked "git checkout tag for xc-vusb" $gitbin -q -b $tag $tag 
        Pop-Location
     } else {
        throw "No branch or tag for xc-vusb checkout"
