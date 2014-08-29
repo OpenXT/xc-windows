@@ -140,9 +140,9 @@ if ($type.ToLower().CompareTo("debug") -eq 0) {
 }
 
 if ($crosssign) {
-    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname $certname -signtool ("'"+$signtool+"'") -crosssign $crosssign
+    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname ("'"+$certname+"'") -signtool ("'"+$signtool+"'") -crosssign ("'"+$crosssign+"'")
 } else {
-    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname $certname -signtool ("'"+$signtool+"'")
+    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname ("'"+$certname+"'") -signtool ("'"+$signtool+"'")
 }
  
 #Only do verification if not doing a developer build
