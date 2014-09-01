@@ -115,11 +115,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|x64'">
     <OutDir>..\..\..\..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
     <DiagnosticMode>true</DiagnosticMode>
+    <TargetName>xenvesado</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">
     <OutDir>..\..\..\..\build\amd64\</OutDir>
     <IntDir>amd64\</IntDir>
     <DiagnosticMode>true</DiagnosticMode>
+    <TargetName>xenvesado</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|x64'">
     <OutDir>..\..\..\..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
