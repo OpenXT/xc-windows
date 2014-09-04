@@ -38,6 +38,10 @@ $compile = $true # can be set to false if you just want to get to signing quickl
 #Set some important variables
 $mywd = Split-Path -Parent $MyInvocation.MyCommand.Path
 
+if ($signtool.Length -lt 1) {
+    throw "Please specify the location of a directory containing signtool using the /signtool argument"
+}
+
 Push-Location -Path $mywd
 
 #Set build type
@@ -47,13 +51,15 @@ if ($type.ToLower().CompareTo("debug") -eq 0)
 	$cfg = "chk"
 }
 
+
+
 Write-Host ("Building Xen Tools version: " + $verstr + " in: " + $mywd)
 
 # Before running any of the batch files, make sure they have an access rule to allow execute
 enable-read-execute -file ".\dostampinf.bat"
 enable-read-execute -file ".\dobuild.bat"
 enable-read-execute -file ".\dowin8build.bat"
-enable-read-execute -file ".\doverifysign.bat"
+enable-read-execute -file ".\doverifysign.ps1"
 enable-read-execute -file ".\dotestsign.bat"
 
 # If no specific license is specified, grab the default EULA
@@ -148,14 +154,7 @@ if ($crosssign) {
 #Only do verification if not doing a developer build
 if($developer -ne $true){
     #Verify the drivers are signed using default signtool through %PATH% or use a specific one
-    if ($signtool.Length -lt 1)
-    {
-        Invoke-CommandChecked "doverifysign without signtool" ".\doverifysign.bat"
-    }
-    else
-    {
-        Invoke-CommandChecked "doverifysign with signtool"  ".\doverifysign.bat" 
-    }
+    Invoke-CommandChecked "doverifysign" .\doverifysign.ps1 $signtool\signtool.exe
 }
 
 Pop-Location

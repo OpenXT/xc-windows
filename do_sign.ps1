@@ -43,66 +43,116 @@ foreach ($arch in @("amd64", "i386")) {
     # TODO: consider combining the build and xc-vusb/build directories
     # to simplify this code
     # TODO: run signtool once with all the sys files as arguments
+    $failed = $false
     foreach ($buildd in @("..\build\$arch", "..\xc-vusb\build\$vusb_arch")) {
         Get-ChildItem $buildd -Filter *.sys | Foreach-Object {
-	    if (! ($badsys -contains ([string]$_))) {
-                Checked-Copy ($_.FullName) $_
-                sign $arch $_ $certname
-                Checked-Copy $_ ($_.FullName)
+	    try {
+      	        if (! ($badsys -contains ([string]$_))) {
+                    Checked-Copy ($_.FullName) $_
+                    sign $arch $_ $certname
+                    Checked-Copy $_ ($_.FullName)
+                }
+            } catch {
+                Write-Host "Failed to copy and sign sys file $_ with $_Exception.Message"
+                $failed = $true
             }
         }
     }
+    if ($failed) {
+        throw "copying and signing sys files failed"
+    }
     Write-Host "Copying inf files to $workd"
+    $failed = $false
     Get-ChildItem ..\ -Filter *.inf -Recurse | Where {! ($_.FullName -like ('*\sign*'))} | Foreach-Object {
-        # we need to leave out certain inf files on specific architectures
-        # TODO: get rid of the bad inf files from the build so that we
-	# don't need this code
-	$handle = $true
-	if ($badinfs -contains ([string]$_)) {
-	    $handle = $false
-        } 
-        # we want inf files that correspond to the sys files we have
-	$base = ($_.BaseName)
-	# TODO: rename the inf files to just have the architecture 
-	# as a postfix to simplify this code
-        if ($arch -eq "amd64") {
-  	    if ($base.EndsWith("64")) {
-                $base = $base.Substring(0, $base.Length-2)
-            } else {
-   	        $handle = $false
+        try {
+            # we need to leave out certain inf files on specific architectures
+            # TODO: get rid of the bad inf files from the build so that we
+    	    # don't need this code
+	    $handle = $true
+	    if ($badinfs -contains ([string]$_)) {
+	        $handle = $false
             }
+            # we want inf files that correspond to the sys files we have
+	    $base = ($_.BaseName)
+	    # TODO: rename the inf files to just have the architecture
+	    # as a postfix to simplify this code
+            if ($arch -eq "amd64") {
+  	        if ($base.EndsWith("64")) {
+                    $base = $base.Substring(0, $base.Length-2)
+                } else {
+   	            $handle = $false
+                }
+            }
+            if ($handle -and (Test-Path ($base+'.sys'))) {
+                Checked-Copy $_.FullName $_
+            }
+            # and there are some extra inf files which don't have names
+            # matching sys files
+            if ($extrainfs -contains ([string]$_)) {
+	        Checked-Copy $_.FullName $_
+            }
+	    # TODO: make the extra inf files match the pattern above to simplify this code
+        } catch {
+            $failed = $true
+            Write-Host "Failed to process inf file $_ with $_Exception.Message"
         }
-        if ($handle -and (Test-Path ($base+'.sys'))) {
-            Checked-Copy $_.FullName $_
-        }
-        # and there are some extra inf files which don't have names
-        # matching sys files
-        if ($extrainfs -contains ([string]$_)) {
-	    Checked-Copy $_.FullName $_
-        }
-	# TODO: make the extra inf files match the pattern above
-	# to simplify this code
+    }
+    if ($failed) {
+        throw "inf file handling failed"
     }
     Checked-Copy ..\install\WdfCoInstaller01009.dll .
     Checked-Copy ..\build\$arch\xenvesa-display.dll .
     sign $arch xenvesa-display.dll
     Invoke-CommandChecked "inf2cat $arch" ($signtool+"/inf2cat") /driver:. $oslist
+    $failed = $false
     Get-ChildItem . -Filter *.cat | Foreach-Object {
-        sign $arch $_
+        try {
+            sign $arch $_
+        } catch {
+            $failed = $true
+            Write-Host "sign $_ failed with $_Exception.Message"
+        }
     }
+    Write-Host "Copying cat files matching inf files back $(get-location)"
     # copy back the new cat files alongside their inf files
+    $failed = $false
     # TODO: is this needed?
     Get-ChildItem ..\ -Filter *.inf -Recurse | Where {! ($_.FullName -like ('*\sign*'))} | Foreach-Object {
-        if (Test-Path $_) {
-            Checked-Copy (($_.BaseName)+".cat") (($_.DirectoryName)+"\"+($_.BaseName)+".cat")
+	try {
+            Write-Host "Considering copy-back of cat file associated with $_"
+            if (Test-Path $_) {
+	        if ($_.BaseName.EndsWith('64')) {
+                    $catfile = (($_.BaseName.SubString(0, $_.BaseName.Length -2))+".cat")
+                } else {
+          	        $catfile = (($_.BaseName)+".cat")
+                }
+                $dest = (($_.DirectoryName)+"\"+($_.Basename)+".cat")
+	        Checked-Copy $catfile $dest
+            }
+        } catch {
+             $failed = $true
+	     Write-Host "copyback on $_ failed"
         }
     }
+    if ($failed) {
+       throw "catfile copyback failed"
+    }
+    Write-Host "Copybacks done"
     # copy back the sys files
     # TODO: is this needed?
+    $failed = $false
     Get-ChildItem "..\build\$arch" -Filter *.sys | Foreach-Object {
-        if (Test-Path $_) {
-            Checked-Copy $_ ($_.FullName)
+        try {
+            if (Test-Path $_) { 
+                 Checked-Copy $_ ($_.FullName)
+            } 
+        } catch { 
+             $failed = $true
+             Write-Host "copy back $_ failed with $_Exception.Message"
         }
+    }
+    if ($failed) {
+        throw "copy back sys files failed"
     }
     Checked-Copy xenvesa-display.dll ..\build\$arch\xenvesa-display.dll
     Pop-Location
