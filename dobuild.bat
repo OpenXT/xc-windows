@@ -3,7 +3,7 @@ REM %2 - Build base directory
 REM %3 - Release or debug build - fre|chk
 REM %4 - Build architecture - x86|x64
 
-call %1\bin\setenv.bat %1 %3 WLH %4 || exit /b 1
+call %1\bin\setenv.bat %1 %3 WLH %4 no_oacr || exit /b 1
 
 cd /d %2
 
