@@ -95,6 +95,7 @@ struct xenbus_device {
     unsigned enumerate:1;
     unsigned was_connected:1;
     unsigned bus_rescan_needed:1;
+    unsigned surprise_remove:1;
 };
 
 #define XS_DELAY_REMOVAL_US 5000000
