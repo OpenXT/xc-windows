@@ -898,7 +898,7 @@ DeviceClassReconnectNotSupported(struct xenbus_device_class *class,
     }
 
     status = xenbus_read_state(XBT_NIL, backend_path, "state", &backend_state);
-     if (!NT_SUCCESS(status)) {
+    if (!NT_SUCCESS(status)) {
         TraceError(("%s: Failed to get backend state for device %s/%s.\n",
                     __FUNCTION__, class->class, instance));
         return FALSE;
@@ -907,7 +907,7 @@ DeviceClassReconnectNotSupported(struct xenbus_device_class *class,
     /* Check to see if the state is closed indicating this device was connected
        and now is gone. */
     if (same_XENBUS_STATE(backend_state, XENBUS_STATE_CLOSED)) {
-        TraceNotice(("%s: Cannot reconnect this class of device %s/%s OK.\n",
+        TraceNotice(("%s: Cannot reconnect this class of device %s/%s.\n",
                     __FUNCTION__, class->class, instance));
         return TRUE;
     }
@@ -969,21 +969,22 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
     backend_path = FindBackendPath(XBT_NIL, xd);
     if (backend_path) {
         char *t;
+
+        /* Check for device classes that cannot be reconnected after they
+           transition to closed. */
+        if (DeviceClassReconnectNotSupported(class, instance, backend_path))
+        {
+            TraceNotice(("Device class does not support reconnect after close - device %s/%s.\n",
+                         class->class, instance));
+            xd->present_in_xenbus = 0;
+            XmFreeMemory(backend_path);
+            EvtchnReleaseSuspendToken(token);
+            xenbus_device_deref(xd);
+            return 0;
+        }
+
         t = Xmasprintf("%s/state", backend_path);
         if (t) {
-            /* Check for device classes that cannot be reconnected after they
-               transition to closed. */
-            if (DeviceClassReconnectNotSupported(class, instance, backend_path))
-            {
-                TraceNotice(("Device class does not support reconnect after close - device %s/%s.\n",
-                             class->class, instance));
-                xd->present_in_xenbus = 0;
-                XmFreeMemory(backend_path);
-                EvtchnReleaseSuspendToken(token);
-                xenbus_device_deref(xd);
-                return 0;
-            }
-
             if (xd->bstate_watch)
             {
                 xenbus_unregister_watch (xd->bstate_watch);
