@@ -621,6 +621,26 @@ xenbus_device_backend_state_changed(void *ctxt)
             }
         }
     }
+    else if (strcmp(xd->class->class, "vusb") == 0)
+    {
+        if (!online &&
+            (same_XENBUS_STATE(state, XENBUS_STATE_CLOSING) ||
+             same_XENBUS_STATE(state, XENBUS_STATE_CLOSED))) {
+            TraceNotice(("%s/%s: issuing an Invalidate on VUSB request\n", xd->class->class,
+                         xd->name));
+            if (!xd->devExt->UninstEnabled)
+            {
+                TraceNotice (("Backend closed device: Requesting bus rescan (%s) and surprise removal\n", xd->class->class));
+                // Ask pnp to call us back to rescan the bus unless an uninstall is in progress
+                xd->surprise_remove = 1;
+                IoInvalidateDeviceRelations (xd->devExt->PhysicalDeviceObject, BusRelations);
+            }
+            else
+            {
+                TraceNotice (("Backend closed device: No rescan, uninstall in progress (%s)\n", xd->class->class));
+            }
+        }
+    }
     else
     {
         if (!online &&
@@ -730,6 +750,7 @@ ConstructDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
     xd->present_in_xenbus = 1;
     xd->enumerate = 1;
     xd->was_connected = 0;
+    xd->surprise_remove = 0;
     ExInitializeFastMutex(&xd->pdo_lock);
 
     if (xd->name)
@@ -863,6 +884,37 @@ CloseFrontend(struct xenbus_device *xd, char *backend_path, SUSPEND_TOKEN token)
     TraceNotice(("%s closed\n", frontend_path));
 }
 
+static BOOLEAN
+DeviceClassReconnectNotSupported(struct xenbus_device_class *class,
+                                 const char *instance,
+                                 const char *backend_path)
+{
+    NTSTATUS status;
+    XENBUS_STATE backend_state;
+
+    if (strcmp(class->class, "vusb") != 0) {
+        TraceNotice(("%s: Reconnect class %s OK.\n", __FUNCTION__, class->class));
+        return FALSE;
+    }
+
+    status = xenbus_read_state(XBT_NIL, backend_path, "state", &backend_state);
+    if (!NT_SUCCESS(status)) {
+        TraceError(("%s: Failed to get backend state for device %s/%s.\n",
+                    __FUNCTION__, class->class, instance));
+        return FALSE;
+    }
+
+    /* Check to see if the state is closed indicating this device was connected
+       and now is gone. */
+    if (same_XENBUS_STATE(backend_state, XENBUS_STATE_CLOSED)) {
+        TraceNotice(("%s: Cannot reconnect this class of device %s/%s.\n",
+                    __FUNCTION__, class->class, instance));
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 /* Probe a specific device on the xenbus. */
 static int
 ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
@@ -917,6 +969,20 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
     backend_path = FindBackendPath(XBT_NIL, xd);
     if (backend_path) {
         char *t;
+
+        /* Check for device classes that cannot be reconnected after they
+           transition to closed. */
+        if (DeviceClassReconnectNotSupported(class, instance, backend_path))
+        {
+            TraceNotice(("Device class does not support reconnect after close - device %s/%s.\n",
+                         class->class, instance));
+            xd->present_in_xenbus = 0;
+            XmFreeMemory(backend_path);
+            EvtchnReleaseSuspendToken(token);
+            xenbus_device_deref(xd);
+            return 0;
+        }
+
         t = Xmasprintf("%s/state", backend_path);
         if (t) {
             if (xd->bstate_watch)
@@ -1761,7 +1827,7 @@ RemoveDevicePdo(PDEVICE_OBJECT pdo, PIRP Irp)
     struct xm_thread *reprobe_thread;
 
     if (!xd->reported_to_pnpmgr) {
-        TraceDebug(("Final remove on %s/%s.\n", xd->class->class, xd->name));
+        TraceNotice(("Final remove on %s/%s.\n", xd->class->class, xd->name));
         ExAcquireFastMutex(&xd->pdo_lock);
         p = xd->pdo;
         xd->pdo = NULL;
@@ -1884,7 +1950,7 @@ DoFdoQueryDeviceRelations(PXENEVTCHN_DEVICE_EXTENSION pXevtdx)
                                struct xenbus_device,
                                all_devices);
         should_be_enumerated(xd);
-        if (!xd->failed && xd->enumerate &&
+        if (!xd->failed && !xd->surprise_remove && xd->enumerate &&
             (xd->present_in_xenbus ||
              xd->removal_time.QuadPart > now.QuadPart))
             nChildren++;
@@ -1914,6 +1980,9 @@ DoFdoQueryDeviceRelations(PXENEVTCHN_DEVICE_EXTENSION pXevtdx)
         else if (xd->present_in_xenbus)
             TraceDebug(("%s/%s present.\n", xd->class->class,
                        xd->name));
+        else if (xd->surprise_remove)
+            TraceDebug(("%s/%s surprise remove.\n", xd->class->class,
+                       xd->name));
         else if (xd->removal_time.QuadPart > now.QuadPart) {
             TraceDebug(("%s/%s is preserved: %I64d > %I64d.\n",
                        xd->class->class, xd->name,
@@ -1921,7 +1990,7 @@ DoFdoQueryDeviceRelations(PXENEVTCHN_DEVICE_EXTENSION pXevtdx)
         } else
             TraceDebug(("%s/%s really gone.\n", xd->class->class,
                        xd->name));
-        if (!xd->failed && xd->enumerate &&
+        if (!xd->failed && !xd->surprise_remove && xd->enumerate &&
             (xd->present_in_xenbus ||
              xd->removal_time.QuadPart > now.QuadPart)) {
             XM_ASSERT(xd->pdo);
