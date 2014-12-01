@@ -421,6 +421,74 @@ xenbus_write_state(xenbus_transaction_t xbt, PCSTR prefix,
                    PCSTR node, XENBUS_STATE state);
 
 static void
+xenbus_set_surprise_removal(struct xenbus_device *xd)
+{
+    NTSTATUS status;
+    char *path;
+
+    path = Xmasprintf("%s/surprise-removal", xd->frontend_path);
+    if (!path)
+    {
+        TraceError(("%s Failed to allocate path for setting surprise-removal for %s/%s\n",
+                   __FUNCTION__, xd->class->class, xd->name));
+        return;
+    }
+
+    status = xenbus_write(XBT_NIL, path, "gone");
+    XmFreeMemory(path);
+    if (!NT_SUCCESS(status))
+    {
+        TraceError(("%s Failed to write surprise-removal for %s/%s - status: 0x%x\n",
+                   __FUNCTION__, xd->class->class, xd->name, status));
+    }
+}
+
+static BOOLEAN
+xenbus_check_surprise_removal(struct xenbus_device *xd)
+{
+    NTSTATUS status;
+    BOOLEAN ret = FALSE;
+    char *path;
+    char *value;
+
+    path = Xmasprintf("%s/surprise-removal", xd->frontend_path);
+    if (!path)
+    {
+        TraceError(("%s Failed to allocate path for checking surprise-removal for %s/%s\n",
+                   __FUNCTION__, xd->class->class, xd->name));
+        return FALSE;
+    }
+
+    status = xenbus_read(XBT_NIL, path, &value);
+    XmFreeMemory(path);
+
+    /* OK, the node does not exist so it is not a surprise removed device */
+    if (status == STATUS_OBJECT_NAME_NOT_FOUND)
+        return FALSE;
+
+    if (!NT_SUCCESS(status))
+    {
+        TraceError(("%s Failed to read surprise-removal for %s/%s - status: 0x%x\n",
+                   __FUNCTION__, xd->class->class, xd->name, status));
+        /* Don't know what happened so default to not surprise removed */
+        return FALSE;
+    }
+
+    if (strcmp(value, "gone") == 0)
+    {
+        TraceNotice(("%s Device in surprise-removal state for %s/%s\n",
+                   __FUNCTION__, xd->class->class, xd->name));
+        ret = TRUE;
+    }
+
+    /* There is no documentation but in all other places the out value is
+     * only freed on the status success path.
+     */
+    XmFreeMemory(value);
+    return ret;
+}
+
+static void
 xenbus_remove_frontend_node (struct xenbus_device *xd, char *node)
 {
     char *path;
@@ -631,8 +699,10 @@ xenbus_device_backend_state_changed(void *ctxt)
             if (!xd->devExt->UninstEnabled)
             {
                 TraceNotice (("Backend closed device: Requesting bus rescan (%s) and surprise removal\n", xd->class->class));
-                // Ask pnp to call us back to rescan the bus unless an uninstall is in progress
+                // Flag this device struct and in xenstore frontend path as surprise removed.
                 xd->surprise_remove = 1;
+                xenbus_set_surprise_removal(xd);
+                // Ask pnp to call us back to rescan the bus unless an uninstall is in progress
                 IoInvalidateDeviceRelations (xd->devExt->PhysicalDeviceObject, BusRelations);
             }
             else
@@ -884,37 +954,6 @@ CloseFrontend(struct xenbus_device *xd, char *backend_path, SUSPEND_TOKEN token)
     TraceNotice(("%s closed\n", frontend_path));
 }
 
-static BOOLEAN
-DeviceClassReconnectNotSupported(struct xenbus_device_class *class,
-                                 const char *instance,
-                                 const char *backend_path)
-{
-    NTSTATUS status;
-    XENBUS_STATE backend_state;
-
-    if (strcmp(class->class, "vusb") != 0) {
-        TraceNotice(("%s: Reconnect class %s OK.\n", __FUNCTION__, class->class));
-        return FALSE;
-    }
-
-    status = xenbus_read_state(XBT_NIL, backend_path, "state", &backend_state);
-    if (!NT_SUCCESS(status)) {
-        TraceError(("%s: Failed to get backend state for device %s/%s.\n",
-                    __FUNCTION__, class->class, instance));
-        return FALSE;
-    }
-
-    /* Check to see if the state is closed indicating this device was connected
-       and now is gone. */
-    if (same_XENBUS_STATE(backend_state, XENBUS_STATE_CLOSED)) {
-        TraceNotice(("%s: Cannot reconnect this class of device %s/%s.\n",
-                    __FUNCTION__, class->class, instance));
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
 /* Probe a specific device on the xenbus. */
 static int
 ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
@@ -963,25 +1002,22 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         return 0;
     }
 
+    /* Check for devices that were surprise removed and cannot be reconnected after they
+       transition to closed. */
+    if (xenbus_check_surprise_removal(xd)) {
+        TraceNotice(("Device was surprise removed and cannot reconnect after close - %s/%s.\n",
+                     class->class, instance));
+        xd->present_in_xenbus = 0;
+        xenbus_device_deref(xd);
+        return 0;
+    }
+
     /* We have problems if we suspend in the interval between reading
        the backend path and adding the new device to the list. */
     token = EvtchnAllocateSuspendToken("xenbus probe");
     backend_path = FindBackendPath(XBT_NIL, xd);
     if (backend_path) {
         char *t;
-
-        /* Check for device classes that cannot be reconnected after they
-           transition to closed. */
-        if (DeviceClassReconnectNotSupported(class, instance, backend_path))
-        {
-            TraceNotice(("Device class does not support reconnect after close - device %s/%s.\n",
-                         class->class, instance));
-            xd->present_in_xenbus = 0;
-            XmFreeMemory(backend_path);
-            EvtchnReleaseSuspendToken(token);
-            xenbus_device_deref(xd);
-            return 0;
-        }
 
         t = Xmasprintf("%s/state", backend_path);
         if (t) {
