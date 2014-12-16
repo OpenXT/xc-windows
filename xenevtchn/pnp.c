@@ -64,6 +64,8 @@ static NTSTATUS PdoQueryBusInformation(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 static NTSTATUS FdoQueryDeviceRelations(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 static NTSTATUS PdoQueryDeviceRelations(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 
+static void xenbus_device_reference(struct xenbus_device *xd, const char *caller);
+
 static NTSTATUS
 TrivialIrpHandler(PIRP Irp, NTSTATUS status)
 {
@@ -362,7 +364,7 @@ FindDevice(struct xenbus_device_class *class, const char *instance)
         xd = CONTAINING_RECORD(ple, struct xenbus_device,
                                devices_this_class);
         if (!strcmp(xd->name, instance)) {
-            InterlockedIncrement(&xd->refcount);
+            xenbus_device_reference(xd, __FUNCTION__);
             return xd;
         }
         ple = ple->Flink;
@@ -371,16 +373,34 @@ FindDevice(struct xenbus_device_class *class, const char *instance)
 }
 
 static void
-xenbus_device_deref(struct xenbus_device *xd)
+xenbus_device_reference(struct xenbus_device *xd, const char *caller)
+{
+    LONG refcount;
+
+    refcount = InterlockedIncrement(&xd->refcount);
+
+    TraceInfo(("++ %s raised device %p (%s/%s) refcount to: %d\n",
+              caller, xd, xd->class->class, xd->name, refcount));
+}
+
+static void
+xenbus_device_dereference(struct xenbus_device *xd, const char *caller)
 {
     SUSPEND_TOKEN token;
+    LONG refcount;
 
     XM_ASSERT(KeGetCurrentIrql() < DISPATCH_LEVEL);
-    if (!InterlockedDecrement(&xd->refcount)) {
+
+    refcount = InterlockedDecrement(&xd->refcount);
+
+    TraceInfo(("-- %s dropped device %p (%s/%s) refcount to: %d\n",
+               caller, xd, xd->class->class, xd->name, refcount));
+
+    if (!refcount) {
         XM_ASSERT(!xd->present_in_xenbus);
         XM_ASSERT(!xd->reported_to_pnpmgr);
         XM_ASSERT(!xd->pdo);
-        TraceInfo(("Releasing device %s::%s.\n", xd->class->class,
+        TraceInfo(("Releasing device (%s/%s).\n", xd->class->class,
                    xd->name));
         token = EvtchnAllocateSuspendToken("xenbus pnp deref");
         if (xd->bstate_watch)
@@ -812,7 +832,8 @@ ConstructDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         return NULL;
     xd->class = class;
     xd->name = xsstrdup(instance);
-    xd->refcount = 1;
+    xd->refcount = 0;
+    xenbus_device_reference(xd, __FUNCTION__);
     xd->devExt = pXevtdx;
     xd->InstanceId = AnsiToWchar(instance);
     xd->HardwareId = MakeDeviceHwId(class->class);
@@ -821,6 +842,7 @@ ConstructDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
     xd->enumerate = 1;
     xd->was_connected = 0;
     xd->surprise_remove = 0;
+    xd->class_changed_deref = 0;
     ExInitializeFastMutex(&xd->pdo_lock);
 
     if (xd->name)
@@ -851,7 +873,7 @@ XenbusDeviceCreatePdo(struct xenbus_device *xd,
 
     TraceVerbose (("Creating new %s PDO\n", xd->class->class));
 
-    InterlockedIncrement(&xd->refcount); /* PDO holds a reference. */
+    xenbus_device_reference(xd, __FUNCTION__); /* PDO holds a reference. */
 
     status = IoCreateDevice(pXevtdx->DriverObject,
                             sizeof(*newDevExt),
@@ -862,7 +884,7 @@ XenbusDeviceCreatePdo(struct xenbus_device *xd,
                             &newdev);
     if (!NT_SUCCESS(status)) {
         TraceError (("IoCreateDevice() failed\n"));
-        xenbus_device_deref(xd);
+        xenbus_device_dereference(xd, __FUNCTION__);
         return status;
     }
 
@@ -976,7 +998,7 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         if (!xd->enumerate)
         {
             ExReleaseFastMutex(&pXevtdx->xenbus_lock);
-            xenbus_device_deref(xd);
+            xenbus_device_dereference(xd, __FUNCTION__);
             return xd->bus_rescan_needed;
         }
     }
@@ -991,10 +1013,15 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
     if (xd) {
         TraceDebug(("Already had a device instance for device/%s/%s.\n",
                    class->class, instance));
-        xenbus_device_deref(xd);
+        xenbus_device_dereference(xd, __FUNCTION__);
         return 0;
     }
 
+    /* This bumps the ref count to 1 on the new device. The next bunch
+     * of calls xenbus_device_dereference are simply to free the device
+     * on error conditions. This ref count is for the device's association
+     * with the lists it will be added to.
+     */
     xd = ConstructDevice(pXevtdx, class, instance);
     if (!xd) {
         TraceError(("Cannot allocate device structure for %s/%s.\n",
@@ -1008,7 +1035,7 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         TraceNotice(("Device was surprise removed and cannot reconnect after close - %s/%s.\n",
                      class->class, instance));
         xd->present_in_xenbus = 0;
-        xenbus_device_deref(xd);
+        xenbus_device_dereference(xd, __FUNCTION__);
         return 0;
     }
 
@@ -1023,7 +1050,7 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         if (t) {
             if (xd->bstate_watch)
             {
-                xenbus_unregister_watch (xd->bstate_watch);
+                xenbus_unregister_watch(xd->bstate_watch);
                 xd->bstate_watch = NULL;
             }
             xd->bstate_watch = xenbus_watch_path(t,
@@ -1038,7 +1065,7 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         xd->enumerate = 0;
         xd->present_in_xenbus = 0;
         if (!xd->reported_to_pnpmgr && !xd->pdo && !xd->present_in_xenbus)
-            xenbus_device_deref(xd);
+            xenbus_device_dereference(xd, __FUNCTION__);
         return xd->bus_rescan_needed;
     }
     if (!xd->bstate_watch) {
@@ -1047,11 +1074,14 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         xd->present_in_xenbus = 0;
         XmFreeMemory(backend_path);
         EvtchnReleaseSuspendToken(token);
-        xenbus_device_deref(xd);
+        xenbus_device_dereference(xd, __FUNCTION__);
         return 0;
     }
     TraceVerbose (("Watchpoint set on %s/state\n", backend_path));
 
+    /* This bumps the ref count to 2 on successful return for the
+     * reference the new PDO has to the xen device.
+     */
     status = XenbusDeviceCreatePdo(xd, pXevtdx, &newdev);
     if (!NT_SUCCESS(status)) {
         TraceError(("Failed to create device object for %s/%s.\n",
@@ -1059,11 +1089,17 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         xd->present_in_xenbus = 0;
         XmFreeMemory(backend_path);
         EvtchnReleaseSuspendToken(token);
-        xenbus_device_deref(xd);
+        xenbus_device_dereference(xd, __FUNCTION__);
         return 0;
     }
 
     ExAcquireFastMutex(&pXevtdx->xenbus_lock);
+
+    /* Really, there is a perfectly acceptable race condition here??!!
+     * I believe the PDO with its ref count from above are not leaked because
+     * this device will not be reported on the next bus relations query and
+     * PnP will send down a device removal IRP for it.
+     */
     xd2 = FindDevice(class, instance);
     if (xd2) {
         TraceVerbose (("Lost race trying to add device %s/%s.\n",
@@ -1072,9 +1108,12 @@ ProbeThisDevice(PXENEVTCHN_DEVICE_EXTENSION pXevtdx,
         xd->present_in_xenbus = 0;
         XmFreeMemory(backend_path);
         EvtchnReleaseSuspendToken(token);
-        xenbus_device_deref(xd);
+        /* Don't deref xd, it will get cleaned up in the PDO remove routine */
+        xenbus_device_dereference(xd2, __FUNCTION__);
         return 0;
     }
+
+    /* Finally the new xen device is on the lists with a ref count of 2 */
     InsertTailList(&pXevtdx->devices, &xd->all_devices);
     InsertTailList(&class->devices, &xd->devices_this_class);
 
@@ -1185,8 +1224,21 @@ retry:
                    &xdc->devExt->xenbus_dpc);
 
         ExReleaseFastMutex(&xdc->devExt->xenbus_lock);
+        TraceNotice(("Dereferencing device %s/%s - no longer in xenbus list\n",
+                    xd->class->class, xd->name));
+
+        /* So this is one place where the list ref count can be dropped. But
+         * the device has to be in the class list to ever even get here. If
+         * RemoveDevicePdo is called before this, which seems to be the case,
+         * the xen device is removed from both lists. Since RemoveDevicePdo
+         * originally only removed the PDO ref count, the xen device and all
+         * its resources were leaked. This case has to be handled in RemoveDevicePdo
+         * to stop leaks, hangs and misery.
+         */
+        xd->class_changed_deref = 1;
+
         /* It's no longer in the xenbus list, so drop a reference. */
-        xenbus_device_deref(xd);
+        xenbus_device_dereference(xd, __FUNCTION__);
         goto retry; /* We released the lock, have to start scanning
                        from beginning of list. */
     }
@@ -1343,7 +1395,7 @@ retry:
                                all_devices);
         if (xd->failed || !xd->backend_watch_stale)
             continue;
-        InterlockedIncrement(&xd->refcount);
+        xenbus_device_reference(xd, __FUNCTION__);
         ExReleaseFastMutex(&pXevtdx->xenbus_lock);
         if (xd->bstate_watch)
             xenbus_unregister_watch(xd->bstate_watch);
@@ -1375,7 +1427,7 @@ retry:
             TraceWarning(("Could not read backend path for %s:%s on resume\n",
                           xd->class->class, xd->name));
         }
-        xenbus_device_deref(xd);
+        xenbus_device_dereference(xd, __FUNCTION__);
         ExAcquireFastMutex(&pXevtdx->xenbus_lock);
         goto retry;
     }
@@ -1878,12 +1930,23 @@ RemoveDevicePdo(PDEVICE_OBJECT pdo, PIRP Irp)
             RemoveEntryList(&xd->devices_this_class);
             ExReleaseFastMutex(&xd->devExt->xenbus_lock);
 
+            /* Have to see if the list ref count was already dropped in
+             * xenbus_class_changed while scanning the class device list.
+             * If it was then class_changed_deref is set. If not set then
+             * drop the list ref count.
+             */
+            if (!xd->class_changed_deref) {
+                /* Flag it as gone from xenbus since it is. */
+                xd->present_in_xenbus = 0;
+                xenbus_device_dereference(xd, __FUNCTION__);
+            }
+
             TrivialIrpHandler(Irp, STATUS_SUCCESS);
 
             IoDeleteDevice(p);
 
             reprobe_thread = xd->devExt->reprobe_xenbus_thread;
-            xenbus_device_deref(xd);
+            xenbus_device_dereference(xd, __FUNCTION__);
 
             /* Because if we couldn't build the reprobe thread we'd
                have failed the FDO START and we wouldn't have any PDOs
