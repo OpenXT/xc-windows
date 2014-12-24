@@ -136,12 +136,12 @@ New-Item -Path ".\xc-vusb\build\x64" -Type Directory -Force
 if ($type.ToLower().CompareTo("debug") -eq 0) {
     Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb.inf" ".\xc-vusb\build\x86\"
     Checked-Copy ".\xc-vusb\Drivers\xenvusb\Win7Debug\xenvusb.sys" ".\xc-vusb\build\x86\"    
-    Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb64.inf" ".\xc-vusb\build\x64\"
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb64.inf" ".\xc-vusb\build\x64\xenvusb.inf"
     Checked-Copy ".\xc-vusb\Drivers\xenvusb\x64\Win7Debug\xenvusb.sys" ".\xc-vusb\build\x64\"
 } else {
     Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb.inf" ".\xc-vusb\build\x86\"
     Checked-Copy ".\xc-vusb\Drivers\xenvusb\Win7Release\xenvusb.sys" ".\xc-vusb\build\x86\"    
-    Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb64.inf" ".\xc-vusb\build\x64\"
+    Checked-Copy ".\xc-vusb\Drivers\xenvusb\xenvusb64.inf" ".\xc-vusb\build\x64\xenvusb.inf"
     Checked-Copy ".\xc-vusb\Drivers\xenvusb\x64\Win7Release\xenvusb.sys" ".\xc-vusb\build\x64\"
 }
 

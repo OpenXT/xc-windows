@@ -84,12 +84,12 @@ foreach ($arch in @("amd64", "i386")) {
                 }
             }
             if ($handle -and (Test-Path ($base+'.sys'))) {
-                Checked-Copy $_.FullName $_
+				Checked-Copy $_.FullName ($_.Name).Replace("64","")
             }
             # and there are some extra inf files which don't have names
             # matching sys files
             if ($extrainfs -contains ([string]$_)) {
-	        Checked-Copy $_.FullName $_
+	        Checked-Copy $_.FullName ($_.Name).Replace("64","")
             }
 	    # TODO: make the extra inf files match the pattern above to simplify this code
         } catch {
@@ -113,47 +113,47 @@ foreach ($arch in @("amd64", "i386")) {
             Write-Host "sign $_ failed with $_Exception.Message"
         }
     }
-    Write-Host "Copying cat files matching inf files back $(get-location)"
+    #Write-Host "Copying cat files matching inf files back $(get-location)"
     # copy back the new cat files alongside their inf files
-    $failed = $false
+    #$failed = $false
     # TODO: is this needed?
-    Get-ChildItem ..\ -Filter *.inf -Recurse | Where {! ($_.FullName -like ('*\sign*'))} | Foreach-Object {
-	try {
-            Write-Host "Considering copy-back of cat file associated with $_"
-            if (Test-Path $_) {
-	        if ($_.BaseName.EndsWith('64')) {
-                    $catfile = (($_.BaseName.SubString(0, $_.BaseName.Length -2))+".cat")
-                } else {
-          	        $catfile = (($_.BaseName)+".cat")
-                }
-                $dest = (($_.DirectoryName)+"\"+($_.Basename)+".cat")
-	        Checked-Copy $catfile $dest
-            }
-        } catch {
-             $failed = $true
-	     Write-Host "copyback on $_ failed"
-        }
-    }
-    if ($failed) {
-       throw "catfile copyback failed"
-    }
-    Write-Host "Copybacks done"
+    #Get-ChildItem ..\ -Filter *.inf -Recurse | Where {! ($_.FullName -like ('*\sign*'))} | Foreach-Object {
+	#try {
+    #        Write-Host "Considering copy-back of cat file associated with $_"
+    #        if (Test-Path $_) {
+	#        if ($_.BaseName.EndsWith('64')) {
+    #                $catfile = (($_.BaseName.SubString(0, $_.BaseName.Length -2))+".cat")
+    #            } else {
+    #      	        $catfile = (($_.BaseName)+".cat")
+    #            }
+    #            $dest = (($_.DirectoryName)+"\"+($_.Basename)+".cat")
+	#        Checked-Copy $catfile $dest
+    #        }
+    #    } catch {
+    #         $failed = $true
+	#     Write-Host "copyback on $_ failed"
+    #    }
+    #}
+    #if ($failed) {
+    #   throw "catfile copyback failed"
+    #}
+    #Write-Host "Copybacks done" 
     # copy back the sys files
     # TODO: is this needed?
-    $failed = $false
-    Get-ChildItem "..\build\$arch" -Filter *.sys | Foreach-Object {
-        try {
-            if (Test-Path $_) { 
-                 Checked-Copy $_ ($_.FullName)
-            } 
-        } catch { 
-             $failed = $true
-             Write-Host "copy back $_ failed with $_Exception.Message"
-        }
-    }
-    if ($failed) {
-        throw "copy back sys files failed"
-    }
+    #$failed = $false
+    #Get-ChildItem "..\build\$arch" -Filter *.sys | Foreach-Object {
+    #    try {
+    #        if (Test-Path $_) { 
+    #             Checked-Copy $_ ($_.FullName)
+    #        } 
+    #    } catch { 
+    #         $failed = $true
+    #         Write-Host "copy back $_ failed with $_Exception.Message"
+    #    }
+    #}
+    #if ($failed) {
+    #    throw "copy back sys files failed"
+    #}
     Checked-Copy xenvesa-display.dll ..\build\$arch\xenvesa-display.dll
     Pop-Location
 }

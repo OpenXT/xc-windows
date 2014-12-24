@@ -619,67 +619,69 @@ ${Endif}
   
   SetOutPath $INSTDIR
 
+# Driver files once signed cannot be changed in any way, including renaming them.  If you do this, Windows 7 will reject the driver on boot leading
+# to blue screens on the boot drivers
   ${If} "$IsAmd64" == "no"
 
-    File ..\xc-vusb\build\x86\xenvusb.sys
+    File ..\sign32\xenvusb.sys
 
-    File /nonfatal ..\xc-vusb\build\x86\xenvusb.cat
-    File ..\xc-vusb\build\x86\xenvusb.inf
-    File .\WdfCoInstaller01009.dll
+    File /nonfatal ..\sign32\xenvusb.cat
+    File ..\sign32\xenvusb.inf
+    File ..\sign32\WdfCoInstaller01009.dll
 
-    File ${BUILD_PREFIX}\xevtchn.sys
-    File ..\xenevtchn\xevtchn.inf
-    File /nonfatal ..\xenevtchn\xevtchn.cat
+    File ..\sign32\xevtchn.sys
+    File ..\sign32\xevtchn.inf
+    File /nonfatal ..\sign32\xevtchn.cat
 
-    File ${BUILD_PREFIX}\xenvbd.sys
-    File ${BUILD_PREFIX}\scsifilt.sys
-    File /nonfatal ..\xenvbd\xenvbd.cat
-    File ..\xenvbd\xenvbd.inf
+    File ..\sign32\xenvbd.sys
+    File ..\sign32\scsifilt.sys
+    File /nonfatal ..\sign32\xenvbd.cat
+    File ..\sign32\xenvbd.inf
 
-    File ${BUILD_PREFIX}\xennet.sys
-    File ${BUILD_PREFIX}\xennet6.sys
-    File ${BUILD_PREFIX}\xenwnet.sys
-    File ${BUILD_PREFIX}\xenwnet6.sys
-    File ..\net\xennet.inf
-    File /nonfatal ..\net\xennet.cat
-    File ..\wnet\xenwnet.inf
-    File /nonfatal ..\wnet\xenwnet.cat
+    File ..\sign32\xennet.sys
+    File ..\sign32\xennet6.sys
+    File ..\sign32\xenwnet.sys
+    File ..\sign32\xenwnet6.sys
+    File ..\sign32\xennet.inf
+    File /nonfatal ..\sign32\xennet.cat
+    File ..\sign32\xenwnet.inf
+    File /nonfatal ..\sign32\xenwnet.cat
 
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
 ${If} "$OsType" == "8"
-    File ${BUILD_PREFIX}\xenvesado.sys
+    File ..\sign32\xenvesado.sys
 ${Endif}
 !endif	
 ${If}  "$OsType" != "8"   
-    File ${BUILD_PREFIX}\xenvesa-miniport.sys
-    File ${BUILD_PREFIX}\xenvesa-display.dll
+    File ..\sign32\xenvesa-miniport.sys
+    File ..\sign32\xenvesa-display.dll
 ${EndIf}    
 ${If} "$OsType" == "XP"
-    File ..\xenvesa\xenvesa-xp.inf
-    File /nonfatal ..\xenvesa\xenvesa-xp.cat
+    File ..\sign32\xenvesa-xp.inf
+    File /nonfatal ..\sign32\xenvesa-xp.cat
 !ifdef INSTALL_XENVESA8
 ${ElseIf} "$OsType" = "8"
-    File ..\xengfx\vesa\wddm\miniport\xenvesado.inf
-    File /nonfatal ..\xengfx\vesa\wddm\miniport\xenvesado.cat
+    File ..\sign32\xenvesado.inf
+    File /nonfatal ..\sign32\xenvesado.cat
 !endif
 ${Else} 
-    File ..\xenvesa\xenvesa-lh.inf
-    File /nonfatal ..\xenvesa\xenvesa-lh.cat
+    File ..\sign32\xenvesa-lh.inf
+    File /nonfatal ..\sign32\xenvesa-lh.cat
 ${EndIf}
 !endif
 
     File ${BUILD_PREFIX}\xeninp.sys
-    File /nonfatal ..\input\xeninp\xeninp.cat
-    File ..\input\xeninp\xeninp.inf
+    File /nonfatal ..\sign32\xeninp.cat
+    File ..\sign32\xeninp.inf
 
     ${If} "$OsType" != "2000"
-      File ${BUILD_PREFIX}\xenv4v.sys
-      File /nonfatal ..\xenv4v\xenv4v.cat
-      File ..\xenv4v\xenv4v.inf
+      File ..\sign32\xenv4v.sys
+      File /nonfatal ..\sign32\xenv4v.cat
+      File ..\sign32\xenv4v.inf
     ${EndIf}
 
-    File ${BUILD_PREFIX}\xenutil.sys
+    File ..\sign32\xenutil.sys
 
     File /oname=xs.new ${BUILD_PREFIX}\xs.dll
     Rename /REBOOTOK xs.new xs.dll
@@ -701,67 +703,67 @@ ${EndIf}
     File ${BUILD_PREFIX}\copyvif.exe
     File ${BUILD_PREFIX}\fixdiskfilters.exe
 
-	; this is the 64bit definition
+	; this is the 64bit definition DO NOT RENAME THE FILES
   ${Else}
-    File ..\xc-vusb\build\x64\xenvusb.sys
+    File ..\sign64\xenvusb.sys
 
-    File /nonfatal /oname=xenvusb.cat ..\xc-vusb\build\x64\xenvusb.cat
-    File /oname=xenvusb.inf ..\xc-vusb\build\x64\xenvusb64.inf
-    File .\WdfCoInstaller01009.dll
+    File /nonfatal ..\sign64\xenvusb.cat
+    File ..\sign64\xenvusb.inf
+    File ..\sign64\WdfCoInstaller01009.dll
 	
-    File ${BUILD_PREFIX64}\xevtchn.sys
-    File /oname=xevtchn.inf ..\xenevtchn\xevtchn64.inf 
-    File /nonfatal /oname=xevtchn.cat ..\xenevtchn\xevtchn64.cat
+    File ..\sign64\xevtchn.sys
+    File ..\sign64\xevtchn.inf 
+    File /nonfatal ..\sign64\xevtchn.cat
 
-    File ${BUILD_PREFIX64}\xenvbd.sys
-    File ${BUILD_PREFIX64}\scsifilt.sys
-    File /oname=xenvbd.inf ..\xenvbd\xenvbd64.inf
-    File /nonfatal /oname=xenvbd.cat ..\xenvbd\xenvbd64.cat
+    File ..\sign64\xenvbd.sys
+    File ..\sign64\scsifilt.sys
+    File ..\sign64\xenvbd.inf
+    File /nonfatal ..\sign64\xenvbd.cat
 
-    File ${BUILD_PREFIX64}\xennet.sys
-    File ${BUILD_PREFIX64}\xennet6.sys
-    File ${BUILD_PREFIX64}\xenwnet.sys
-    File ${BUILD_PREFIX64}\xenwnet6.sys
-    File /oname=xennet.inf ..\net\xennet64.inf
-    File /nonfatal /oname=xennet.cat ..\net\xennet64.cat
-    File /oname=xenwnet.inf ..\wnet\xenwnet64.inf
-    File /nonfatal /oname=xenwnet.cat ..\wnet\xenwnet64.cat
+    File ..\sign64\xennet.sys
+    File ..\sign64\xennet6.sys
+    File ..\sign64\xenwnet.sys
+    File ..\sign64\xenwnet6.sys
+    File ..\sign64\xennet.inf
+    File /nonfatal ..\sign64\xennet.cat
+    File ..\sign64\xenwnet.inf
+    File /nonfatal ..\sign64\xenwnet.cat
 
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
 ${If} "$OsType"  == "8"
-	File ${BUILD_PREFIX64}\xenvesado.sys
+	File ..\sign64\xenvesado.sys
 ${Endif}
 !endif
 ${If} "$OsType" != "8"	
-    File ${BUILD_PREFIX64}\xenvesa-miniport.sys
-    File ${BUILD_PREFIX64}\xenvesa-display.dll    
+    File ..\sign64\xenvesa-miniport.sys
+    File ..\sign64\xenvesa-display.dll    
 ${EndIf}    
 ${If} "$OsType" == "XP"
-    File ..\xenvesa\xenvesa-xp.inf
-    File /nonfatal /oname=xenvesa-xp.cat ..\xenvesa\xenvesa-xp64.cat
+    File ..\sign64\xenvesa-xp.inf
+    File /nonfatal ..\sign64\xenvesa-xp.cat
 !ifdef INSTALL_XENVESA8
 ${ElseIf} "$OsType" == "8"
-    File ..\xengfx\vesa\wddm\miniport\xenvesado.inf
-	File /nonfatal /oname=xenvesado.cat ..\xengfx\vesa\wddm\miniport\xenvesado64.cat
+    File ..\sign64\xenvesado.inf
+	File /nonfatal ..\sign64\xenvesado.cat
 !endif
 ${Else}
-    File ..\xenvesa\xenvesa-lh.inf
-    File /nonfatal /oname=xenvesa-lh.cat ..\xenvesa\xenvesa-lh64.cat
+    File ..\sign64\xenvesa-lh.inf
+    File ..\sign64\xenvesa-lh.cat
 ${EndIf}
 !endif
 
-	File ${BUILD_PREFIX64}\xeninp.sys
-	File /nonfatal /oname=xeninp.cat ..\input\xeninp\xeninp64.cat
-	File ..\input\xeninp\xeninp.inf
+	File ..\sign64\xeninp.sys
+	File ..\sign64\xeninp.cat
+	File ..\sign64\xeninp.inf
 
     ${If} "$OsType" != "2000"
-      File ${BUILD_PREFIX64}\xenv4v.sys
-      File /oname=xenv4v.inf ..\xenv4v\xenv4v64.inf
-      File /nonfatal /oname=xenv4v.cat ..\xenv4v\xenv4v64.cat
+      File ..\sign64\xenv4v.sys
+      File ..\sign64\xenv4v.inf
+      File /nonfatal ..\sign64\xenv4v.cat
     ${EndIf}
 
-    File ${BUILD_PREFIX64}\xenutil.sys
+    File ..\sign64\xenutil.sys
 
     File /oname=xs.new ${BUILD_PREFIX64}\xs.dll
     Rename /REBOOTOK xs.new xs.dll
