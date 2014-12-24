@@ -22,6 +22,8 @@ ${UnStrTok}
 
 !define BUILD_PREFIX "..\build\i386"
 !define BUILD_PREFIX64 "..\build\amd64"
+!define SIGN_PREFIX "..\sign32"
+!define SIGN_PREFIX_64 "..\sign64"
 
 # OsType is one of 2008r2, 7, 2008, Vista, 2003, XP, and 2000.
 Var /GLOBAL OsType
@@ -389,11 +391,11 @@ Section "Install Section" SecDrvInst ;No components page, name is not important
 !ifdef INSTALL_DEBUG
     File ..\xc-vusb\Drivers\xenvusb\Win7Debug\xenvusb.sys
 !else
-	File ..\xc-vusb\Drivers\xenvusb\Win7Release\xenvusb.sys
+	File ${SIGN_PREFIX}\xenvusb.sys
 !endif
-    File /nonfatal ..\xc-vusb\Drivers\xenvusb\xenvusb.cat
-    File ..\xc-vusb\Drivers\xenvusb\xenvusb.inf
-	File .\WdfCoInstaller01009.dll
+    File /nonfatal ${SIGN_PREFIX}\xenvusb.cat
+    File ${SIGN_PREFIX}\xenvusb.inf
+	File ${SIGN_PREFIX}\WdfCoInstaller01009.dll
 
     File ${BUILD_PREFIX}\removedev.exe
   
@@ -402,11 +404,11 @@ Section "Install Section" SecDrvInst ;No components page, name is not important
 !ifdef INSTALL_DEBUG
     File ..\xc-vusb\Drivers\xenvusb\x64\Win7Debug\xenvusb.sys
 !else
-    File ..\xc-vusb\Drivers\xenvusb\x64\Win7Release\xenvusb.sys
+    File ${SIGN_PREFIX_64}\xenvusb.sys
 !endif
-	File /nonfatal /oname=xenvusb.cat ..\xc-vusb\Drivers\xenvusb\xenvusb64.cat
-	File /oname=xenvusb.inf ..\xc-vusb\Drivers\xenvusb\xenvusb64.inf
-	File .\WdfCoInstaller01009.dll
+	File /nonfatal ${SIGN_PREFIX_64}\xenvusb.cat
+	File ${SIGN_PREFIX_64}\xenvusb.inf
+	File ${SIGN_PREFIX_64}\WdfCoInstaller01009.dll
 
     File ${BUILD_PREFIX64}\removedev.exe
 
