@@ -25,3 +25,4 @@ cd /d %2
 %1\bin\x86\stampinf -f xengfx\xddm\xengfx-xp.inf -d %Month%/%Day%/%Year% -v || exit /b 1
 %1\bin\x86\stampinf -f xenv4v\xenv4v.inf -d %Month%/%Day%/%Year% -v || exit /b 1
 %1\bin\x86\stampinf -f xenv4v\xenv4v64.inf -d %Month%/%Day%/%Year% -v || exit /b 1
+%1\bin\x86\stampinf -f xenaud\xenaud.inf -d %Month%/%Day%/%Year% -v || exit /b 1
