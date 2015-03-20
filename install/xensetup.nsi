@@ -29,6 +29,8 @@ ${StrStr}
 
 !define BUILD_PREFIX "..\build\i386"
 !define BUILD_PREFIX64 "..\build\amd64"
+!define SIGN_PREFIX "..\sign32"
+!define SIGN_PREFIX_64 "..\sign64"
 
 # OsType is one of 2008r2, 7, 2008, Vista, 2003, XP, and 2000.
 Var /GLOBAL OsType
@@ -619,67 +621,72 @@ ${Endif}
   
   SetOutPath $INSTDIR
 
+# Driver files once signed cannot be changed in any way, including renaming them.  If you do this, Windows 7 will reject the driver on boot leading
+# to blue screens on the boot drivers
   ${If} "$IsAmd64" == "no"
 
-    File ..\xc-vusb\build\x86\xenvusb.sys
+    File ${SIGN_PREFIX}\xenvusb.sys
 
-    File /nonfatal ..\xc-vusb\build\x86\xenvusb.cat
-    File ..\xc-vusb\build\x86\xenvusb.inf
-    File .\WdfCoInstaller01009.dll
+    File /nonfatal ${SIGN_PREFIX}\xenvusb.cat
+    File ${SIGN_PREFIX}\xenvusb.inf
+    File ${SIGN_PREFIX}\WdfCoInstaller01009.dll
 
-    File ${BUILD_PREFIX}\xevtchn.sys
-    File ..\xenevtchn\xevtchn.inf
-    File /nonfatal ..\xenevtchn\xevtchn.cat
+    File ${SIGN_PREFIX}\xevtchn.sys
+    File ${SIGN_PREFIX}\xevtchn.inf
+    File /nonfatal ${SIGN_PREFIX}\xevtchn.cat
 
-    File ${BUILD_PREFIX}\xenvbd.sys
-    File ${BUILD_PREFIX}\scsifilt.sys
-    File /nonfatal ..\xenvbd\xenvbd.cat
-    File ..\xenvbd\xenvbd.inf
+    File ${SIGN_PREFIX}\xenvbd.sys
+    File ${SIGN_PREFIX}\scsifilt.sys
+    File /nonfatal ${SIGN_PREFIX}\xenvbd.cat
+    File ${SIGN_PREFIX}\xenvbd.inf
 
-    File ${BUILD_PREFIX}\xennet.sys
-    File ${BUILD_PREFIX}\xennet6.sys
-    File ${BUILD_PREFIX}\xenwnet.sys
-    File ${BUILD_PREFIX}\xenwnet6.sys
-    File ..\net\xennet.inf
-    File /nonfatal ..\net\xennet.cat
-    File ..\wnet\xenwnet.inf
-    File /nonfatal ..\wnet\xenwnet.cat
+    File ${SIGN_PREFIX}\xennet.sys
+    File ${SIGN_PREFIX}\xennet6.sys
+    File ${SIGN_PREFIX}\xenwnet.sys
+    File ${SIGN_PREFIX}\xenwnet6.sys
+    File ${SIGN_PREFIX}\xennet.inf
+    File /nonfatal ${SIGN_PREFIX}\xennet.cat
+    File ${SIGN_PREFIX}\xenwnet.inf
+    File /nonfatal ${SIGN_PREFIX}\xenwnet.cat
+	File /nonfatal ${SIGN_PREFIX}\xenaud.cat
+	File ${SIGN_PREFIX}\xenaud.sys
+	File ${SIGN_PREFIX}\xenaud.inf
 
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
 ${If} "$OsType" == "8"
-    File ${BUILD_PREFIX}\xenvesado.sys
+    File ${SIGN_PREFIX}\xenvesado.sys
 ${Endif}
 !endif	
 ${If}  "$OsType" != "8"   
-    File ${BUILD_PREFIX}\xenvesa-miniport.sys
-    File ${BUILD_PREFIX}\xenvesa-display.dll
+    File ${SIGN_PREFIX}\xenvesa-miniport.sys
+    File ${SIGN_PREFIX}\xenvesa-display.dll
 ${EndIf}    
 ${If} "$OsType" == "XP"
-    File ..\xenvesa\xenvesa-xp.inf
-    File /nonfatal ..\xenvesa\xenvesa-xp.cat
+    File ${SIGN_PREFIX}\xenvesa-xp.inf
+    File /nonfatal ${SIGN_PREFIX}\xenvesa-xp.cat
 !ifdef INSTALL_XENVESA8
 ${ElseIf} "$OsType" = "8"
-    File ..\xengfx\vesa\wddm\miniport\xenvesado.inf
-    File /nonfatal ..\xengfx\vesa\wddm\miniport\xenvesado.cat
+    File ${SIGN_PREFIX}\xenvesado.inf
+    File /nonfatal ${SIGN_PREFIX}\xenvesado.cat
 !endif
 ${Else} 
-    File ..\xenvesa\xenvesa-lh.inf
-    File /nonfatal ..\xenvesa\xenvesa-lh.cat
+    File ${SIGN_PREFIX}\xenvesa-lh.inf
+    File /nonfatal ${SIGN_PREFIX}\xenvesa-lh.cat
 ${EndIf}
 !endif
 
     File ${BUILD_PREFIX}\xeninp.sys
-    File /nonfatal ..\input\xeninp\xeninp.cat
-    File ..\input\xeninp\xeninp.inf
+    File /nonfatal ${SIGN_PREFIX}\xeninp.cat
+    File ${SIGN_PREFIX}\xeninp.inf
 
     ${If} "$OsType" != "2000"
-      File ${BUILD_PREFIX}\xenv4v.sys
-      File /nonfatal ..\xenv4v\xenv4v.cat
-      File ..\xenv4v\xenv4v.inf
+      File ${SIGN_PREFIX}\xenv4v.sys
+      File /nonfatal ${SIGN_PREFIX}\xenv4v.cat
+      File ${SIGN_PREFIX}\xenv4v.inf
     ${EndIf}
 
-    File ${BUILD_PREFIX}\xenutil.sys
+    File ${SIGN_PREFIX}\xenutil.sys
 
     File /oname=xs.new ${BUILD_PREFIX}\xs.dll
     Rename /REBOOTOK xs.new xs.dll
@@ -701,67 +708,70 @@ ${EndIf}
     File ${BUILD_PREFIX}\copyvif.exe
     File ${BUILD_PREFIX}\fixdiskfilters.exe
 
-	; this is the 64bit definition
+	; this is the 64bit definition DO NOT RENAME THE FILES
   ${Else}
-    File ..\xc-vusb\build\x64\xenvusb.sys
+    File ${SIGN_PREFIX_64}\xenvusb.sys
 
-    File /nonfatal /oname=xenvusb.cat ..\xc-vusb\build\x64\xenvusb.cat
-    File /oname=xenvusb.inf ..\xc-vusb\build\x64\xenvusb64.inf
-    File .\WdfCoInstaller01009.dll
+    File /nonfatal ${SIGN_PREFIX_64}\xenvusb.cat
+    File ${SIGN_PREFIX_64}\xenvusb.inf
+    File ${SIGN_PREFIX_64}\WdfCoInstaller01009.dll
 	
-    File ${BUILD_PREFIX64}\xevtchn.sys
-    File /oname=xevtchn.inf ..\xenevtchn\xevtchn64.inf 
-    File /nonfatal /oname=xevtchn.cat ..\xenevtchn\xevtchn64.cat
+    File ${SIGN_PREFIX_64}\xevtchn.sys
+    File ${SIGN_PREFIX_64}\xevtchn.inf 
+    File /nonfatal ${SIGN_PREFIX_64}\xevtchn.cat
 
-    File ${BUILD_PREFIX64}\xenvbd.sys
-    File ${BUILD_PREFIX64}\scsifilt.sys
-    File /oname=xenvbd.inf ..\xenvbd\xenvbd64.inf
-    File /nonfatal /oname=xenvbd.cat ..\xenvbd\xenvbd64.cat
+    File ${SIGN_PREFIX_64}\xenvbd.sys
+    File ${SIGN_PREFIX_64}\scsifilt.sys
+    File ${SIGN_PREFIX_64}\xenvbd.inf
+    File /nonfatal ${SIGN_PREFIX_64}\xenvbd.cat
 
-    File ${BUILD_PREFIX64}\xennet.sys
-    File ${BUILD_PREFIX64}\xennet6.sys
-    File ${BUILD_PREFIX64}\xenwnet.sys
-    File ${BUILD_PREFIX64}\xenwnet6.sys
-    File /oname=xennet.inf ..\net\xennet64.inf
-    File /nonfatal /oname=xennet.cat ..\net\xennet64.cat
-    File /oname=xenwnet.inf ..\wnet\xenwnet64.inf
-    File /nonfatal /oname=xenwnet.cat ..\wnet\xenwnet64.cat
-
+    File ${SIGN_PREFIX_64}\xennet.sys
+    File ${SIGN_PREFIX_64}\xennet6.sys
+    File ${SIGN_PREFIX_64}\xenwnet.sys
+    File ${SIGN_PREFIX_64}\xenwnet6.sys
+    File ${SIGN_PREFIX_64}\xennet.inf
+    File /nonfatal ${SIGN_PREFIX_64}\xennet.cat
+    File ${SIGN_PREFIX_64}\xenwnet.inf
+    File /nonfatal ${SIGN_PREFIX_64}\xenwnet.cat
+	File /nonfatal ${SIGN_PREFIX_64}\xenaud.cat
+	File ${SIGN_PREFIX_64}\xenaud.sys
+	File ${SIGN_PREFIX_64}\xenaud.inf
+	
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
 ${If} "$OsType"  == "8"
-	File ${BUILD_PREFIX64}\xenvesado.sys
+	File ${SIGN_PREFIX_64}\xenvesado.sys
 ${Endif}
 !endif
 ${If} "$OsType" != "8"	
-    File ${BUILD_PREFIX64}\xenvesa-miniport.sys
-    File ${BUILD_PREFIX64}\xenvesa-display.dll    
+    File ${SIGN_PREFIX_64}\xenvesa-miniport.sys
+    File ${SIGN_PREFIX_64}\xenvesa-display.dll    
 ${EndIf}    
 ${If} "$OsType" == "XP"
-    File ..\xenvesa\xenvesa-xp.inf
-    File /nonfatal /oname=xenvesa-xp.cat ..\xenvesa\xenvesa-xp64.cat
+    File ${SIGN_PREFIX_64}\xenvesa-xp.inf
+    File /nonfatal ${SIGN_PREFIX_64}\xenvesa-xp.cat
 !ifdef INSTALL_XENVESA8
 ${ElseIf} "$OsType" == "8"
-    File ..\xengfx\vesa\wddm\miniport\xenvesado.inf
-	File /nonfatal /oname=xenvesado.cat ..\xengfx\vesa\wddm\miniport\xenvesado64.cat
+    File ${SIGN_PREFIX_64}\xenvesado.inf
+	File /nonfatal ${SIGN_PREFIX_64}\xenvesado.cat
 !endif
 ${Else}
-    File ..\xenvesa\xenvesa-lh.inf
-    File /nonfatal /oname=xenvesa-lh.cat ..\xenvesa\xenvesa-lh64.cat
+    File ${SIGN_PREFIX_64}\xenvesa-lh.inf
+    File ${SIGN_PREFIX_64}\xenvesa-lh.cat
 ${EndIf}
 !endif
 
-	File ${BUILD_PREFIX64}\xeninp.sys
-	File /nonfatal /oname=xeninp.cat ..\input\xeninp\xeninp64.cat
-	File ..\input\xeninp\xeninp.inf
+	File ${SIGN_PREFIX_64}\xeninp.sys
+	File ${SIGN_PREFIX_64}\xeninp.cat
+	File ${SIGN_PREFIX_64}\xeninp.inf
 
     ${If} "$OsType" != "2000"
-      File ${BUILD_PREFIX64}\xenv4v.sys
-      File /oname=xenv4v.inf ..\xenv4v\xenv4v64.inf
-      File /nonfatal /oname=xenv4v.cat ..\xenv4v\xenv4v64.cat
+      File ${SIGN_PREFIX_64}\xenv4v.sys
+      File ${SIGN_PREFIX_64}\xenv4v.inf
+      File /nonfatal ${SIGN_PREFIX_64}\xenv4v.cat
     ${EndIf}
 
-    File ${BUILD_PREFIX64}\xenutil.sys
+    File ${SIGN_PREFIX_64}\xenutil.sys
 
     File /oname=xs.new ${BUILD_PREFIX64}\xs.dll
     Rename /REBOOTOK xs.new xs.dll
@@ -854,6 +864,9 @@ ${EndIf}
   Push "XEN\VUSB"
   Call DeleteInstalledOemInf
   
+  Push "PCI\VEN_111d&DEV_76b2"
+  Call DeleteInstalledOemInf
+  
   # Install drivers
   SetOutPath $TEMP
   ${if} "$IsAmd64" == "yes"
@@ -881,6 +894,8 @@ InstallINFs:
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvbd.inf"' $0
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xennet.inf"' $0
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenwnet.inf"' $0
+  ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenaud.inf"' $0
+  
 !ifdef INSTALL_XENVESA
 ${If} "$OsType" == "XP"
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvesa-xp.inf"' $0
@@ -1360,6 +1375,10 @@ ${EndIf}
   Delete /REBOOTOK $INSTDIR\xenwnet.sys
   Delete /REBOOTOK $INSTDIR\xenwnet6.sys
   Delete /REBOOTOK $INSTDIR\xenwnet.cat
+  Delete /REBOOTOK $INSTDIR\xenaud.inf
+  Delete /REBOOTOK $INSTDIR\xenaud.cat
+  Delete /REBOOTOK $INSTDIR\xenaud.sys
+  
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
   ${If} "$OsType"  == "8"
