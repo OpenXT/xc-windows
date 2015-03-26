@@ -648,6 +648,9 @@ ${Endif}
     File /nonfatal ${SIGN_PREFIX}\xennet.cat
     File ${SIGN_PREFIX}\xenwnet.inf
     File /nonfatal ${SIGN_PREFIX}\xenwnet.cat
+	File /nonfatal ${SIGN_PREFIX}\xenaud.cat
+	File ${SIGN_PREFIX}\xenaud.sys
+	File ${SIGN_PREFIX}\xenaud.inf
 
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
@@ -730,7 +733,10 @@ ${EndIf}
     File /nonfatal ${SIGN_PREFIX_64}\xennet.cat
     File ${SIGN_PREFIX_64}\xenwnet.inf
     File /nonfatal ${SIGN_PREFIX_64}\xenwnet.cat
-
+	File /nonfatal ${SIGN_PREFIX_64}\xenaud.cat
+	File ${SIGN_PREFIX_64}\xenaud.sys
+	File ${SIGN_PREFIX_64}\xenaud.inf
+	
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
 ${If} "$OsType"  == "8"
@@ -858,6 +864,9 @@ ${EndIf}
   Push "XEN\VUSB"
   Call DeleteInstalledOemInf
   
+  Push "PCI\VEN_111d&DEV_76b2"
+  Call DeleteInstalledOemInf
+  
   # Install drivers
   SetOutPath $TEMP
   ${if} "$IsAmd64" == "yes"
@@ -885,6 +894,8 @@ InstallINFs:
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvbd.inf"' $0
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xennet.inf"' $0
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenwnet.inf"' $0
+  ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenaud.inf"' $0
+  
 !ifdef INSTALL_XENVESA
 ${If} "$OsType" == "XP"
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvesa-xp.inf"' $0
@@ -1364,6 +1375,10 @@ ${EndIf}
   Delete /REBOOTOK $INSTDIR\xenwnet.sys
   Delete /REBOOTOK $INSTDIR\xenwnet6.sys
   Delete /REBOOTOK $INSTDIR\xenwnet.cat
+  Delete /REBOOTOK $INSTDIR\xenaud.inf
+  Delete /REBOOTOK $INSTDIR\xenaud.cat
+  Delete /REBOOTOK $INSTDIR\xenaud.sys
+  
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
   ${If} "$OsType"  == "8"

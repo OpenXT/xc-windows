@@ -1,0 +1,32 @@
+TOPDIR=..
+
+include ..\config.mk
+
+TARGETNAME = xenaud
+TARGETTYPE = DRIVER
+
+TARGETLIBS=	$(DDK_LIB_PATH)\portcls.lib    \
+		$(DDK_LIB_PATH)\stdunk.lib     \
+		$(DDK_LIB_PATH)\ntstrsafe.lib  \
+		$(SDK_LIB_PATH)\libcntpr.lib   \
+	        $(TARGETPATH_ARCH)\xevtchn.lib \
+	        $(TARGETPATH_ARCH)\xenutil.lib
+
+INCLUDES=$(INCLUDES)
+
+MSC_WARNING_LEVEL = -W4 -WX
+
+UNUSED_DEFINES = -DINCLUDE_PRIVATE_PROPERTY  -D_KS_NO_ANONYMOUS_STRUCTURES_
+C_DEFINES = $(CFASTFLAGS) $(C_DEFINES) -DUNICODE -D_UNICODE -DUNDER_NT -DPROPERTY_SHOW_SET -DXENTARGET=\"XENAUD\"
+
+SOURCES = adapter.cpp  \
+          common.cpp   \
+          mintopo.cpp  \
+          prophnd.cpp  \
+          xenaud.rc  \
+          wavepciminiport.cpp	\
+          wavepcistream.cpp	\
+          rtminiport.cpp	\
+          rtstream.cpp		\
+          xen.cpp
+
