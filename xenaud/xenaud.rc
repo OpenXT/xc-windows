@@ -1,7 +1,6 @@
 //
 //  xenaud.rc
 //
-//  Copyright 2010 XenSource, Inc. All rights reserved.
 //
 
 
@@ -11,7 +10,7 @@
 #include "verinfo.h"
 
 #define VER_INTERNALNAME_STR        "xenaud.sys"
-#define VER_FILEDESCRIPTION_STR     "Citrix Xen AC97 Audio Driver"
+#define VER_FILEDESCRIPTION_STR     "OpenXT Xen AC97 Audio Driver"
 #define VER_ORIGINALFILENAME_STR    "xenaud.sys"
 
 #define VER_FILETYPE                VFT_DRV
