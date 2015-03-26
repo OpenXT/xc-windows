@@ -1,4 +1,3 @@
-;Copyright (c) 2011 Citrix Systems All rights Reserved
 ;
 ;Module Name:
 ;   xenaud.INF
@@ -24,16 +23,16 @@ DefaultDestDir = 12
 xenaud.sys = 0,,
 
 [Manufacturer]
-%ProviderName% = Citrix,NTamd64
+%ProviderName% = OpenXT,NTamd64
 
 [ControlFlags]
 ExcludeFromSelect = *
 
-[Citrix]
+[OpenXT]
 %xenaud.DeviceDesc% = xenaud, PCI\VEN_8086&DEV_2415
 %xenaud.DeviceDesc% = xenaud, PCI\VEN_111d&DEV_76b2
 
-[Citrix.NTamd64]
+[OpenXT.NTamd64]
 %xenaud.DeviceDesc% = xenaud, PCI\VEN_8086&DEV_2415
 %xenaud.DeviceDesc% = xenaud, PCI\VEN_111d&DEV_76b2
 
@@ -209,10 +208,10 @@ HKR,Settings,DisableCenterLFE,1,1       ;6ch playback is not supported.
 
 
 [Strings]
-ProviderName = "Citrix Systems, Inc."
-MfgName = "Citrix"
-DiskDescription = "Citrix Audio Driver Disk"
-xenaud.DeviceDesc = "Citrix Audio Driver"
+ProviderName = "OpenXT"
+MfgName = "OpenXT"
+DiskDescription = "OpenXT Audio Driver Disk"
+xenaud.DeviceDesc = "OpenXT Audio Driver"
 xenaud.Wave.szPname = "XenClient Audio Device"
 xenaud.Topology.szPname = "XenClient Audio Mixer"
 
