@@ -47,7 +47,7 @@ tAC97Registers CAC97AdapterCommon::m_stAC97Registers[] =
 {0x8808, SHREG_INIT,    L"AUXVolume",       0x0808},    // AC97REG_AUX_VOLUME
 {0x8808, SHREG_INIT,    L"WaveOutVolume",   0x0808},    // AC97REG_PCM_OUT_VOLUME
 {0x0000, SHREG_INIT,    L"RecordSelect",    0x0404},    // AC97REG_RECORD_SELECT
-{0x8000, SHREG_INIT,    L"RecordGain",      0x0000},    // AC97REG_RECORD_GAIN
+{0x8000, SHREG_INIT,    L"RecordGain",      0x0F0F},    // AC97REG_RECORD_GAIN
 {0x8000, SHREG_INIT,    L"RecordGainMic",   0x0000},    // AC97REG_RECORD_GAIN_MIC
 {0x0000, SHREG_INIT,    L"GeneralPurpose",  0x0000},    // AC97REG_GENERAL
 {0x0000, SHREG_INIT,    L"3DControl",       0x0000},    // AC97REG_3D_CONTROL
