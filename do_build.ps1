@@ -105,7 +105,7 @@ if ($doclone) {
         if ($branch.CompareTo("master") -eq 0) {
             Invoke-CommandChecked "git checkout" $gitbin checkout -q $branch
         } else {
-            & $gitbin checkout -q origin/$branch -b $branch
+            & $gitbin checkout -q origin/$branch
 	    # standard practice on XT is to fall back to master for
 	    # branches that do not exist.
             if (-Not ($LastExitCode -eq 0)) {
