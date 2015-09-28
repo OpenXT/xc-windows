@@ -2,6 +2,8 @@ param
 (
     [string]$certname,
     [string]$signtool,
+    [string]$SHA1Thumb,
+    [string]$SHA256Thumb,
     [string]$crosssign = ""
 )
 
@@ -16,9 +18,17 @@ Import-Module $ScriptDir\..\BuildSupport\checked-copy.psm1
 function sign ($arch, $name) { 
     Write-Host "signing with [$certname] crosssign [$crosssign]"
     if ($crosssign) {
-        Invoke-CommandChecked "$arch signtool " ($signtool+"\signtool.exe") sign /v /a /s my /n ('"'+$certname+'"') /t http://timestamp.verisign.com/scripts/timestamp.dll /ac $crosssign $name 
+        Invoke-CommandChecked "$arch signtool - SHA1" ($signtool+"\signtool.exe") sign /v /sha1 $SHA1Thumb /fd sha1 /a /s my /n ('"'+$certname+'"') /t http://timestamp.verisign.com/scripts/timestamp.dll /ac $crosssign $name 
+        if ($SHA256Thumb)
+        {
+            Invoke-CommandChecked "$arch signtool - SHA256" ($signtool+"\signtool.exe") sign /v /sha1 $SHA256Thumb /fd sha256 /as /a /s my /n ('"'+$certname+'"') /tr http://timestamp.geotrust.com/tsa /ac $crosssign $name 
+        }
     } else {
-        Invoke-CommandChecked "$arch signtool " ($signtool+"\signtool.exe") sign /v /a /s my /n ('"'+$certname+'"') /t http://timestamp.verisign.com/scripts/timestamp.dll  $name 
+        Invoke-CommandChecked "$arch signtool " ($signtool+"\signtool.exe") sign /v /sha1 $SHA1Thumb /a /s my /n ('"'+$certname+'"') /t http://timestamp.verisign.com/scripts/timestamp.dll  $name 
+        if ($SHA256Thumb)
+        {
+            Invoke-CommandChecked "$arch signtool - SHA256" ($signtool+"\signtool.exe") sign /v /sha1 $SHA256Thumb /fd sha256 /as /a /s my /n ('"'+$certname+'"') /tr http://timestamp.geotrust.com/tsa $name 
+        }
     }
 }
 
