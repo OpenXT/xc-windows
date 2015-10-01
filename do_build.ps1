@@ -21,6 +21,8 @@ $type = $argtable["BuildType"]
 $developer = $argtable["Developer"]
 $signtool = $argtable["SignTool"]
 $certname = $argtable["CertName"]
+$SHA1Thumb = $argtable["SHA1Thumb"].replace(" ","")
+$SHA256Thumb = $argtable["SHA256Thumb"].replace(" ","")
 $VSDir = $argtable["VSDir"]
 $verstr = $argtable["VerString"]
 $ver0 = $argtable["VerMajor"]
@@ -146,9 +148,9 @@ if ($type.ToLower().CompareTo("debug") -eq 0) {
 }
 
 if ($crosssign) {
-    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname ("'"+$certname+"'") -signtool ("'"+$signtool+"'") -crosssign ("'"+$crosssign+"'")
+    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname ("'"+$certname+"'") -signtool ("'"+$signtool+"'") -SHA1Thumb ("'"+$SHA1Thumb+"'") -SHA256Thumb ("'"+$SHA256Thumb+"'") -crosssign ("'"+$crosssign+"'") 
 } else {
-    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname ("'"+$certname+"'") -signtool ("'"+$signtool+"'")
+    Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname ("'"+$certname+"'") -signtool ("'"+$signtool+"'") -SHA1Thumb ("'"+$SHA1Thumb+"'") -SHA256Thumb ("'"+$SHA256Thumb+"'")
 }
  
 #Only do verification if not doing a developer build
