@@ -32,7 +32,7 @@ ${StrStr}
 !define SIGN_PREFIX "..\sign32"
 !define SIGN_PREFIX_64 "..\sign64"
 
-# OsType is one of 2008r2, 7, 2008, Vista, 2003, XP, and 2000.
+# OsType is one of 8Plus, 2008r2, 7, 2008, Vista, 2003, XP, and 2000.
 Var /GLOBAL OsType
 Var /GLOBAL ServicePack
 
@@ -466,7 +466,7 @@ Section "Install Section" SecDrvInst ;No components page, name is not important
   CreateDirectory "$TEMP\Citrix"
   ${LogSetFileName} "$TEMP\Citrix\log_xensetup.txt"
   ${LogSetOn}
-${If} "$OsType" != "8"
+${If} "$OsType" != "8Plus"
   Call VideoAccelerationLevel
 ${Endif} 
   # Always use 32 bit install.dll, since the installer is a 32 bit
@@ -654,11 +654,11 @@ ${Endif}
 
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
-${If} "$OsType" == "8"
+${If} "$OsType" == "8Plus"
     File ${SIGN_PREFIX}\xenvesado.sys
 ${Endif}
 !endif	
-${If}  "$OsType" != "8"   
+${If}  "$OsType" != "8Plus"
     File ${SIGN_PREFIX}\xenvesa-miniport.sys
     File ${SIGN_PREFIX}\xenvesa-display.dll
 ${EndIf}    
@@ -666,7 +666,7 @@ ${If} "$OsType" == "XP"
     File ${SIGN_PREFIX}\xenvesa-xp.inf
     File /nonfatal ${SIGN_PREFIX}\xenvesa-xp.cat
 !ifdef INSTALL_XENVESA8
-${ElseIf} "$OsType" = "8"
+${ElseIf} "$OsType" = "8Plus"
     File ${SIGN_PREFIX}\xenvesado.inf
     File /nonfatal ${SIGN_PREFIX}\xenvesado.cat
 !endif
@@ -739,11 +739,11 @@ ${EndIf}
 	
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
-${If} "$OsType"  == "8"
+${If} "$OsType"  == "8Plus"
 	File ${SIGN_PREFIX_64}\xenvesado.sys
 ${Endif}
 !endif
-${If} "$OsType" != "8"	
+${If} "$OsType" != "8Plus"
     File ${SIGN_PREFIX_64}\xenvesa-miniport.sys
     File ${SIGN_PREFIX_64}\xenvesa-display.dll    
 ${EndIf}    
@@ -751,7 +751,7 @@ ${If} "$OsType" == "XP"
     File ${SIGN_PREFIX_64}\xenvesa-xp.inf
     File /nonfatal ${SIGN_PREFIX_64}\xenvesa-xp.cat
 !ifdef INSTALL_XENVESA8
-${ElseIf} "$OsType" == "8"
+${ElseIf} "$OsType" == "8Plus"
     File ${SIGN_PREFIX_64}\xenvesado.inf
 	File /nonfatal ${SIGN_PREFIX_64}\xenvesado.cat
 !endif
@@ -900,7 +900,7 @@ InstallINFs:
 ${If} "$OsType" == "XP"
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvesa-xp.inf"' $0
 !ifdef INSTALL_XENVESA8
-${ElseIf} "$OsType" == "8"
+${ElseIf} "$OsType" == "8Plus"
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvesado.inf"' $0
 !endif
 ${Else}
@@ -910,7 +910,7 @@ ${EndIf}
 
   ; install vusb inf file for win7 or later
   ${If} "$OsType" == "7" 
-  ${OrIf} "$OsType" == "8" 
+  ${OrIf} "$OsType" == "8Plus"
     ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvusb.inf"' $0
   ${EndIf}
 	
@@ -940,7 +940,7 @@ ${EndIf}
   ${endif}
   
   ${If} "$OsType" == "7" 
-  ${OrIf} "$OsType" == "8" 
+  ${OrIf} "$OsType" == "8Plus"
     ${If} $R0 == "New"
       ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "XEN\vusb" "$INSTDIR\xenvusb.inf" "0"' $0
     ${else}
@@ -998,7 +998,7 @@ ${EndIf}
       ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "$VesaDeviceName" "$INSTDIR\xenvesa-xp.inf" "1"' $0
     ${endif}
 !ifdef INSTALL_XENVESA8
-  ${ElseIf} "$OsType" == "8"
+  ${ElseIf} "$OsType" == "8Plus"
     ${If} $R0 == "New"
       ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "$VesaDeviceName" "$INSTDIR\xenvesado.inf" "0"' $0
 	${else}
@@ -1270,7 +1270,7 @@ providerNotInstalled:
   Call un.DeleteInstalledOemInf
 
   ${If} "$OsType" == "7" 
-  ${OrIf} "$OsType" == "8" 
+  ${OrIf} "$OsType" == "8Plus" 
     ExecWait '"$INSTDIR\removedev.exe" "/d" "XEN\vusb"' $0
     DeleteRegKey HKLM SYSTEM\CurrentControlSet\Services\xenvusb
     Delete /REBOOTOK $REALSYSDIR\drivers\xenvusb.sys
@@ -1291,13 +1291,13 @@ providerNotInstalled:
   ExecWait '"$INSTDIR\removedev.exe" "/d" "PCI\VEN_1234&DEV_1111&SUBSYS_00015853"' $0
   ExecWait '"$INSTDIR\removedev.exe" "/d" "PCI\VEN_1234&DEV_1111"' $0
 !ifdef INSTALL_XENVESA8
-${If} "$OsType" == "8"
+${If} "$OsType" == "8Plus"
   DeleteRegKey HKLM SYSTEM\CurrentControlSet\Services\xenvesado
   Delete /REBOOTOK $REALSYSDIR\drivers\xenvesado.sys
 ${Endif}
 !endif
 
-${If} "$OsType" != "8"
+${If} "$OsType" != "8Plus"
   DeleteRegKey HKLM SYSTEM\CurrentControlSet\Services\xenvesa-miniport
   Delete /REBOOTOK $REALSYSDIR\drivers\xenvesa-miniport.sys
   Delete /REBOOTOK $REALSYSDIR\drivers\xenvesa-display.dll
@@ -1381,11 +1381,11 @@ ${EndIf}
   
 !ifdef INSTALL_XENVESA
 !ifdef INSTALL_XENVESA8
-  ${If} "$OsType"  == "8"
+  ${If} "$OsType"  == "8Plus"
 	Delete /REBOOTOK $INSTDIR\xenvesado.sys
   ${EndIf}
 !endif
-  ${If} "$OsType" != "8"
+  ${If} "$OsType" != "8Plus"
 	Delete /REBOOTOK $INSTDIR\xenvesa-miniport.sys
 	Delete /REBOOTOK $INSTDIR\xenvesa-display.dll
   ${EndIf}  
@@ -1393,7 +1393,7 @@ ${EndIf}
     Delete /REBOOTOK $INSTDIR\xenvesa-xp.cat
     Delete /REBOOTOK $INSTDIR\xenvesa-xp.inf
 !ifdef INSTALL_XENVESA8
-  ${ElseIf} "$OsType" == "8"
+  ${ElseIf} "$OsType" == "8Plus"
     Delete /REBOOTOK $INSTDIR\xenvesado.cat
     Delete /REBOOTOK $INSTDIR\xenvesado.inf
 !endif
