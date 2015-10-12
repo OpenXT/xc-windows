@@ -54,7 +54,9 @@ lbl_winnt:
   StrCmp $R2 '5.2' lbl_winnt_2003
   StrCmp $R2 '6.0' lbl_winnt_vista
   StrCmp $R2 '6.1' lbl_winnt_7 
-  StrCmp $R2 '6.2' lbl_winnt_8 lbl_error
+  StrCmp $R2 '6.2' lbl_winnt_8Plus
+  StrCmp $R2 '6.3' lbl_winnt_8Plus
+  StrCmp $R2 '10.0' lbl_winnt_8Plus lbl_error
  
 lbl_winnt_x:
     StrCpy $R1 "NT $R1" 6
@@ -90,8 +92,8 @@ lbl_winnt_7:
     Strcpy $R1 '7'
   Goto lbl_done
 
-lbl_winnt_8:
-	Strcpy $R1 '8'
+lbl_winnt_8Plus:
+	Strcpy $R1 '8Plus'
   Goto lbl_done
 
 lbl_winnt_2008r2:
