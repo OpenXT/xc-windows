@@ -429,10 +429,18 @@ ReportPresentProgress(
                             DXGK_PRESENT_DISPLAYONLY_PROGRESS_ID_FAILED;
 
     BOOLEAN bRet = FALSE;
+#if 0
     NT_VERIFY(NT_SUCCESS(pDevExt->GetDxgkInterface()->DxgkCbSynchronizeExecution(
                                     pDevExt->GetDxgkInterface()->DeviceHandle,
                                     (PKSYNCHRONIZE_ROUTINE)SynchronizeVidSchNotifyInterrupt,
                                     (PVOID)&SyncNotifyInterrupt,0,&bRet)));
+#else
+    //
+    // For XenVESA, we do not use an interrupt, so no need to synchronize with the ISR
+    //
+    bRet = SynchronizeVidSchNotifyInterrupt ((PVOID)&SyncNotifyInterrupt);
+#endif
+
     NT_ASSERT(bRet);
 }
 

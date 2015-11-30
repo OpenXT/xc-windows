@@ -705,7 +705,7 @@ void  __cdecl operator delete(void* pObject);
 void  __cdecl operator delete[](void* pObject);
 
 // Pool allocation tag for the Sample Display Driver. All allocations use this tag.
-#define BDDTAG 'DDBS'
+#define BDDTAG XENGFX_TAG
 
 #endif // _BDD_HXX_
 
