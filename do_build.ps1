@@ -166,7 +166,7 @@ Checked-Copy $licfile ".\license.txt"
 # Package the NSIS installer - need the individual version numbers here
 Write-Host "Building driver installer"
 
-Invoke-CommandChecked "makensis" makensis "/DINSTALL_XENVESA" ("/DVERMAJOR=" + $ver0) ("/DVERMINOR=" + $ver1) ("/DVERMICRO=" + $ver2) ("/DVERBUILD=" + $ver3) "xensetup.nsi"
+Invoke-CommandChecked "makensis" makensis "/DINSTALL_XENVESA" "/DINSTALL_XENVESA8" ("/DVERMAJOR=" + $ver0) ("/DVERMINOR=" + $ver1) ("/DVERMICRO=" + $ver2) ("/DVERBUILD=" + $ver3) "xensetup.nsi"
 
 if (!(Test-Path -Path ".\xensetup.exe" -PathType Leaf))
 {
