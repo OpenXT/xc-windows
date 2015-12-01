@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xengfxsh", "xengfx\shared\xengfxsh.vcxproj", "{3F8791DF-74A6-4452-88A2-5F7C53DBAA19}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "miniport", "xengfx\vesa\wddm\miniport\miniport.vcxproj", "{66ABD441-ABC9-48BF-BA82-2A86B0ACF175}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "miniport", "xenvesado\miniport.vcxproj", "{66ABD441-ABC9-48BF-BA82-2A86B0ACF175}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3F8791DF-74A6-4452-88A2-5F7C53DBAA19} = {3F8791DF-74A6-4452-88A2-5F7C53DBAA19}
 	EndProjectSection
