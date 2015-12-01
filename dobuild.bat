@@ -17,8 +17,8 @@ set temp=%2\tmp
 
 set USERNAME=OpenXT
 
-# beware https://github.com/OpenXT/xc-windows/issues/3 if you want to make
-# this faster by removing the c and z flags to get incremental builds
+REM beware https://github.com/OpenXT/xc-windows/issues/3 if you want to make
+REM this faster by removing the c and z flags to get incremental builds
 build -begwcz 2>&1 || exit /b 2
 
 
