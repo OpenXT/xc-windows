@@ -89,47 +89,47 @@
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">
-    <OutDir>..\..\..\..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
+    <OutDir>..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
     <TargetName>xenvesado</TargetName>
     <IntDir>$(IntDir)</IntDir>
     <DiagnosticMode>true</DiagnosticMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">
-    <OutDir>..\..\..\..\build\i386\</OutDir>
+    <OutDir>..\build\i386\</OutDir>
     <TargetName>xenvesado</TargetName>
     <IntDir>$(IntDir)</IntDir>
     <DiagnosticMode>false</DiagnosticMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">
-    <OutDir>..\..\..\..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
+    <OutDir>..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
     <TargetName>xenvesado</TargetName>
     <IntDir>$(BUILD_ALT_DIR)\x86\</IntDir>
     <DiagnosticMode>true</DiagnosticMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">
-    <OutDir>..\..\..\..\build\i386\</OutDir>
+    <OutDir>..\build\i386\</OutDir>
     <TargetName>xenvesado</TargetName>
     <IntDir>i386\</IntDir>
     <DiagnosticMode>true</DiagnosticMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|x64'">
-    <OutDir>..\..\..\..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
+    <OutDir>..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
     <DiagnosticMode>true</DiagnosticMode>
     <TargetName>xenvesado</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">
-    <OutDir>..\..\..\..\build\amd64\</OutDir>
+    <OutDir>..\build\amd64\</OutDir>
     <IntDir>amd64\</IntDir>
     <DiagnosticMode>true</DiagnosticMode>
     <TargetName>xenvesado</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|x64'">
-    <OutDir>..\..\..\..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
+    <OutDir>..\build\WindowsPreview_$(DDKPlatform)\</OutDir>
     <TargetName>xenvesado</TargetName>
     <DiagnosticMode>true</DiagnosticMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">
-    <OutDir>..\..\..\..\build\amd64\</OutDir>
+    <OutDir>..\build\amd64\</OutDir>
     <TargetName>xenvesado</TargetName>
     <IntDir>amd64\</IntDir>
     <DiagnosticMode>true</DiagnosticMode>
@@ -141,18 +141,18 @@
       <WppKernelMode>true</WppKernelMode>
       <WppMinimalRebuildFromTracking Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">false</WppMinimalRebuildFromTracking>
       <WppMinimalRebuildFromTracking Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">false</WppMinimalRebuildFromTracking>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">..\..\..\inc;..\..\inc;..\..\shared;..\..\..\..\xenhdrs;..\..\..\..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">..\..\..\inc;..\..\inc;..\..\shared;..\..\..\..\xenhdrs;..\..\..\..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">..\inc;..\..\inc;..\..\..\inc;..\..\..\..\xenhdrs;..\..\..\xenutil;..\..\shared;..\..\..\..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">..\inc;..\..\inc;..\..\..\inc;..\..\..\..\xenhdrs;..\..\..\xenutil;..\..\shared;..\..\..\..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">..\xengfx\inc;..\xengfx\shared;..\xenhdrs;..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">..\xengfx\inc;..\xengfx\shared;..\xenhdrs;..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">..\xengfx\inc;..\xengfx\shared;..\xenhdrs;..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">..\xengfx\inc;..\xengfx\shared;..\xenhdrs;..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">XENTARGET="XENVESA";_X86_=1;i386=1;STD_CALL;XENGFXV4V;NO_XENUTIL;DBG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">XENTARGET="XENVESA";_X86_=1;i386=1;STD_CALL;XENGFXV4V;DBG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">XENTARGET="XENVESA";_X86_=1;i386=1;STD_CALL;NO_XENUTIL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">NO_XENUTIL="yes";XENTARGET="XENVESA";_X86_=1;i386=1;STD_CALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|x64'">..\..\inc;..\..\..\inc;..\..\..\..\xenhdrs;..\..\..\xenutil;..\..\shared;..\..\..\..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">..\..\inc;..\..\..\inc;..\..\..\..\xenhdrs;..\..\..\xenutil;..\..\shared;..\..\..\..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|x64'">..\..\..\inc;..\..\inc;..\..\shared;..\..\..\..\xenhdrs;..\..\..\..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">..\..\..\inc;..\..\inc;..\..\shared;..\..\..\..\xenhdrs;..\..\..\..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|x64'">..\xengfx\inc;..\xengfx\shared;..\xenhdrs;..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">..\xengfx\inc;..\xengfx\shared;..\xenhdrs;..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|x64'">..\xengfx\inc;..\xengfx\shared;..\xenhdrs;..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">..\xengfx\inc;..\xengfx\shared;..\xenhdrs;..\inc;$(DDK_INC_PATH);$(SDK_INC_PATH)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|x64'">XENTARGET="XENVESA";_X64_=1;amd64=1;STD_CALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">NO_XENUTIL="yes";XENTARGET="XENVESA";_X64_=1;amd64=1;STD_CALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">4127;4603;4627;4986;4987;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -165,14 +165,14 @@
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">xengfxsh.lib;displib.lib;ntoskrnl.lib;hal.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">xenutil.lib; xengfxsh.lib;displib.lib;ntoskrnl.lib;hal.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">$(DDK_LIB_PATH);..\..\..\shared\$(BUILD_ALT_DIR)\$(PlatformTarget)\</AdditionalLibraryDirectories>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">$(OutDir);$(DDK_LIB_PATH)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">$(DDK_LIB_PATH);..\xengfx\shared\$(BUILD_ALT_DIR)\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">$(DDK_LIB_PATH);$(OutDir);..\xengfx\shared\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">xengfxsh.lib;displib.lib;ntoskrnl.lib;hal.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">xengfxsh.lib;displib.lib;ntoskrnl.lib;hal.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">$(DDK_LIB_PATH);$(OutDir);..\..\..\..\build\i386</AdditionalLibraryDirectories>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">$(DDK_LIB_PATH);$(OutDir);..\..\..\shared\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">$(DDK_LIB_PATH);$(OutDir);..\build\i386</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">$(DDK_LIB_PATH);$(OutDir);..\xengfx\shared\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|x64'">xengfxsh.lib;displib.lib;ntoskrnl.lib;hal.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -181,8 +181,8 @@
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">$(DDK_LIB_PATH);$(OutDir)</AdditionalLibraryDirectories>
     </Link>
     <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">$(OutDir);$(DDK_LIB_PATH)</AdditionalLibraryDirectories>
-      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">xengfxsh.lib;displib.lib;ntoskrnl.lib;hal.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">$(DDK_LIB_PATH);$(OutDir);..\xengfx\shared\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">xenutil.lib; xengfxsh.lib;displib.lib;ntoskrnl.lib;hal.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|x64'">xengfxsh.lib;</AdditionalDependencies>
@@ -191,7 +191,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <FilesToPackage Include="$(TargetPath)" />
-    <FilesToPackage Include="@(Inf->'%(CopyOutput)')" Condition="'@(Inf)'!=''" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bdd.hxx" />
@@ -215,20 +214,18 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xenVesaDO.rc">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">..\..\..\..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">..\..\..\..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|x64'">..\..\..\..\inc;$(SDK_INC_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">..\..\..\..\inc;$(SDK_INC_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|x64'">..\..\..\..\INC;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">..\..\..\..\INC;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">..\..\..\..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">..\..\..\..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|Win32'">..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Debug|x64'">..\inc;$(SDK_INC_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">..\inc;$(SDK_INC_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|x64'">..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Windows Developer Preview Release|Win32'">..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Inf Include="xenVesaDO.inf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
+
