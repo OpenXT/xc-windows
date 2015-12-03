@@ -7,7 +7,11 @@ param
 
 $badsys = @("xenm2b.sys", "xengfxmp.sys", "xengfxwd.sys")
 $badinfs = @("xenm2b.inf")
-$extrainfs = @("xenvesa-lh.inf", "xenvesa-xp.inf", "xeninp.inf")
+# extrainfs is used to create a 64-bit version of the inf when only a 32-bit is supplied. i.e., if
+# only 1 inf is supplied, it will be copied to <name>64.inf later.
+# This does not make a lot of sense since an inf should be written to handle both 32 and 64 bit. 
+# TODO: Remove this silly logic in favor of converting the inf files to handle both architectures.
+$extrainfs = @("xenvesa-lh.inf", "xenvesa-xp.inf", "xeninp.inf", "xenvesado.inf")
 
 $ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 Import-Module $ScriptDir\..\BuildSupport\invoke.psm1
@@ -25,12 +29,12 @@ function sign ($arch, $name) {
 foreach ($arch in @("amd64", "i386")) {
     if ($arch -eq "i386") {
         $workd = "sign32"
-	$oslist = "/os:2000,XP_X86,Server2003_X86,Vista_X86,Server2008_X86"
-	$vusb_arch = "x86" # TODO: use the same build directory name on xc-vusb to avoid needing to handle it separately heere
+	    $oslist = "/os:2000,XP_X86,Server2003_X86,Vista_X86,Server2008_X86"
+	    $vusb_arch = "x86" # TODO: use the same build directory name on xc-vusb to avoid needing to handle it separately heere
     } else {
         $workd = "sign64"
-	$oslist = "/os:XP_X64,Server2003_X64,Vista_X64,Server2008_X64"
-	$vusb_arch = "x64"
+	    $oslist = "/os:XP_X64,Server2003_X64,Vista_X64,Server2008_X64"
+	    $vusb_arch = "x64"
     }
     # TODO: make this work incrementally. For now we just delete the siging directory tree
     # difficulties: signtool signs file in place
@@ -68,19 +72,19 @@ foreach ($arch in @("amd64", "i386")) {
             # we need to leave out certain inf files on specific architectures
             # TODO: get rid of the bad inf files from the build so that we
     	    # don't need this code
-	    $handle = $true
-	    if ($badinfs -contains ([string]$_)) {
-	        $handle = $false
+	        $handle = $true
+	        if ($badinfs -contains ([string]$_)) {
+	            $handle = $false
             }
             # we want inf files that correspond to the sys files we have
-	    $base = ($_.BaseName)
-	    # TODO: rename the inf files to just have the architecture
-	    # as a postfix to simplify this code
+	        $base = ($_.BaseName)
+	        # TODO: rename the inf files to just have the architecture
+	        # as a postfix to simplify this code
             if ($arch -eq "amd64") {
   	        if ($base.EndsWith("64")) {
                     $base = $base.Substring(0, $base.Length-2)
                 } else {
-   	            $handle = $false
+   	                $handle = $false
                 }
             }
             if ($handle -and (Test-Path ($base+'.sys'))) {
@@ -89,7 +93,7 @@ foreach ($arch in @("amd64", "i386")) {
             # and there are some extra inf files which don't have names
             # matching sys files
             if ($extrainfs -contains ([string]$_)) {
-	        Checked-Copy $_.FullName ($_.Name).Replace("64","")
+	            Checked-Copy $_.FullName ($_.Name).Replace("64","")
             }
 	    # TODO: make the extra inf files match the pattern above to simplify this code
         } catch {
