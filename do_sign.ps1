@@ -7,7 +7,7 @@ param
 
 $badsys = @("xenm2b.sys", "xengfxmp.sys", "xengfxwd.sys")
 $badinfs = @("xenm2b.inf")
-$extrainfs = @("xenvesa-lh.inf", "xenvesa-xp.inf", "xeninp.inf", "xenVesaDO.inf")
+$extrainfs = @("xenvesa-lh.inf", "xenvesa-xp.inf", "xeninp.inf")
 
 $ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 Import-Module $ScriptDir\..\BuildSupport\invoke.psm1
