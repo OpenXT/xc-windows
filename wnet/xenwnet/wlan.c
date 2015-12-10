@@ -118,7 +118,7 @@ WlanGetBackendValues (
 
     /* TODO this is just test data */
     NdisMoveMemory(WlanAdapter->XenBSSID, "\x00\x1D\xE0\x97\xAA\x33", sizeof(NDIS_802_11_MAC_ADDRESS));
-    NdisMoveMemory(WlanAdapter->XenSSID.Ssid, "XenClient Wireless", 11);
+    NdisMoveMemory(WlanAdapter->XenSSID.Ssid, "OpenXT Wireless", 11);
     WlanAdapter->XenSSID.SsidLength = 11;
     WlanAdapter->XenConnected = TRUE;
 
