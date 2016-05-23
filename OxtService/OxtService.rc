@@ -1,0 +1,152 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "1 TYPELIB ""OxtService.tlb""\r\n"
+    "#include ""oxtmsg.rc""\r\n"
+    "#include ""OxtService.en.rc""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 16,0,0,0
+ PRODUCTVERSION 16,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "Put Your Company Name Here"
+            VALUE "FileDescription", "OpenXT Xen guest services provider"
+            VALUE "FileVersion", "16.0.0.0"
+            VALUE "InternalName", "OxtService.exe"
+            VALUE "LegalCopyright", "Copyright © 2016 Put Your Company Name Here"
+            VALUE "OriginalFilename", "OxtService.exe"
+            VALUE "ProductName", "OpenXT Tools for Virtual Machines"
+            VALUE "ProductVersion", "16.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// REGISTRY
+//
+
+IDR_OXTSERVICE          REGISTRY                "OxtService.rgs"
+IDR_OXTGUESTSERVICES    REGISTRY                "OxtGuestServices.rgs"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "xen.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_SERVICENAME         "OxtService"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DISPLAYNAME         "OpenXT Xen Guest Services"
+    IDS_SERVICEDESC         "Provides in-guest services for Xen user domains."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ATLBASE_NO_HANDLER  "Handler not installed"
+    IDS_ATLBASE_SERVICE_STOPPED "Service stopped"
+    IDS_ATLBASE_SERVICE_STARTED "Service started"
+    IDS_ATLBASE_BAD_SERVICE "Bad service request"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+1 TYPELIB "OxtService.tlb"
+#include "oxtmsg.rc"
+#include "OxtService.en.rc"
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

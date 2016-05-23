@@ -1,0 +1,24 @@
+HKCR
+{
+	OxtService.OxtGuestServices.1 = s 'OxtGuestServices Class'
+	{
+		CLSID = s '{79E8108A-57E6-4E3D-B98F-DB90572B7F5A}'
+	}
+	OxtService.OxtGuestServices = s 'OxtGuestServices Class'
+	{
+		CLSID = s '{79E8108A-57E6-4E3D-B98F-DB90572B7F5A}'
+		CurVer = s 'OxtService.OxtGuestServices.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {79E8108A-57E6-4E3D-B98F-DB90572B7F5A} = s 'OxtGuestServices Class'
+		{
+			ProgID = s 'OxtService.OxtGuestServices.1'
+			VersionIndependentProgID = s 'OxtService.OxtGuestServices'
+			ForceRemove 'Programmable'
+			LocalServer32 = s '%MODULE%'
+			val AppID = s '%APPID%'
+			'TypeLib' = s '{CB46685A-BBB0-406B-BB1D-CF1641FFF17D}'
+		}
+	}
+}

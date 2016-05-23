@@ -20,5 +20,4 @@ DIRS=removedev \
      copyvif \
      fixdiskfilters \
      input \
-     xengfx \
 	 xenaud

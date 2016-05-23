@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) 2012 Citrix Systems, Inc.
+ * Copyright (c) 2016 Assured Information Security, Inc
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+// OxtGuestAgent.idl : IDL source for XenGuestAgent
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (XenGuestAgent.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(3F2A5FA9-D569-4670-BCBB-2C7243C7DC0B),
+	dual,
+	nonextensible,
+	helpstring("IOxtGuestServices Interface"),
+	pointer_default(unique)
+]
+interface IOxtGuestServices : IDispatch{
+	[id(1), helpstring("method XenStoreRead")] HRESULT XenStoreRead([in] BSTR bstrPath, [out,retval] BSTR* pbstrValue);
+    [id(2), helpstring("method XenStoreRead")] HRESULT XenStoreWrite([in] BSTR bstrPath, [in] BSTR bstrValue);
+};
+
+[
+	uuid(CB46685A-BBB0-406B-BB1D-CF1641FFF17D),
+	version(1.0),
+	helpstring("OxtService 1.0 Type Library")
+]
+library OxtServiceLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(79E8108A-57E6-4E3D-B98F-DB90572B7F5A),
+		helpstring("OxtGuestServices Class")
+	]
+	coclass OxtGuestServices
+	{
+		[default] interface IOxtGuestServices;
+	};	
+};

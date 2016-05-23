@@ -708,6 +708,9 @@ ${EndIf}
     File ${BUILD_PREFIX}\copyvif.exe
     File ${BUILD_PREFIX}\fixdiskfilters.exe
 
+	File ${BUILD_PREFIX}\OxtService.exe
+	File ${BUILD_PREFIX}\OxtUserAgent.exe
+
 	; this is the 64bit definition DO NOT RENAME THE FILES
   ${Else}
     File ${SIGN_PREFIX_64}\xenvusb.sys
@@ -796,6 +799,9 @@ ${EndIf}
     File ${BUILD_PREFIX64}\query_balloon.exe
     File ${BUILD_PREFIX64}\copyvif.exe
     File ${BUILD_PREFIX64}\fixdiskfilters.exe
+
+	File ${BUILD_PREFIX}\OxtService.exe
+	File ${BUILD_PREFIX}\OxtUserAgent.exe
 
   ${EndIf}
 
@@ -1064,6 +1070,11 @@ DoneCheckingServicesTimeout:
   IntCmp "$0" 0 0 error
 !endif
 
+  ${LogText} "Installing OxtService service and OxtUserAgent..."
+  ExecWait '"$INSTDIR\OxtService.exe" /Service' $0
+  ExecWait '"$INSTDIR\OxtService.exe" /DenyRemoteAccess' $0
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "OxtUserAgent" "$INSTDIR\OxtUserAgent.exe"
+
   ${LogText} "Drivers/service installation done."
   DetailPrint "Drivers/service installation done."
 
@@ -1123,6 +1134,8 @@ DoneCheckingServicesTimeout:
 !ifndef NO_INSTALL_XENSERVICE
       Delete /REBOOTOK $UpgradingFromPath\xenservice.exe
 !endif
+      Delete /REBOOTOK $UpgradingFromPath\OxtService.exe
+      Delete /REBOOTOK $UpgradingFromPath\OxtUserAgent.exe
       Delete /REBOOTOK $UpgradingFromPath\xenvbd.inf
       Delete /REBOOTOK $UpgradingFromPath\xenvbd.sys
       Delete /REBOOTOK $UpgradingFromPath\xenvbd.cat
@@ -1241,6 +1254,9 @@ SkipResettingServicesTimeout:
   ExecWait '"$INSTDIR\xenservice.exe" "-u"' $0
   DeleteRegKey HKLM SYSTEM\CurrentControlSet\Services\EventLog\Application\xensvc
 !endif
+
+  ExecWait '"$INSTDIR\OxtService.exe" /UnregServer' $0
+  DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run\OxtUserAgent"
 
   # Make sure that the devices can be disabled.
   ExecWait '"$INSTDIR\enableuninst.exe"'
@@ -1415,6 +1431,8 @@ ${EndIf}
 !ifndef NO_INSTALL_XENSERVICE
   Delete /REBOOTOK $INSTDIR\xenservice.exe
 !endif
+  Delete /REBOOTOK $INSTDIR\OxtService.exe
+  Delete /REBOOTOK $INSTDIR\OxtUserAgent.exe
   Delete /REBOOTOK $INSTDIR\xenvbd.inf
   Delete /REBOOTOK $INSTDIR\xenvbd.sys
   Delete /REBOOTOK $INSTDIR\xenvbd.cat
