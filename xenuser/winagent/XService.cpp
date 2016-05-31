@@ -614,6 +614,13 @@ enum XShutdownType {
     XShutdownS3
 };
 
+static void respondAwake(void *ctx)
+{
+	char *v;
+	if(XenstoreRead("control/awake", &v) >= 0)
+		XenstoreRemove("control/awake");
+}
+
 static void maybeReboot(void *ctx)
 {
 	char *shutdown_type;
@@ -1311,7 +1318,7 @@ void Run()
         CloseHandle (processInfo.hProcess);
         CloseHandle (processInfo.hThread);
     }
-	
+
 
     AddFeature(&features, "control/shutdown", "control/feature-shutdown", 
                "shutdown", maybeReboot, NULL);
@@ -1319,6 +1326,7 @@ void Run()
                "rexec", processRexec, NULL);
     AddFeature(&features, "control/ping", NULL, "ping", processPing, NULL);
     AddFeature(&features, "control/dumplog", NULL, "dumplog", processDumpLog, NULL);
+    AddFeature(&features, "control/awake", NULL, "awake", respondAwake, NULL);
 
     /* Disabled for now, until we figure out exactly what we're going
        to use this for. */
