@@ -35,9 +35,10 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
-static void OxtUpdateScreen()
+static void OxtUpdateScreens(BOOL bClearScreens)
 {
     DWORD dwDevNum;
+    int iCount = 0;
     DISPLAY_DEVICE DisplayDevice;
     BOOL bRet;
     IOxtGuestServices *piOxtSvcs = NULL;
@@ -45,19 +46,6 @@ static void OxtUpdateScreen()
     int iWidth, iHeight;
     WCHAR wszData[MAX_LOADSTRING];
     CComBSTR bstrPath, bstrValue;
-
-    ::memset(&DisplayDevice, 0, sizeof(DISPLAY_DEVICE));
-    DisplayDevice.cb = sizeof(DISPLAY_DEVICE);
-
-    for (dwDevNum = 0; ; dwDevNum++)
-    {
-        bRet = ::EnumDisplayDevices(NULL, dwDevNum, &DisplayDevice, 0);
-        if (!bRet)
-        {
-            // We are done, error returned when there are no more
-            break;
-        }
-    }
 
     hr = ::CoCreateInstance(CLSID_OxtGuestServices,
                             NULL,
@@ -70,9 +58,43 @@ static void OxtUpdateScreen()
         return;
     }
 
+    if (bClearScreens)
+    {
+        bstrPath = L"display/activeAdapter";
+        bstrValue = L"0";
+        piOxtSvcs->XenStoreWrite(bstrPath, bstrValue);
+        return;
+    }
+
+    ::memset(&DisplayDevice, 0, sizeof(DISPLAY_DEVICE));
+    DisplayDevice.cb = sizeof(DISPLAY_DEVICE);
+
+    for (dwDevNum = 0; ; dwDevNum++)
+    {
+        bRet = ::EnumDisplayDevices(NULL, dwDevNum, &DisplayDevice, 0);
+        if (!bRet)
+        {
+            // We are done, error returned when there are no more
+            break;
+        }
+
+        if (((DisplayDevice.StateFlags & DISPLAY_DEVICE_ACTIVE) == 0) ||
+            (DisplayDevice.StateFlags & DISPLAY_DEVICE_REMOTE))
+        {
+            continue;
+        }
+
+        _snwprintf(wszData, MAX_LOADSTRING, L"display/activeAdapter/%d", iCount);
+        bstrPath = wszData;
+        bstrValue = DisplayDevice.DeviceString;
+        piOxtSvcs->XenStoreWrite(bstrPath, bstrValue);
+
+        iCount++;
+    }
+
     // First the active adapter count (not sure if it is used though).
     bstrPath = L"display/activeAdapter";
-    _snwprintf(wszData, MAX_LOADSTRING, L"%d", (int)dwDevNum);
+    _snwprintf(wszData, MAX_LOADSTRING, L"%d", iCount);
     bstrValue = wszData;
     piOxtSvcs->XenStoreWrite(bstrPath, bstrValue);
 
@@ -94,11 +116,15 @@ LRESULT CALLBACK OxtWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     case WM_POWERBROADCAST:
         if (wParam == PBT_APMRESUMEAUTOMATIC)
         {
-            OxtUpdateScreen();
+            OxtUpdateScreens(FALSE);
+        }
+        if (wParam == PBT_APMSUSPEND)
+        {
+            OxtUpdateScreens(TRUE);
         }
         break;
     case WM_DISPLAYCHANGE:
-        OxtUpdateScreen();
+        OxtUpdateScreens(FALSE);
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
@@ -163,18 +189,18 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
     ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
     LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadString(hInstance, IDC_OXTUSERAGENT, szWindowClass, MAX_LOADSTRING);
+    LoadString(hInstance, IDC_OXTUSERAGENT, szWindowClass, MAX_LOADSTRING);
 
     OxtRegisterClass(hInstance);
 
-	// Perform application initialization:
-	if (!OxtInitInstance(hInstance, nCmdShow))
-	{
-		return FALSE;
-	}
+    // Perform application initialization:
+    if (!OxtInitInstance(hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
 
     // Call once to initialize things a bit
-    OxtUpdateScreen();
+    OxtUpdateScreens(FALSE);
 
     // Main message loop:
     while (GetMessage(&msg, NULL, 0, 0))
