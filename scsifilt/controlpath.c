@@ -88,12 +88,14 @@ static void
 grant_ring(struct scsifilt *sf)
 {
     DOMAIN_ID domid = sf->backend_domid;
-    ULONG_PTR frame = virt_to_pfn(sf->ring_shared);
+    ULONG_PTR frame;
     int i;
 
     ungrant_ring(sf);
 
     for (i = 0; i < (1 << sf->ring_order); i++) {
+        frame = virt_to_pfn((void*) ((ULONG_PTR)sf->ring_shared + 
+                                     (ULONG_PTR)((i)*PAGE_SIZE)));
         sf->ring_gref[i] = GnttabGrantForeignAccessCache(domid,
                                                          frame,
                                                          GRANT_MODE_RW,
@@ -102,8 +104,6 @@ grant_ring(struct scsifilt *sf)
         /* Because the grant cache always contains enough grefs to cover
            the ring itself. */
         XM_ASSERT(!is_null_GRANT_REF(sf->ring_gref[i]));
-
-        frame++;
     }
 }
 
