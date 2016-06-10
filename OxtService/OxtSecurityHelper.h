@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2012 Citrix Systems, Inc.
  * Copyright (c) 2016 Assured Information Security, Inc
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
 
 
 #pragma once
-#include "resource.h"       // main symbols
+#include "resource.h"	   // main symbols
 #include "OxtService.h"
 
 #define XSH_APPID_LEN 45
@@ -31,16 +31,16 @@
 typedef struct _XSH_DESCRIPTOR
 {
 	SECURITY_DESCRIPTOR stSD;
-	PACL                pACL;
-	PSID                pAdminsSID;
-	PSID                pInteractivSID;
+	PACL				pACL;
+	PSID				pAdminsSID;
+	PSID				pInteractivSID;
 } XSH_DESCRIPTOR, *PXSH_DESCRIPTOR;
 
 class COxtSecurityHelper
 {
 private:
 	COxtService *m_pclOxtSvc;
-	TCHAR        m_tszAppIdKey[XSH_APPID_LEN + 1];
+	TCHAR		m_tszAppIdKey[XSH_APPID_LEN + 1];
 
 public:
 	COxtSecurityHelper(COxtService *pclOxtSvc)
@@ -65,7 +65,7 @@ public:
 	XSH_DESCRIPTOR* CreateXgaComSecurityDescriptor();
 	void FreeXgaComSecurityDescriptor(XSH_DESCRIPTOR* pXD);
 
-private:	
+private:
 	void LogSecuritySetupFailure(LPCTSTR tszPrincipal,
 								 LPCTSTR tszPermissionName,
 								 LPCTSTR tszOp,
@@ -94,7 +94,7 @@ private:
 							   LPCTSTR tszPrincipal,
 							   DWORD dwAccessMask);
 	DWORD MakeAbsoluteSecurityDescriptor(PSECURITY_DESCRIPTOR psidOld,
-									     PSECURITY_DESCRIPTOR *psidNew);
+										 PSECURITY_DESCRIPTOR *psidNew);
 	DWORD RemovePrincipalFromSecurityDescriptor(LPCTSTR tszPermissionName,
 												LPCTSTR tszPrincipal);
 	DWORD UpdatePrincipalInNamedSecurityDescriptor(LPCTSTR tszPermissionName,

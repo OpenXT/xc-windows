@@ -28,12 +28,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#ifndef APSTUDIO_INVOKED\r\n"
     "#include ""targetver.h""\r\n"
@@ -42,7 +42,7 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "1 TYPELIB ""OxtService.tlb""\r\n"
     "#include ""oxtmsg.rc""\r\n"
@@ -75,7 +75,7 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Put Your Company Name Here"
+            VALUE "CompanyName", "OpenXT Project"
             VALUE "FileDescription", "OpenXT Xen guest services provider"
             VALUE "FileVersion", "16.0.0.0"
             VALUE "InternalName", "OxtService.exe"

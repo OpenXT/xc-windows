@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2012 Citrix Systems, Inc.
  * Copyright (c) 2016 Assured Information Security, Inc
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,7 +45,7 @@ HRESULT COxtGuestServices::FinalConstruct()
 		// Register this object - if it fails the global count is exceeded
 		if (!m_pclOxtSvc->RegisterXgs())
 		{
-            m_clXs.XS2Close();
+			m_clXs.XS2Close();
 			hr = E_ACCESSDENIED;
 			LogCreateFailure((IDS_MAXIMUM_INSTANCE_COUNT_REACHED___OXTGUESTSERVICES_61), hr);
 		}
@@ -70,7 +70,7 @@ HRESULT COxtGuestServices::LogCreateFailure(ULONG ulMsg, HRESULT hr)
 
 STDMETHODIMP COxtGuestServices::InterfaceSupportsErrorInfo(REFIID riid)
 {
-	static const IID* arr[] = 
+	static const IID* arr[] =
 	{
 		&IID_IOxtGuestServices
 	};
@@ -85,35 +85,35 @@ STDMETHODIMP COxtGuestServices::InterfaceSupportsErrorInfo(REFIID riid)
 
 STDMETHODIMP COxtGuestServices::XenStoreRead(BSTR bstrPath, BSTR *pbstrValue)
 {
-    LPCSTR szValue;
-    CComBSTR bstrValue;
-    HRESULT hr;
+	LPCSTR szValue;
+	CComBSTR bstrValue;
+	HRESULT hr;
 
-    szValue = (LPCSTR)m_clXs.XS2Read(CW2A(bstrPath), NULL);
-    if (szValue == NULL)
-    {
-        hr = LogCreateFailure((IDS_FAILED_TO_OPEN_XENSTORE___HRESUL_OXTGUESTSERVICES_32),
+	szValue = (LPCSTR)m_clXs.XS2Read(CW2A(bstrPath), NULL);
+	if (szValue == NULL)
+	{
+		hr = LogCreateFailure((IDS_FAILED_TO_OPEN_XENSTORE___HRESUL_OXTGUESTSERVICES_32),
 								  E_UNEXPECTED);
-        return hr;
-    }
+		return hr;
+	}
 
-    bstrValue = szValue;
+	bstrValue = szValue;
 
-    m_clXs.XS2Free((LPVOID)szValue);
-    *pbstrValue = bstrValue.Copy();
+	m_clXs.XS2Free((LPVOID)szValue);
+	*pbstrValue = bstrValue.Copy();
 	return S_OK;
 }
 
 STDMETHODIMP COxtGuestServices::XenStoreWrite(BSTR bstrPath, BSTR bstrValue)
 {
-    HRESULT hr;
+	HRESULT hr;
 
-    if (!m_clXs.XS2Write(CW2A(bstrPath), CW2A(bstrValue)))
-    {
-        hr = LogCreateFailure((IDS_FAILED_TO_OPEN_XENSTORE___HRESUL_OXTGUESTSERVICES_32),
+	if (!m_clXs.XS2Write(CW2A(bstrPath), CW2A(bstrValue)))
+	{
+		hr = LogCreateFailure((IDS_FAILED_TO_OPEN_XENSTORE___HRESUL_OXTGUESTSERVICES_32),
 								  E_UNEXPECTED);
-        return hr;
-    }
+		return hr;
+	}
 
 	return S_OK;
 }

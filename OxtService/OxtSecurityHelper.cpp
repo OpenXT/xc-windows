@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2012 Citrix Systems, Inc.
  * Copyright (c) 2016 Assured Information Security, Inc
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,7 +30,7 @@
 #include "OxtSecurityHelper.h"
 
 #define XSH_PRINCIPAL_COUNT 3
-#define XSH_NAME_LEN        255
+#define XSH_NAME_LEN		255
 
 #define SDTYPE_APPLICATION_LAUNCH 0x10L
 #define SDTYPE_APPLICATION_ACCESS 0x20L
@@ -66,7 +66,7 @@ void COxtSecurityHelper::LogSecuritySetupFailure(LPCTSTR tszPrincipal,
 
 bool COxtSecurityHelper::IsLegacySecurityModel()
 {
-    bool                   br    = false;
+	bool				   br	= false;
 	const OSVERSIONINFOEX *posvi = m_pclOxtSvc->GetOsInfo();
 
 	if (posvi->dwMajorVersion == 5) // = 2k, xp, 2k3
@@ -90,18 +90,18 @@ bool COxtSecurityHelper::IsLegacySecurityModel()
 	else if (posvi->dwMajorVersion < 5) // nt?
 		br = true;
 
-    return br;
+	return br;
 }
 
 DWORD COxtSecurityHelper::CopyACL(PACL paclOld, PACL paclNew)
 {
 	ACL_SIZE_INFORMATION  aclSizeInfo = {0};
-	LPVOID                pvAce       = NULL;
-	ACE_HEADER           *pAceHeader  = NULL;
-	ULONG                 i;
+	LPVOID				  pvAce	      = NULL;
+	ACE_HEADER		     *pAceHeader  = NULL;
+	ULONG				  i;
 
-	if(!::GetAclInformation(paclOld, (LPVOID)&aclSizeInfo, 
-						    sizeof(aclSizeInfo), AclSizeInformation))
+	if(!::GetAclInformation(paclOld, (LPVOID)&aclSizeInfo,
+							sizeof(aclSizeInfo), AclSizeInformation))
 	{
 		return ::GetLastError();
 	}
@@ -127,12 +127,12 @@ DWORD COxtSecurityHelper::AddAccessAllowedACEToACL(PACL *paclOrig,
 												   DWORD dwAccessMask,
 												   LPCTSTR tszPrincipal)
 {
-	ACL_SIZE_INFORMATION  aclSizeInfo   = {0};
-	int                   cbAclSize     = 0;
-	DWORD                 dwReturnValue = ERROR_SUCCESS;
-	PSID                  psidPrincipal = NULL;
-	PACL                  paclOld       = NULL;
-	PACL                  paclNew       = NULL;
+	ACL_SIZE_INFORMATION aclSizeInfo   = {0};
+	int				     cbAclSize	   = 0;
+	DWORD				 dwReturnValue = ERROR_SUCCESS;
+	PSID				 psidPrincipal = NULL;
+	PACL				 paclOld	   = NULL;
+	PACL				 paclNew	   = NULL;
 
 	if (paclOrig == NULL)
 		return ERROR_BAD_ARGUMENTS;
@@ -144,8 +144,8 @@ DWORD COxtSecurityHelper::AddAccessAllowedACEToACL(PACL *paclOrig,
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		if (!::GetAclInformation(paclOld, (LPVOID)&aclSizeInfo, 
-							     sizeof (ACL_SIZE_INFORMATION), AclSizeInformation))
+		if (!::GetAclInformation(paclOld, (LPVOID)&aclSizeInfo,
+								 sizeof (ACL_SIZE_INFORMATION), AclSizeInformation))
 		{
 			dwReturnValue = ::GetLastError();
 			break;
@@ -195,11 +195,11 @@ DWORD COxtSecurityHelper::AddAccessDeniedACEToACL(PACL *paclOrig,
 												  LPCTSTR tszPrincipal)
 {
 	ACL_SIZE_INFORMATION  aclSizeInfo   = {0};
-	int                   cbAclSize     = 0;
-	DWORD                 dwReturnValue = ERROR_SUCCESS;
-	PSID                  psidPrincipal = NULL;
-	PACL                  paclOld       = NULL; 
-	PACL                  paclNew       = NULL;
+	int				      cbAclSize	    = 0;
+	DWORD				  dwReturnValue = ERROR_SUCCESS;
+	PSID				  psidPrincipal = NULL;
+	PACL				  paclOld	    = NULL;
+	PACL				  paclNew	    = NULL;
 
 	if (paclOrig == NULL)
 		return ERROR_BAD_ARGUMENTS;
@@ -211,8 +211,8 @@ DWORD COxtSecurityHelper::AddAccessDeniedACEToACL(PACL *paclOrig,
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		if (!::GetAclInformation(paclOld, (LPVOID)&aclSizeInfo, 
-							     sizeof (ACL_SIZE_INFORMATION), AclSizeInformation))
+		if (!::GetAclInformation(paclOld, (LPVOID)&aclSizeInfo,
+								 sizeof (ACL_SIZE_INFORMATION), AclSizeInformation))
 		{
 			dwReturnValue = ::GetLastError();
 			break;
@@ -261,36 +261,36 @@ DWORD COxtSecurityHelper::SetLegacyACLDefaults(PACL *ppDacl, DWORD dwSDType)
 	{
 	case SDTYPE_APPLICATION_LAUNCH:
 		{
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
-												 COM_RIGHTS_EXECUTE, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[1]); // SYSTEM
 
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
-												 COM_RIGHTS_EXECUTE, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[2]); // Administrators
 
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
-												 COM_RIGHTS_EXECUTE, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[0]); // INTERACTIVE
 		break;
 		}
 	case SDTYPE_APPLICATION_ACCESS:
 		{
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
-												 COM_RIGHTS_EXECUTE, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[1]); // SYSTEM
 
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
-												 COM_RIGHTS_EXECUTE, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[0]); // INTERACTIVE
 		break;
 		}
@@ -305,64 +305,64 @@ DWORD COxtSecurityHelper::SetACLDefaults(PACL *ppDacl, DWORD dwSDType)
 {
 	DWORD dwReturnValue = ERROR_BAD_ARGUMENTS;
 
-	if (IsLegacySecurityModel()) 
+	if (IsLegacySecurityModel())
 		return SetLegacyACLDefaults(ppDacl, dwSDType);
 
 	switch (dwSDType)
-	{   
+	{
 	case SDTYPE_APPLICATION_LAUNCH:
 		{
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
 												 COM_RIGHTS_ACTIVATE_LOCAL |
-												 COM_RIGHTS_EXECUTE_LOCAL | 
-												 COM_RIGHTS_EXECUTE, 
+												 COM_RIGHTS_EXECUTE_LOCAL |
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[1]); // SYSTEM
 
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
 												 COM_RIGHTS_ACTIVATE_LOCAL |
-												 COM_RIGHTS_EXECUTE_LOCAL | 
-												 COM_RIGHTS_EXECUTE, 
+												 COM_RIGHTS_EXECUTE_LOCAL |
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[2]); // Administrators
 
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
 												 COM_RIGHTS_ACTIVATE_LOCAL |
-												 COM_RIGHTS_EXECUTE_LOCAL | 
-												 COM_RIGHTS_EXECUTE, 
+												 COM_RIGHTS_EXECUTE_LOCAL |
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[0]); // INTERACTIVE
 		break;
 		}
 	case SDTYPE_APPLICATION_ACCESS:
 		{
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
-												 COM_RIGHTS_EXECUTE_LOCAL | 
-												 COM_RIGHTS_EXECUTE, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
+												 COM_RIGHTS_EXECUTE_LOCAL |
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[1]); // SYSTEM
 
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
-												 COM_RIGHTS_EXECUTE_LOCAL | 
-												 COM_RIGHTS_EXECUTE, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
+												 COM_RIGHTS_EXECUTE_LOCAL |
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[2]); // Administrators
 
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		dwReturnValue = AddAccessAllowedACEToACL(ppDacl, 
-												 COM_RIGHTS_EXECUTE_LOCAL | 
-												 COM_RIGHTS_EXECUTE, 
+		dwReturnValue = AddAccessAllowedACEToACL(ppDacl,
+												 COM_RIGHTS_EXECUTE_LOCAL |
+												 COM_RIGHTS_EXECUTE,
 												 g_ptszPrincipals[0]); // INTERACTIVE
 
 		break;
 		}
-	default:    
+	default:
 		break;
 	}
 
@@ -371,12 +371,12 @@ DWORD COxtSecurityHelper::SetACLDefaults(PACL *ppDacl, DWORD dwSDType)
 
 DWORD COxtSecurityHelper::CreateNewSecurityDescriptor(SECURITY_DESCRIPTOR **ppSecurityDesc)
 {
-	PACL                     pAcl               = NULL;
-	DWORD                    cbSid              = 0;
-	PSID                     pSid               = NULL;
-	PSID                     psidGroup          = NULL;
-	PSID                     psidOwner          = NULL;
-	DWORD                    dwReturnValue      = ERROR_SUCCESS;
+	PACL					 pAcl			  = NULL;
+	DWORD					 cbSid			  = 0;
+	PSID					 pSid			  = NULL;
+	PSID					 psidGroup		  = NULL;
+	PSID					 psidOwner		  = NULL;
+	DWORD					 dwReturnValue	  = ERROR_SUCCESS;
 	SID_IDENTIFIER_AUTHORITY SystemSidAuthority = SECURITY_NT_AUTHORITY;
 
 	if (!ppSecurityDesc)
@@ -385,7 +385,7 @@ DWORD COxtSecurityHelper::CreateNewSecurityDescriptor(SECURITY_DESCRIPTOR **ppSe
 	*ppSecurityDesc = NULL;
 
 	do {
-		if (!::AllocateAndInitializeSid(&SystemSidAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, 
+		if (!::AllocateAndInitializeSid(&SystemSidAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID,
 										DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &pSid))
 		{
 			dwReturnValue = GetLastError();
@@ -453,16 +453,16 @@ DWORD COxtSecurityHelper::CreateNewSecurityDescriptor(SECURITY_DESCRIPTOR **ppSe
 DWORD COxtSecurityHelper::GetPrincipalSIDByName(LPCTSTR tszPrincipal, PSID *ppSid)
 {
 	SID_NAME_USE snu;
-    DWORD        cbSid                          = 0;
-    DWORD        cbRefDomain                    = 0;
-    DWORD        dwReturnValue                  = ERROR_SUCCESS;
-	TCHAR        tszRefDomain[XSH_NAME_LEN + 1] = {0};
+	DWORD		 cbSid         = 0;
+	DWORD		 cbRefDomain   = 0;
+	DWORD		 dwReturnValue = ERROR_SUCCESS;
+	TCHAR		 tszRefDomain[XSH_NAME_LEN + 1] = {0};
 
-    cbSid = 0;
-    cbRefDomain = XSH_NAME_LEN;
+	cbSid = 0;
+	cbRefDomain = XSH_NAME_LEN;
 
 	::LookupAccountName(NULL, tszPrincipal, *ppSid, &cbSid,
-					    tszRefDomain, &cbRefDomain, &snu);
+						tszRefDomain, &cbRefDomain, &snu);
 
 	dwReturnValue = ::GetLastError();
 	if (dwReturnValue != ERROR_INSUFFICIENT_BUFFER)
@@ -489,8 +489,8 @@ DWORD COxtSecurityHelper::GetPrincipalSIDByName(LPCTSTR tszPrincipal, PSID *ppSi
 
 DWORD COxtSecurityHelper::GetPrincipalSID(LPCTSTR tszPrincipal, PSID *ppSid)
 {
-    const TCHAR *tszStringSid  = NULL;
-	DWORD        i;
+	const TCHAR *tszStringSid  = NULL;
+	DWORD		i;
 
 	*ppSid = NULL;
 
@@ -520,11 +520,11 @@ DWORD COxtSecurityHelper::GetSecurityDescripterByName(LPCTSTR tszPermissionName,
 													  BOOL *pbNew)
 {
 	DWORD  dwReturnValue = ERROR_SUCCESS;
-	HKEY   hkeyReg       = NULL;
-	DWORD  dwType        = 0;
-	DWORD  cbSize        = 0;
+	HKEY   hkeyReg	     = NULL;
+	DWORD  dwType		 = 0;
+	DWORD  cbSize		 = 0;
 
-	if (pbNew) 
+	if (pbNew)
 		*pbNew = FALSE;
 
 	if (!ppSecurityDesc)
@@ -543,7 +543,7 @@ DWORD COxtSecurityHelper::GetSecurityDescripterByName(LPCTSTR tszPermissionName,
 		dwReturnValue = ::RegQueryValueEx(hkeyReg, tszPermissionName, NULL, &dwType, NULL, &cbSize);
 
 		if ((dwReturnValue != ERROR_SUCCESS)&&(dwReturnValue != ERROR_INSUFFICIENT_BUFFER))
-			break;	 
+			break;
 
 		*ppSecurityDesc = (SECURITY_DESCRIPTOR *)malloc(cbSize);
 		if (*ppSecurityDesc == NULL)
@@ -552,7 +552,7 @@ DWORD COxtSecurityHelper::GetSecurityDescripterByName(LPCTSTR tszPermissionName,
 			break;
 		}
 
-		dwReturnValue = ::RegQueryValueEx(hkeyReg, tszPermissionName, NULL, 
+		dwReturnValue = ::RegQueryValueEx(hkeyReg, tszPermissionName, NULL,
 										  &dwType, (LPBYTE)*ppSecurityDesc, &cbSize);
 	} while (false);
 
@@ -567,7 +567,7 @@ DWORD COxtSecurityHelper::GetSecurityDescripterByName(LPCTSTR tszPermissionName,
 		{
 			dwReturnValue = CreateNewSecurityDescriptor(ppSecurityDesc);
 			if (dwReturnValue == ERROR_SUCCESS)
-				*pbNew = TRUE;			
+				*pbNew = TRUE;
 		}
 	}
 
@@ -580,20 +580,20 @@ DWORD COxtSecurityHelper::GetSecurityDescripterByName(LPCTSTR tszPermissionName,
 DWORD COxtSecurityHelper::SetSecurityDescriptorByName(LPCTSTR tszPermissionName,
 													  SECURITY_DESCRIPTOR *pSecurityDesc)
 {
-    DWORD dwReturnValue = ERROR_SUCCESS;
-    DWORD dwDisposition = 0;
+	DWORD dwReturnValue = ERROR_SUCCESS;
+	DWORD dwDisposition = 0;
 	DWORD dwLength;
-    HKEY  hkeyReg = NULL;
+	HKEY  hkeyReg = NULL;
 
 	// Create new key or open existing key
-	dwReturnValue = ::RegCreateKeyEx(HKEY_CLASSES_ROOT, m_tszAppIdKey, 0, _T(""), 0, 
+	dwReturnValue = ::RegCreateKeyEx(HKEY_CLASSES_ROOT, m_tszAppIdKey, 0, _T(""), 0,
 									 KEY_ALL_ACCESS, NULL, &hkeyReg, &dwDisposition);
 	if (dwReturnValue != ERROR_SUCCESS)
 		return dwReturnValue;
 
 	// Write the security descriptor
 	dwLength = ::GetSecurityDescriptorLength(pSecurityDesc);
-	dwReturnValue = ::RegSetValueEx(hkeyReg, tszPermissionName, 0, REG_BINARY, 
+	dwReturnValue = ::RegSetValueEx(hkeyReg, tszPermissionName, 0, REG_BINARY,
 									(LPBYTE)pSecurityDesc, dwLength);
 	::RegCloseKey(hkeyReg);
 
@@ -604,7 +604,7 @@ DWORD COxtSecurityHelper::CanonicalizeSecurityDescriptor(PSECURITY_DESCRIPTOR pS
 {
 	BOOL bACLPresent = FALSE;
 	BOOL bDefaulted  = FALSE;
-	ACL* pACL        = NULL;
+	ACL* pACL		 = NULL;
 
 	if (!::GetSecurityDescriptorDacl(pSD, &bACLPresent, &pACL, &bDefaulted))
 		return ::GetLastError();
@@ -627,11 +627,11 @@ DWORD COxtSecurityHelper::CanonicalizeSecurityDescriptor(PSECURITY_DESCRIPTOR pS
 		{
 			DWORD dwError = NULL;
 			void* pNewAcl = NULL;
-	   
-			// Protect against bad ACL structure 
+
+			// Protect against bad ACL structure
 			if (((ULONG_PTR)pAceHeader-(ULONG_PTR)pACL) >= (pACL->AclSize - sizeof(ACCESS_MASK)))
 				return ERROR_INVALID_PARAMETER;
-	  
+
 			DWORD dwAceSize = pAceHeader->AceSize;
 
 			// Ensure minimum size ACE
@@ -663,22 +663,22 @@ DWORD COxtSecurityHelper::CanonicalizeSecurityDescriptor(PSECURITY_DESCRIPTOR pS
 
 DWORD COxtSecurityHelper::RemovePrincipalFromACL(PACL paclOrig, LPCTSTR tszPrincipal)
 {
-    ACL_SIZE_INFORMATION  aclSizeInfo      = {0};
-    LONG                  i;
-    LPVOID                pvAce            = NULL;
-    ACCESS_DENIED_ACE    *pAccessDeniedAce = NULL;
-    PSID                  psidPrincipal    = NULL;
-    DWORD                 dwReturnValue    = ERROR_SUCCESS;
-    ACE_HEADER           *pAceHeader       = NULL;
-    DWORD                 dwFoundValue     = ERROR_FILE_NOT_FOUND;
+	ACL_SIZE_INFORMATION  aclSizeInfo	   = {0};
+	LONG				  i;
+	LPVOID				  pvAce			   = NULL;
+	ACCESS_DENIED_ACE	 *pAccessDeniedAce = NULL;
+	PSID				  psidPrincipal	   = NULL;
+	DWORD				  dwReturnValue	   = ERROR_SUCCESS;
+	ACE_HEADER		     *pAceHeader	   = NULL;
+	DWORD				  dwFoundValue	   = ERROR_FILE_NOT_FOUND;
 
 	do {
 		dwReturnValue = GetPrincipalSID(tszPrincipal, &psidPrincipal);
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		if (!::GetAclInformation(paclOrig, (LPVOID)&aclSizeInfo, 
-							     sizeof(ACL_SIZE_INFORMATION), AclSizeInformation))
+		if (!::GetAclInformation(paclOrig, (LPVOID)&aclSizeInfo,
+								 sizeof(ACL_SIZE_INFORMATION), AclSizeInformation))
 		{
 			dwReturnValue = ::GetLastError();
 			break;
@@ -701,7 +701,7 @@ DWORD COxtSecurityHelper::RemovePrincipalFromACL(PACL paclOrig, LPCTSTR tszPrinc
 
 				if (::EqualSid(psidPrincipal, (PSID)&pAccessDeniedAce->SidStart))
 				{
-					if (pAccessDeniedAce->Mask & SPECIFIC_RIGHTS_ALL)					
+					if (pAccessDeniedAce->Mask & SPECIFIC_RIGHTS_ALL)
 						::DeleteAce(paclOrig, i);
 
 					dwFoundValue = ERROR_SUCCESS;
@@ -721,16 +721,16 @@ DWORD COxtSecurityHelper::RemovePrincipalFromACL(PACL paclOrig, LPCTSTR tszPrinc
 
 DWORD COxtSecurityHelper::UpdatePrincipalInACL(PACL paclOrig, LPCTSTR tszPrincipal, DWORD dwAccessMask)
 {
-    ACL_SIZE_INFORMATION  aclSizeInfo       = {0};
-    LONG                  i;
-    LPVOID                pvAce             = NULL;
-    ACCESS_ALLOWED_ACE   *pAccessAllowedAce = NULL;
-    ACCESS_DENIED_ACE    *pAccessDeniedAce  = NULL;
-    SYSTEM_AUDIT_ACE     *pSystemAuditAce   = NULL;
-    PSID                  psidPrincipal     = NULL;
-    DWORD                 dwReturnValue     = ERROR_SUCCESS;
-    ACE_HEADER           *pAceHeader        = NULL;
-    DWORD                 dwFoundValue      = ERROR_FILE_NOT_FOUND;
+	ACL_SIZE_INFORMATION aclSizeInfo	   = {0};
+	LONG				 i;
+	LPVOID				 pvAce			   = NULL;
+	ACCESS_ALLOWED_ACE  *pAccessAllowedAce = NULL;
+	ACCESS_DENIED_ACE   *pAccessDeniedAce  = NULL;
+	SYSTEM_AUDIT_ACE	*pSystemAuditAce   = NULL;
+	PSID				 psidPrincipal	   = NULL;
+	DWORD				 dwReturnValue	   = ERROR_SUCCESS;
+	ACE_HEADER		    *pAceHeader		   = NULL;
+	DWORD				 dwFoundValue	   = ERROR_FILE_NOT_FOUND;
 
 	do {
 		// Construct a SID for this principal
@@ -738,14 +738,14 @@ DWORD COxtSecurityHelper::UpdatePrincipalInACL(PACL paclOrig, LPCTSTR tszPrincip
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
-		if (!::GetAclInformation(paclOrig, (LPVOID)&aclSizeInfo, 
-							     sizeof(ACL_SIZE_INFORMATION), AclSizeInformation))
+		if (!::GetAclInformation(paclOrig, (LPVOID)&aclSizeInfo,
+								 sizeof(ACL_SIZE_INFORMATION), AclSizeInformation))
 		{
 			dwReturnValue = ::GetLastError();
 			break;
 		}
 
-		// Iterate through all of the ACEs in this ACL looking for a SID that corresponds 
+		// Iterate through all of the ACEs in this ACL looking for a SID that corresponds
 		// to the principal.
 		for (i = aclSizeInfo.AceCount - 1; i >= 0; i--)
 		{
@@ -768,7 +768,7 @@ DWORD COxtSecurityHelper::UpdatePrincipalInACL(PACL paclOrig, LPCTSTR tszPrincip
 					if (pAccessAllowedAce->Mask & SPECIFIC_RIGHTS_ALL)
 					{
 						pAccessAllowedAce->Mask &= ~dwAccessMask;
-						// If there are any COM rights reamining we must ensure 
+						// If there are any COM rights reamining we must ensure
 						// COM_RIGHTS_EXECUTE is set before leaving.
 						if (pAccessAllowedAce->Mask & (COM_RIGHTS_ACTIVATE_LOCAL  |
 													   COM_RIGHTS_ACTIVATE_REMOTE |
@@ -777,11 +777,11 @@ DWORD COxtSecurityHelper::UpdatePrincipalInACL(PACL paclOrig, LPCTSTR tszPrincip
 						{
 							pAccessAllowedAce->Mask |= COM_RIGHTS_EXECUTE;
 						}
-						else if((pAccessAllowedAce->Mask & SPECIFIC_RIGHTS_ALL) == 0) 
+						else if((pAccessAllowedAce->Mask & SPECIFIC_RIGHTS_ALL) == 0)
 						{
 							// If there are no more specific rights on this ACE, delete it.
 							::DeleteAce(paclOrig, i);
-						}		                                          
+						}
 					}
 					else
 					{
@@ -805,19 +805,19 @@ DWORD COxtSecurityHelper::UpdatePrincipalInACL(PACL paclOrig, LPCTSTR tszPrincip
 DWORD COxtSecurityHelper::MakeAbsoluteSecurityDescriptor(PSECURITY_DESCRIPTOR psidOld,
 														 PSECURITY_DESCRIPTOR *psidNew)
 {
-	PSECURITY_DESCRIPTOR  pSid           = NULL;
-	DWORD                 cbDescriptor   = 0;
-	DWORD                 cbDacl         = 0;
-	DWORD                 cbSacl         = 0;
-	DWORD                 cbOwnerSID     = 0;
-	DWORD                 cbGroupSID     = 0;
-	PACL                  pDacl          = NULL;
-	PACL                  pSacl          = NULL;
-	PSID                  psidOwner      = NULL;
-	PSID                  psidGroup      = NULL;
-	BOOL                  bPresent       = FALSE;
-	BOOL                  bSystemDefault = FALSE;
-	DWORD                 dwReturnValue  = ERROR_SUCCESS;
+	PSECURITY_DESCRIPTOR  pSid		   = NULL;
+	DWORD				  cbDescriptor   = 0;
+	DWORD				  cbDacl		 = 0;
+	DWORD				  cbSacl		 = 0;
+	DWORD				  cbOwnerSID	 = 0;
+	DWORD				  cbGroupSID	 = 0;
+	PACL				  pDacl		  = NULL;
+	PACL				  pSacl		  = NULL;
+	PSID				  psidOwner	  = NULL;
+	PSID				  psidGroup	  = NULL;
+	BOOL				  bPresent	     = FALSE;
+	BOOL				  bSystemDefault = FALSE;
+	DWORD				  dwReturnValue  = ERROR_SUCCESS;
 
 	do {
 		if (!::GetSecurityDescriptorSacl(psidOld, &bPresent, &pSacl, &bSystemDefault))
@@ -898,19 +898,19 @@ DWORD COxtSecurityHelper::MakeAbsoluteSecurityDescriptor(PSECURITY_DESCRIPTOR ps
 DWORD COxtSecurityHelper::RemovePrincipalFromSecurityDescriptor(LPCTSTR tszPermissionName,
 																LPCTSTR tszPrincipal)
 {
-	DWORD                dwReturnValue    = ERROR_SUCCESS;
-	SECURITY_DESCRIPTOR *pSD             = NULL;
+	DWORD				 dwReturnValue   = ERROR_SUCCESS;
+	SECURITY_DESCRIPTOR *pSD			 = NULL;
 	SECURITY_DESCRIPTOR *psdSelfRelative = NULL;
-	SECURITY_DESCRIPTOR *psdAbsolute     = NULL;
-	DWORD                cbSecurityDesc   = 0;
-	BOOL                 bPresent         = FALSE;
-	BOOL                 bDefaultDACL     = FALSE;
-	PACL                 pDacl            = NULL;
+	SECURITY_DESCRIPTOR *psdAbsolute	 = NULL;
+	DWORD				 cbSecurityDesc  = 0;
+	BOOL				 bPresent		 = FALSE;
+	BOOL				 bDefaultDACL	 = FALSE;
+	PACL				 pDacl			 = NULL;
 
 	do {
 		// Get security descriptor from registry, if it is not there then
 		// just return - nothing to do.
-		dwReturnValue = GetSecurityDescripterByName(tszPermissionName, &pSD, NULL);		
+		dwReturnValue = GetSecurityDescripterByName(tszPermissionName, &pSD, NULL);
 		if (dwReturnValue != ERROR_SUCCESS)
 		{
 			if (dwReturnValue == ERROR_FILE_NOT_FOUND)
@@ -935,7 +935,7 @@ DWORD COxtSecurityHelper::RemovePrincipalFromSecurityDescriptor(LPCTSTR tszPermi
 			break;
 
 		// Make the security descriptor absolute if it isn't new
-		dwReturnValue = MakeAbsoluteSecurityDescriptor((PSECURITY_DESCRIPTOR)pSD, (PSECURITY_DESCRIPTOR *)&psdAbsolute); 
+		dwReturnValue = MakeAbsoluteSecurityDescriptor((PSECURITY_DESCRIPTOR)pSD, (PSECURITY_DESCRIPTOR *)&psdAbsolute);
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
@@ -965,7 +965,7 @@ DWORD COxtSecurityHelper::RemovePrincipalFromSecurityDescriptor(LPCTSTR tszPermi
 		}
 
 		// Store the security descriptor in the registry
-		dwReturnValue = SetSecurityDescriptorByName(tszPermissionName, psdSelfRelative);		
+		dwReturnValue = SetSecurityDescriptorByName(tszPermissionName, psdSelfRelative);
 	} while (false);
 
 	if (pSD != NULL)
@@ -982,14 +982,14 @@ DWORD COxtSecurityHelper::UpdatePrincipalInNamedSecurityDescriptor(LPCTSTR tszPe
 																   LPCTSTR tszPrincipal,
 																   DWORD dwAccessMask)
 {
-	DWORD                dwReturnValue    = ERROR_SUCCESS;
-	SECURITY_DESCRIPTOR *pSD              = NULL;
-	SECURITY_DESCRIPTOR *psdSelfRelative  = NULL;
-	SECURITY_DESCRIPTOR *psdAbsolute      = NULL;
-	DWORD                cbSecurityDesc   = 0;
-	BOOL                 bPresent         = FALSE;
-	BOOL                 bDefaultDACL     = FALSE;
-	PACL                 pDacl            = NULL;
+	DWORD				 dwReturnValue	 = ERROR_SUCCESS;
+	SECURITY_DESCRIPTOR *pSD			 = NULL;
+	SECURITY_DESCRIPTOR *psdSelfRelative = NULL;
+	SECURITY_DESCRIPTOR *psdAbsolute	 = NULL;
+	DWORD				 cbSecurityDesc  = 0;
+	BOOL				 bPresent		 = FALSE;
+	BOOL				 bDefaultDACL	 = FALSE;
+	PACL				 pDacl			 = NULL;
 
 	do {
 		// Get security descriptor from registry
@@ -1020,9 +1020,9 @@ DWORD COxtSecurityHelper::UpdatePrincipalInNamedSecurityDescriptor(LPCTSTR tszPe
 			break;
 		}
 
-		// Make the security descriptor absolute 
-		dwReturnValue = MakeAbsoluteSecurityDescriptor((PSECURITY_DESCRIPTOR)pSD, 
-													   (PSECURITY_DESCRIPTOR *)&psdAbsolute); 
+		// Make the security descriptor absolute
+		dwReturnValue = MakeAbsoluteSecurityDescriptor((PSECURITY_DESCRIPTOR)pSD,
+													   (PSECURITY_DESCRIPTOR *)&psdAbsolute);
 		if (dwReturnValue != ERROR_SUCCESS)
 			break;
 
@@ -1075,16 +1075,16 @@ DWORD COxtSecurityHelper::AddPrincipalToNamedSecurityDescriptor(LPCTSTR tszPermi
 																DWORD dwAccessMask,
 																DWORD dwSDType)
 {
-	DWORD                dwReturnValue    = ERROR_SUCCESS;
-	SECURITY_DESCRIPTOR *pSD              = NULL;
-	SECURITY_DESCRIPTOR *psdSelfRelative  = NULL;
-	SECURITY_DESCRIPTOR *psdAbsolute      = NULL;
-	DWORD                cbSecurityDesc   = 0;
-	BOOL                 bPresent         = FALSE;
-	BOOL                 bDefaultDACL     = FALSE;
-	PACL                 pDacl            = NULL;
-	BOOL                 bNewSD           = FALSE;
- 
+	DWORD				 dwReturnValue	 = ERROR_SUCCESS;
+	SECURITY_DESCRIPTOR *pSD			 = NULL;
+	SECURITY_DESCRIPTOR *psdSelfRelative = NULL;
+	SECURITY_DESCRIPTOR *psdAbsolute	 = NULL;
+	DWORD				 cbSecurityDesc  = 0;
+	BOOL				 bPresent		 = FALSE;
+	BOOL				 bDefaultDACL	 = FALSE;
+	PACL				 pDacl			 = NULL;
+	BOOL				 bNewSD		     = FALSE;
+
 	do {
 		// Get security descriptor from registry or create a new one
 		dwReturnValue = GetSecurityDescripterByName(tszPermissionName, &pSD, &bNewSD);
@@ -1113,7 +1113,7 @@ DWORD COxtSecurityHelper::AddPrincipalToNamedSecurityDescriptor(LPCTSTR tszPermi
 		if (!bNewSD)
 		{
 			dwReturnValue = MakeAbsoluteSecurityDescriptor((PSECURITY_DESCRIPTOR)pSD,
-														   (PSECURITY_DESCRIPTOR *)&psdAbsolute); 
+														   (PSECURITY_DESCRIPTOR *)&psdAbsolute);
 			if (dwReturnValue != ERROR_SUCCESS)
 				break;
 		}
@@ -1279,7 +1279,7 @@ bool COxtSecurityHelper::DenyCheckUser(DWORD dwAccessMask,
 									   BOOL bPermit)
 {
 
-    if (IsLegacySecurityModel())
+	if (IsLegacySecurityModel())
 	{
 		// We don't really support anything lower than XPSP3 so we will just
 		// drop out on the legacy check.
@@ -1291,12 +1291,12 @@ bool COxtSecurityHelper::DenyCheckUser(DWORD dwAccessMask,
 	// everything has been denied. So the only case that is bad is permitting
 	// remote access.
 
-    if (dwSDType & SDTYPE_APPLICATION_ACCESS)
-    {
-        BOOL bRemoteAccess = (dwAccessMask & COM_RIGHTS_EXECUTE_REMOTE  ) ||
-                             ((dwAccessMask & COM_RIGHTS_EXECUTE) && 
-                              !(dwAccessMask & COM_RIGHTS_EXECUTE_LOCAL));
-		
+	if (dwSDType & SDTYPE_APPLICATION_ACCESS)
+	{
+		BOOL bRemoteAccess = (dwAccessMask & COM_RIGHTS_EXECUTE_REMOTE  ) ||
+							 ((dwAccessMask & COM_RIGHTS_EXECUTE) &&
+							  !(dwAccessMask & COM_RIGHTS_EXECUTE_LOCAL));
+
 		if ((bPermit)&&(bRemoteAccess))
 		{
 			m_pclOxtSvc->LogEventTypeId(ctxLS(IDS_DENY_REMOTE_CHECK_FOR_zS_DETECTE_OXTSECURITYHELPER_1279),
@@ -1304,21 +1304,21 @@ bool COxtSecurityHelper::DenyCheckUser(DWORD dwAccessMask,
 									 _T("AccessPermission"));
 			return false;
 		}
-    }
+	}
 
-    if (dwSDType & SDTYPE_APPLICATION_LAUNCH)
-    {
-        BOOL bRemoteLaunchAccess = (dwAccessMask & COM_RIGHTS_EXECUTE_REMOTE  ) ||
-                             ((dwAccessMask & COM_RIGHTS_EXECUTE) && 
-                             !(dwAccessMask & (COM_RIGHTS_EXECUTE_LOCAL   |
-                                               COM_RIGHTS_ACTIVATE_REMOTE |
-                                               COM_RIGHTS_ACTIVATE_LOCAL)));
+	if (dwSDType & SDTYPE_APPLICATION_LAUNCH)
+	{
+		BOOL bRemoteLaunchAccess = (dwAccessMask & COM_RIGHTS_EXECUTE_REMOTE  ) ||
+							 ((dwAccessMask & COM_RIGHTS_EXECUTE) &&
+							 !(dwAccessMask & (COM_RIGHTS_EXECUTE_LOCAL   |
+											   COM_RIGHTS_ACTIVATE_REMOTE |
+											   COM_RIGHTS_ACTIVATE_LOCAL)));
 
-        BOOL bRemoteActivateAccess = (dwAccessMask & COM_RIGHTS_ACTIVATE_REMOTE) ||
-                             ((dwAccessMask & COM_RIGHTS_EXECUTE) && 
-                             !(dwAccessMask & (COM_RIGHTS_EXECUTE_LOCAL  |
-                                               COM_RIGHTS_EXECUTE_REMOTE |
-                                               COM_RIGHTS_ACTIVATE_LOCAL)));
+		BOOL bRemoteActivateAccess = (dwAccessMask & COM_RIGHTS_ACTIVATE_REMOTE) ||
+							 ((dwAccessMask & COM_RIGHTS_EXECUTE) &&
+							 !(dwAccessMask & (COM_RIGHTS_EXECUTE_LOCAL  |
+											   COM_RIGHTS_EXECUTE_REMOTE |
+											   COM_RIGHTS_ACTIVATE_LOCAL)));
 		if ((bPermit)&&(bRemoteLaunchAccess))
 		{
 			m_pclOxtSvc->LogEventTypeId(ctxLS(IDS_DENY_REMOTE_CHECK_FOR_zS_DETECTE_OXTSECURITYHELPER_1301),
@@ -1334,31 +1334,31 @@ bool COxtSecurityHelper::DenyCheckUser(DWORD dwAccessMask,
 									 _T("LaunchPermission-Activate"));
 			return false;
 		}
-    }
+	}
 
 	return true;
 }
 
 bool COxtSecurityHelper::DenyCheckACL(PACL pACL, LPCTSTR tszPermissionName, DWORD dwSDType)
 {
-	ACL_SIZE_INFORMATION      aclSizeInfo                     = {0};
-	ACL_REVISION_INFORMATION  aclRevInfo                      = {0};
-	ULONG                     i;
-	LPVOID                    pvAce                           = NULL;
-	ACE_HEADER               *pAceHeader                      = NULL;
-	ACCESS_ALLOWED_ACE       *pAccessAllowedAce               = NULL;
-	ACCESS_DENIED_ACE        *pAccessDeniedAce                = NULL;
-	TCHAR                     tszDomainName[XSH_NAME_LEN + 1] = {0};
-	TCHAR                     tszUserName[XSH_NAME_LEN + 1]   = {0};
-	DWORD                     cchName                         = 0;
-	SID_NAME_USE              snu;
-	BOOL                      rc;
-	BOOL                      bPermit;
-	PSID                      pSID;
-	ACCESS_MASK               dwMask;
+	ACL_SIZE_INFORMATION	  aclSizeInfo					  = {0};
+	ACL_REVISION_INFORMATION  aclRevInfo					  = {0};
+	ULONG					  i;
+	LPVOID					  pvAce						      = NULL;
+	ACE_HEADER			     *pAceHeader					  = NULL;
+	ACCESS_ALLOWED_ACE	     *pAccessAllowedAce			      = NULL;
+	ACCESS_DENIED_ACE		 *pAccessDeniedAce				  = NULL;
+	TCHAR					  tszDomainName[XSH_NAME_LEN + 1] = {0};
+	TCHAR					  tszUserName[XSH_NAME_LEN + 1]   = {0};
+	DWORD					  cchName						  = 0;
+	SID_NAME_USE			  snu;
+	BOOL					  rc;
+	BOOL					  bPermit;
+	PSID					  pSID;
+	ACCESS_MASK			      dwMask;
 
 	if (!::GetAclInformation(pACL, &aclSizeInfo, sizeof(ACL_SIZE_INFORMATION), AclSizeInformation))
-	{		
+	{
 		LogDenyCheckFailure(tszPermissionName, _T("GET AclSizeInformation"));
 		return false;
 	}
@@ -1386,7 +1386,7 @@ bool COxtSecurityHelper::DenyCheckACL(PACL pACL, LPCTSTR tszPermissionName, DWOR
 			pSID = (PSID)&pAccessAllowedAce->SidStart;
 			dwMask = pAccessAllowedAce->Mask;
 			bPermit = TRUE;
-		} 
+		}
 		else if (pAceHeader->AceType == ACCESS_DENIED_ACE_TYPE)
 		{
 			pAccessDeniedAce = (ACCESS_DENIED_ACE*)pvAce;
@@ -1412,7 +1412,7 @@ bool COxtSecurityHelper::DenyCheckACL(PACL pACL, LPCTSTR tszPermissionName, DWOR
 
 		rc = DenyCheckUser(dwMask,
 						   dwSDType,
-						   tszUserName, 
+						   tszUserName,
 						   tszDomainName,
 						   bPermit);
 		if (!rc)
@@ -1424,12 +1424,12 @@ bool COxtSecurityHelper::DenyCheckACL(PACL pACL, LPCTSTR tszPermissionName, DWOR
 
 bool COxtSecurityHelper::CheckDenyRemoteAccess()
 {
-	DWORD                dwReturnValue = ERROR_SUCCESS;
-	SECURITY_DESCRIPTOR *pSD           = NULL;
-	BOOL                 bPresent      = FALSE;
-	BOOL                 bDefaultDACL  = FALSE;
-	PACL                 pDACL         = NULL;
-	bool                 rc = true;
+	DWORD				 dwReturnValue = ERROR_SUCCESS;
+	SECURITY_DESCRIPTOR *pSD		   = NULL;
+	BOOL				 bPresent	   = FALSE;
+	BOOL				 bDefaultDACL  = FALSE;
+	PACL				 pDACL		   = NULL;
+	bool				 rc = true;
 
 	// First test AccessPermission for denied remote access
 	do {
@@ -1443,7 +1443,7 @@ bool COxtSecurityHelper::CheckDenyRemoteAccess()
 		}
 
 		if (!::GetSecurityDescriptorDacl(pSD, &bPresent, &pDACL, &bDefaultDACL))
-		{			
+		{
 			LogDenyCheckFailure(_T("AccessPermission"), _T("GET SD DACL"));
 			rc = false;
 			break;
@@ -1467,14 +1467,14 @@ bool COxtSecurityHelper::CheckDenyRemoteAccess()
 		free(pSD);
 		pSD = NULL;
 	}
-	
+
 	if (!rc)
 		return false; // first check failed
 
 	dwReturnValue = ERROR_SUCCESS;
-	bPresent      = FALSE;
+	bPresent	  = FALSE;
 	bDefaultDACL  = FALSE;
-    pDACL         = NULL;
+	pDACL		  = NULL;
 
 	// Now test LaunchPermission for denied remote access
 	do {
@@ -1517,7 +1517,7 @@ bool COxtSecurityHelper::CheckDenyRemoteAccess()
 }
 
 // DACL to allow interactive users access to named events and objects
-static const WCHAR g_XgsEventDACL[] = 
+static const WCHAR g_XgsEventDACL[] =
 {
 	SDDL_DACL SDDL_DELIMINATOR SDDL_PROTECTED
 
@@ -1574,7 +1574,7 @@ SECURITY_ATTRIBUTES* COxtSecurityHelper::CreateXgaSecurityAttributes()
 {
 	SECURITY_ATTRIBUTES  *pSA   = NULL;
 	PSECURITY_DESCRIPTOR  pSD = NULL;
-	BOOL                  rc;
+	BOOL				  rc;
 
 	pSA = (SECURITY_ATTRIBUTES*)::LocalAlloc(LMEM_FIXED, sizeof(SECURITY_ATTRIBUTES));
 	if (pSA == NULL)
@@ -1602,19 +1602,19 @@ SECURITY_ATTRIBUTES* COxtSecurityHelper::CreateXgaSecurityAttributes()
 
 SECURITY_ATTRIBUTES* COxtSecurityHelper::CreateXgaSecurityAttributesAbsolute()
 {
-	DWORD                dwRet         = ERROR_SUCCESS;
-	PSECURITY_DESCRIPTOR pSD           = NULL;
+	DWORD				 dwRet		 = ERROR_SUCCESS;
+	PSECURITY_DESCRIPTOR pSD		 = NULL;
 	PSECURITY_ATTRIBUTES pSA;
-	ULONG                ulSdSize      = 0;
-	ULONG                ulDaclSize    = 0;
-	ULONG                ulSaclSize    = 0;
-	ULONG                ulOwnerSize   = 0;
-	ULONG                ulGroupSize   = 0;
-	ULONG                ulNewSdSize   = 0;	
-	PACL                 pDACL;
-	PACL                 pSACL;
-	PSID                 pOwner;
-	PSID                 pGroup;
+	ULONG				 ulSdSize	 = 0;
+	ULONG				 ulDaclSize	 = 0;
+	ULONG				 ulSaclSize	 = 0;
+	ULONG				 ulOwnerSize = 0;
+	ULONG				 ulGroupSize = 0;
+	ULONG				 ulNewSdSize = 0;
+	PACL				 pDACL;
+	PACL				 pSACL;
+	PSID				 pOwner;
+	PSID				 pGroup;
 
 	// First create our relate descriptor
 	pSA = CreateXgaSecurityAttributes();
@@ -1651,7 +1651,7 @@ SECURITY_ATTRIBUTES* COxtSecurityHelper::CreateXgaSecurityAttributesAbsolute()
 		return NULL;
 	}
 
-	pDACL  = (PACL)((PCHAR)pSD    + ulSdSize);
+	pDACL  = (PACL)((PCHAR)pSD	+ ulSdSize);
 	pSACL  = (PACL)((PCHAR)pDACL  + ulDaclSize);
 	pOwner = (PSID)((PCHAR)pSACL  + ulSaclSize);
 	pGroup = (PSID)((PCHAR)pOwner + ulOwnerSize);
@@ -1692,11 +1692,11 @@ WINADVAPI
 BOOL
 WINAPI
 CreateWellKnownSid(
-    __in     WELL_KNOWN_SID_TYPE WellKnownSidType,
-    __in_opt PSID DomainSid,
-    __out_bcount_part_opt(*cbSid, *cbSid) PSID pSid,
-    __inout  DWORD *cbSid
-    );
+	__in	 WELL_KNOWN_SID_TYPE WellKnownSidType,
+	__in_opt PSID DomainSid,
+	__out_bcount_part_opt(*cbSid, *cbSid) PSID pSid,
+	__inout  DWORD *cbSid
+	);
 
 XSH_DESCRIPTOR* COxtSecurityHelper::CreateXgaComSecurityDescriptor()
 {
@@ -1760,15 +1760,15 @@ XSH_DESCRIPTOR* COxtSecurityHelper::CreateXgaComSecurityDescriptor()
 									 EVENTLOG_ERROR_TYPE, EVMSG_SECURITY_FAILURE, ::GetLastError());
 			break;
 		}
-		
-		// Setup AuthenticatedUsers for COM access. 
-		ea.grfAccessPermissions = COM_RIGHTS_EXECUTE; 
-		ea.grfAccessMode = SET_ACCESS; 
-		ea.grfInheritance = NO_INHERITANCE; 
-		ea.Trustee.pMultipleTrustee = NULL; 
-		ea.Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE; 
-		ea.Trustee.TrusteeForm = TRUSTEE_IS_SID; 
-		ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP; 
+
+		// Setup AuthenticatedUsers for COM access.
+		ea.grfAccessPermissions = COM_RIGHTS_EXECUTE;
+		ea.grfAccessMode = SET_ACCESS;
+		ea.grfInheritance = NO_INHERITANCE;
+		ea.Trustee.pMultipleTrustee = NULL;
+		ea.Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+		ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
+		ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
 		ea.Trustee.ptstrName = (LPTSTR)pXD->pInteractivSID;
 
 		// Create the Interactive user ACL with this new ACE

@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2014 Citrix Systems, Inc.
  * Copyright (c) 2016 Assured Information Security, Inc.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -63,7 +63,7 @@ public :
 
 	DECLARE_LIBID(LIBID_OxtServiceLib)
 	DECLARE_REGISTRY_APPID_RESOURCEID(IDR_OXTSERVICE, APPID_OxtService)
-	
+
 	HRESULT InitializeSecurity() throw()
 	{
 		COxtSecurityHelper clXsh(&_OxtService);
@@ -93,7 +93,7 @@ public :
 		// administrator). The default authentication values are fine for this.
 
 		// NOTE: One oddity was that a NULL DACL was being passed to CoInitializeSecurity
-		// earlier but the values in the AppID were still being used. Perhaps 
+		// earlier but the values in the AppID were still being used. Perhaps
 		// there is more to the overriding of AppID registry values than simply
 		// ignoring them in some cases.
 
@@ -103,7 +103,7 @@ public :
 	void LoadStrings(HINSTANCE hInstance)
 	{
 		m_hInstance = hInstance;
-		
+
 		::LoadString(m_hInstance, IDS_DISPLAYNAME, m_tszDisplayName, sizeof(m_tszDisplayName)/sizeof(TCHAR));
 		::LoadString(m_hInstance, IDS_SERVICEDESC, m_tszServiceDesc, sizeof(m_tszServiceDesc)/sizeof(TCHAR));
 
@@ -156,12 +156,12 @@ public :
 		CRegKey keyAppLog;
 		CRegKey keyNewApp;
 		TCHAR tszImageName[_MAX_PATH + 1];
-		
+
 		::ZeroMemory(tszImageName, sizeof(TCHAR)*(_MAX_PATH + 1));
 		::GetModuleFileName(NULL, tszImageName, _MAX_PATH);
 
 		// Open the app log key
-		lRet = keyAppLog.Open(HKEY_LOCAL_MACHINE, 
+		lRet = keyAppLog.Open(HKEY_LOCAL_MACHINE,
 							  _T("SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application"));
 		if (_OxtService.LogEventTypeIdLastRegistryError(ctxLS(IDS_REGISTEREVENTSOURCE_COULD_NOT_OP_OXTSERVICE_145)
 			,EVENTLOG_ERROR_TYPE
@@ -180,7 +180,7 @@ public :
 		{
 			return;
 		}
-		
+
 		// Set the value of the message code base
 		lRet = keyNewApp.SetStringValue(_T("EventMessageFile"), tszImageName);
 		if (_OxtService.LogEventTypeIdLastRegistryError(ctxLS(IDS_REGISTEREVENTSOURCE_COULD_NOT_SE_OXTSERVICE_165)
@@ -209,7 +209,7 @@ public :
 		CRegKey keyAppLog;
 
 		// Open the app log key
-		lRet = keyAppLog.Open(HKEY_LOCAL_MACHINE, 
+		lRet = keyAppLog.Open(HKEY_LOCAL_MACHINE,
 							  _T("SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application"));
 		if (_OxtService.LogEventTypeIdLastRegistryError(ctxLS(IDS_UNREGISTEREVENTSOURCE_COULD_NOT__OXTSERVICE_193)
 			,EVENTLOG_ERROR_TYPE
@@ -220,7 +220,7 @@ public :
 		}
 
 		// Delete this service's logging key
-		keyAppLog.DeleteSubKey(m_szServiceName);	
+		keyAppLog.DeleteSubKey(m_szServiceName);
 	}
 
 	void DenyRemoteAccess()
@@ -233,7 +233,7 @@ public :
 	void CheckRemoteAccess()
 	{
 		COxtSecurityHelper clXsh(&_OxtService);
-		
+
 		if (clXsh.CheckDenyRemoteAccess())
 			::MessageBox(NULL, _T("CheckRemoteAccess: Remote access is denied."), m_szServiceName, MB_OK|MB_ICONINFORMATION);
 		else
@@ -254,7 +254,7 @@ public :
 				_OxtService.LogEventTypeId(ctxLS(IDS_UPDATESERVICEREGISTRY_COULD_NOT__OXTSERVICE_233),
 											  EVENTLOG_ERROR_TYPE,
 											  EVMSG_START_FAILURE,
-											  ::GetLastError());		
+											  ::GetLastError());
 				break;
 			}
 
@@ -285,7 +285,7 @@ public :
 				_OxtService.LogEventTypeId(ctxLS(IDS_UPDATESERVICEREGISTRY_CHANGE_SER_OXTSERVICE_264),
 											  EVENTLOG_ERROR_TYPE,
 											  EVMSG_START_FAILURE,
-											  ::GetLastError());		
+											  ::GetLastError());
 				break;
 			}
 
@@ -304,7 +304,7 @@ public :
 			::CloseServiceHandle(hService);
 
 		if (hSCM != NULL)
-			::CloseServiceHandle(hSCM);		
+			::CloseServiceHandle(hSCM);
 	}
 
 	bool PreStartTasks()
@@ -407,7 +407,7 @@ public :
 #endif //_ATL_NO_COM_SUPPORT
 		// When the Run function returns, the service has stopped.
 		m_status.dwWin32ExitCode = this->Run(SW_HIDE);
-		
+
 		// Ok, I give up. How do we remote debug with the correct credentials ?
 #		ifdef _CAN_CONSOLE
 		if (m_status.dwWin32ExitCode == CO_E_WRONG_SERVER_IDENTITY)
@@ -429,13 +429,13 @@ public :
 	HRESULT Start(int nShowCmd) throw()
 	{
 		// Explicitly load the xs2.dll here for use in the service.
-        if (!CXenStoreWrapper::XS2Initialize())
+		if (!CXenStoreWrapper::XS2Initialize())
 		{
 			_OxtService.LogEventTypeId(ctxLS(IDS_FAILED_TO_LOAD_XS2_LIBRARY___ERR_OXTSERVICE_413),
 										  EVENTLOG_ERROR_TYPE, EVMSG_START_FAILURE, ::GetLastError());
 			return E_FAIL;
 		}
-		
+
 		// We are overriding start with our own. Since we are always a service then
 		// can ditch the registry checks. First, start the non-COM related tasks.
 		if (!_OxtService.Start())
@@ -508,7 +508,7 @@ bool COxtService::Initialize()
 
 	m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	if (!::GetVersionEx((OSVERSIONINFO*)&m_osvi))
-	{		
+	{
 		LogEventTypeId(ctxLS(IDS_GETVERSIONEX_FAILED_____ERROR__z_OXTSERVICE_537), // SNO!
 					   EVENTLOG_ERROR_TYPE, EVMSG_START_FAILURE, ::GetLastError());
 		return false;
@@ -544,13 +544,13 @@ void COxtService::Uninitialize()
 	{
 		::CloseHandle(m_hShutdownEvent);
 		m_hShutdownEvent = NULL;
-	}	
+	}
 }
 
 bool COxtService::Start()
 {
-    // Configure power options
-    poweropts();
+	// Configure power options
+	poweropts();
 	return true;
 }
 
@@ -630,7 +630,7 @@ bool COxtService::LogEventTypeIdLastError(ULONG ulFormat, WORD wType, DWORD dwEv
 		strstrFormat << tszFormat <<  _T(" - ERROR");
 
 		dwFormatMessageResult = FormatMessage(
-			 FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+			 FORMAT_MESSAGE_ALLOCATE_BUFFER |
 			 FORMAT_MESSAGE_FROM_SYSTEM |
 			 FORMAT_MESSAGE_IGNORE_INSERTS
 			,NULL // source
@@ -722,7 +722,7 @@ bool COxtService::LogEventTypeIdLastRegistryError(ULONG ulFormat, WORD wType, DW
 		if (dwLastError != 0) // If there is a last error
 		{
 			dwFormatMessageResult = FormatMessage(
-				 FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+				 FORMAT_MESSAGE_ALLOCATE_BUFFER |
 				 FORMAT_MESSAGE_FROM_SYSTEM |
 				 FORMAT_MESSAGE_IGNORE_INSERTS
 				,NULL // source
@@ -738,7 +738,7 @@ bool COxtService::LogEventTypeIdLastRegistryError(ULONG ulFormat, WORD wType, DW
 			// Work out what went wrong with the registry key.
 			// Retrieve the system error message for the last-error code.
 			dwFormatMessageResult = FormatMessage(
-				 FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+				 FORMAT_MESSAGE_ALLOCATE_BUFFER |
 				 FORMAT_MESSAGE_FROM_SYSTEM |
 				 FORMAT_MESSAGE_IGNORE_INSERTS
 				,NULL // source
@@ -852,8 +852,8 @@ void COxtService::UnregisterXgs()
 
 COxtService _OxtService;
 
-extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, 
-                                LPTSTR /*lpCmdLine*/, int nShowCmd)
+extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
+								LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
 	int iRet;
 
@@ -871,7 +871,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	if (_AtlModule.PreStartTasks())
 		return 0;
 
-    iRet = _AtlModule.WinMain(nShowCmd);
+	iRet = _AtlModule.WinMain(nShowCmd);
 
 	// Tasks after server/service registration
 	_AtlModule.PostStartTasks();

@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2012 Citrix Systems, Inc.
  * Copyright (c) 2016 Assured Information Security, Inc
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,7 +24,7 @@
 // XenGuestServices.h : Declaration of the CXenGuestServices
 
 #pragma once
-#include "resource.h"       // main symbols
+#include "resource.h"	   // main symbols
 #include "input.h"
 #include "OxtService_i.h"
 
@@ -39,16 +39,16 @@ class COxtService
 {
 private:
 	OSVERSIONINFOEX  m_osvi;
-	volatile LONG    m_ulXgsCount;
-	HANDLE           m_hShutdownEvent;
-	bool             m_bLogCommunicationErrors;
-	bool             m_bLogOperationErrors;;
+	volatile LONG	m_ulXgsCount;
+	HANDLE		   m_hShutdownEvent;
+	bool			 m_bLogCommunicationErrors;
+	bool			 m_bLogOperationErrors;;
 
 public:
 	COxtService() : m_ulXgsCount(0),
-	                m_hShutdownEvent(NULL),	                  
-	                m_bLogCommunicationErrors(false),
-	                m_bLogOperationErrors(false)
+					m_hShutdownEvent(NULL),
+					m_bLogCommunicationErrors(false),
+					m_bLogOperationErrors(false)
 	{
 		::ZeroMemory(&m_osvi, sizeof(OSVERSIONINFO));
 	}

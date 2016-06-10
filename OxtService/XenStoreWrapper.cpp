@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2012 Citrix Systems, Inc.
  * Copyright (c) 2016 Assured Information Security, Inc
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -92,7 +92,7 @@
 typedef struct xs2_handle *(WINAPI *xs2_open_t)(void);
 typedef void (WINAPI *xs2_close_t)(struct xs2_handle *handle);
 typedef void (WINAPI *xs2_free_t)(const void *mem);
-typedef BOOL (WINAPI *xs2_write_t)(struct xs2_handle *handle, 
+typedef BOOL (WINAPI *xs2_write_t)(struct xs2_handle *handle,
 								   const char *path,
 								   const char *data);
 typedef BOOL (WINAPI *xs2_write_bin_t)(struct xs2_handle *handle,
@@ -113,15 +113,15 @@ typedef struct xs2_watch* (WINAPI *xs2_watch_t)(struct xs2_handle *handle,
 typedef void (WINAPI *xs2_unwatch_t)(struct xs2_watch *watch);
 
 typedef struct _XSW_FUNCTIONS {
-	xs2_open_t      fp_xs2_open;
-	xs2_close_t     fp_xs2_close;
-	xs2_free_t      fp_xs2_free;
-	xs2_write_t     fp_xs2_write;
+	xs2_open_t	    fp_xs2_open;
+	xs2_close_t	    fp_xs2_close;
+	xs2_free_t	    fp_xs2_free;
+	xs2_write_t	    fp_xs2_write;
 	xs2_write_bin_t fp_xs2_write_bin;
-	xs2_read_t      fp_xs2_read;
+	xs2_read_t	    fp_xs2_read;
 	xs2_directory_t fp_xs2_directory;
-	xs2_remove_t    fp_xs2_remove;
-	xs2_watch_t     fp_xs2_watch;
+	xs2_remove_t	fp_xs2_remove;
+	xs2_watch_t	    fp_xs2_watch;
 	xs2_unwatch_t   fp_xs2_unwatch;
 } XSW_FUNCTIONS;
 
@@ -241,7 +241,7 @@ bool CXenStoreWrapper::XS2Open()
 
 	// Note if the xs2 call fails it will set the last error
 	m_xsh = fps->fp_xs2_open();
-	
+
 	return (m_xsh != NULL) ? true : false;
 }
 
