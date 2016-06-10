@@ -145,6 +145,26 @@ if ($type.ToLower().CompareTo("debug") -eq 0) {
     Checked-Copy ".\xc-vusb\Drivers\xenvusb\x64\Win7Release\xenvusb.sys" ".\xc-vusb\build\x64\"
 }
 
+# Build the Oxt service and user agent
+if ($compile) {
+	Invoke-CommandChecked "OxtService build" $MSBuild .\OxtService\OxtService.sln  /p:Configuration=$type /t:Rebuild /m
+	Invoke-CommandChecked "OxtUserAgent build" $MSBuild .\OxtUserAgent\OxtUserAgent.sln  /p:Configuration=$type /t:Rebuild /m
+}
+
+if ($type -eq "Release") {
+	Invoke-CommandChecked "sign OxtService EXE" ($signtool+"\signtool.exe") sign /a /s my /n ('"'+$certname+'"') /t http://timestamp.verisign.com/scripts/timestamp.dll OxtService\$type\OxtService.exe
+	Invoke-CommandChecked "sign OxtUserAgent EXE" ($signtool+"\signtool.exe") sign /a /s my /n ('"'+$certname+'"') /t http://timestamp.verisign.com/scripts/timestamp.dll OxtUserAgent\$type\OxtUserAgent.exe
+}
+
+if ($type.ToLower().CompareTo("debug") -eq 0) {
+    Checked-Copy ".\OxtService\Debug\OxtService.exe" ".\build\i386\"
+    Checked-Copy ".\OxtUserAgent\Debug\OxtUserAgent.exe" ".\build\i386\"
+} else {
+    Checked-Copy ".\OxtService\Release\OxtService.exe" ".\build\i386\"
+    Checked-Copy ".\OxtUserAgent\Release\OxtUserAgent.exe" ".\build\i386\"
+}
+
+# Main signing
 if ($crosssign) {
     Invoke-CommandChecked "do_sign" powershell ./do_sign.ps1 -certname ("'"+$certname+"'") -signtool ("'"+$signtool+"'") -crosssign ("'"+$crosssign+"'")
 } else {

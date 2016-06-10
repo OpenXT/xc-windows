@@ -1,0 +1,134 @@
+STRINGTABLE 
+BEGIN
+    IDS_SERVICENAME         "OxtService"
+    IDS_DISPLAYNAME         "OpenXT Xen Guest Services"
+    IDS_SERVICEDESC         "Provides in-guest services for Xen user domains."
+    IDS_ATLBASE_NO_HANDLER            "Handler not installed"
+    IDS_ATLBASE_SERVICE_STOPPED       "Service stopped"
+    IDS_ATLBASE_SERVICE_STARTED       "Service started"
+    IDS_ATLBASE_BAD_SERVICE           "Bad service request"
+END
+STRINGTABLE DISCARDABLE
+BEGIN
+   IDS_FAILED_TO_CREATE_OBJECT_LOCK___H_OXTGUESTSERVICES_24          "Failed to create object lock - HRESULT: 0x%x"
+   IDS_FAILED_TO_OPEN_XENSTORE___HRESUL_OXTGUESTSERVICES_32          "Failed to open XenStore - HRESULT: 0x%x"
+   IDS_FAILED_TO_INITIALIZE_VM_VALUES___OXTGUESTSERVICES_53          "Failed to initialize VM values - HRESULT: 0x%x"
+   IDS_MAXIMUM_INSTANCE_COUNT_REACHED___OXTGUESTSERVICES_61          "Maximum instance count reached - HRESULT: 0x%x"
+   IDS_FAILED_TO_CREATE_VMS_EVENT_GUID__OXTGUESTSERVICES_474         "Failed to create VMS Event GUID - HRESULT: 0x%x"
+   IDS_FAILED_TO_CREATE_VMS_EVENT___HRE_OXTGUESTSERVICES_492         "Failed to create VMS Event - HRESULT: 0x%x"
+   IDS_FAILED_TO_CREATE_ALERTS_EVENT_GU_OXTGUESTSERVICES_532         "Failed to create Alerts Event GUID - HRESULT: 0x%x"
+   IDS_FAILED_TO_CREATE_ALERTS_EVENT____OXTGUESTSERVICES_550         "Failed to create Alerts Event - HRESULT: 0x%x"
+END
+STRINGTABLE DISCARDABLE
+BEGIN
+   IDS_PRINCIPAL__zS_PERMISSION__zS_OPE_OXTSECURITYHELPER_35         "PRINCIPAL: %s PERMISSION: %s OPERATION: %s ERROR: %d"
+   IDS_DENY_CHECK_FAILURE___PERMISSION__OXTSECURITYHELPER_1244       "DENY CHECK FAILURE - PERMISSION: %s OPERATION: %s ERROR: %d"
+   IDS_DENY_REMOTE_CHECK_FOR_zS_DETECTE_OXTSECURITYHELPER_1279       "Deny remote check for %s detected remote access is allowed!"
+   IDS_ACCESSPERMISSION_OXTSECURITYHELPER_1281                       "AccessPermission"
+   IDS_LAUNCHPERMISSION_LAUNCH_OXTSECURITYHELPER_1303                "LaunchPermission-Launch"
+   IDS_LAUNCHPERMISSION_ACTIVATE_OXTSECURITYHELPER_1311              "LaunchPermission-Activate"
+   IDS_DENY_CHECK_FOUND_NO_SD_DACL_FOR__OXTSECURITYHELPER_1431       "Deny check found no SD DACL for %s - access may be denied to everyone"
+   IDS_LAUNCHPERMISSION_OXTSECURITYHELPER_1478                       "LaunchPermission"
+   IDS_FAILED_TO_ALLOCATE_SECURITY_ATTR_OXTSECURITYHELPER_1559       "Failed to allocate SECURITY_ATTRIBUTES"
+   IDS_FAILED_TO_CREATE_SECURITY_DESCRI_OXTSECURITYHELPER_1569       "Failed to create security descriptor - error: %d"
+   IDS_FAILED_TO_GET_SIZES_FROM_MAKEABS_OXTSECURITYHELPER_1614       "Failed to get sizes from MakeAbsoluteSD - error: %d"
+   IDS_FAILED_TO_ALLOCATE_SECURITY_DESC_OXTSECURITYHELPER_1625       "Failed to allocate SECURITY_DESCRIPTOR"
+   IDS_FAILED_CREATE_SD_IN_MAKEABSOLUTE_OXTSECURITYHELPER_1644       "Failed create SD in MakeAbsoluteSD - error: %d"
+   IDS_FAILED_TO_ALLOCATE_XSH_DESCRIPTO_OXTSECURITYHELPER_1689       "Failed to allocate XSH_DESCRIPTOR"
+   IDS_FAILED_TO_INITIALIZE_COM_SID___E_OXTSECURITYHELPER_1699       "Failed to initialize COM SID - error: %d"
+   IDS_FAILED_TO_ALLOCATE_PINTERACTIVSI_OXTSECURITYHELPER_1709       "failed to allocate pInteractivSID SID"
+END
+STRINGTABLE DISCARDABLE
+BEGIN
+   IDS_FAILED_TO_ALLOCATE_ADMINS_SID_OXTSECURITYHELPER_1718          "Failed to allocate Admins SID"
+   IDS_FAILED_CREATEWELLKNOWNSID_PINTER_OXTSECURITYHELPER_1727       "Failed CreateWellKnownSid(pInteractivSID) - error: %d"
+   IDS_FAILED_CREATEWELLKNOWNSID_PADMIN_OXTSECURITYHELPER_1736       "Failed CreateWellKnownSid(pAdminsSID) - error: %d"
+   IDS_FAILED_SETENTRIESINACL_PINTERACT_OXTSECURITYHELPER_1755       "Failed SetEntriesInAcl(pInteractivSID) - error: %d"
+   IDS_FAILED_TO_SET_ADMINS_SID_AS_OWNE_OXTSECURITYHELPER_1765       "Failed to set Admins SID as owner - error: %d"
+   IDS_FAILED_TO_SET_ADMINS_SID_AS_GROU_OXTSECURITYHELPER_1773       "Failed to set Admins SID as group - error: %d"
+   IDS_FAILED_TO_SET_DACL_FOR_SD___ERRO_OXTSECURITYHELPER_1782       "Failed to set DACL for SD - error: %d"
+END
+STRINGTABLE DISCARDABLE
+BEGIN
+   IDS_SETUPPARAMETERKEY_COULD_NOT_CREA_OXTSERVICE_106            "SetupParameterKey could not create parameters key"
+   IDS_SETUPPARAMETERKEY_COULD_NOT_SET__OXTSERVICE_115            "SetupParameterKey could not set LogCommunicationErrors"
+   IDS_SETUPPARAMETERKEY_COULD_NOT_SET__OXTSERVICE_123            "SetupParameterKey could not set LogOperationErrors"
+   IDS_REGISTEREVENTSOURCE_COULD_NOT_OP_OXTSERVICE_145            "RegisterEventSource could not open event logging key"
+   IDS_REGISTEREVENTSOURCE_COULD_NOT_CR_OXTSERVICE_155            "RegisterEventSource could not create new event logging key"
+   IDS_REGISTEREVENTSOURCE_COULD_NOT_SE_OXTSERVICE_165            "RegisterEventSource could not set logging messsage source"
+   IDS_REGISTEREVENTSOURCE_COULD_NOT_SE_OXTSERVICE_176            "RegisterEventSource could not set allowed event types"
+   IDS_UNREGISTEREVENTSOURCE_COULD_NOT__OXTSERVICE_193            "UnregisterEventSource could not remove logging event key"
+   IDS_UPDATESERVICEREGISTRY_COULD_NOT__OXTSERVICE_233            "UpdateServiceRegistry could not open SCM - error: 0x%x"
+   IDS_UPDATESERVICEREGISTRY_COULD_NOT__OXTSERVICE_244            "UpdateServiceRegistry could not open Service - error: 0x%x"
+   IDS_UPDATESERVICEREGISTRY_CHANGE_SER_OXTSERVICE_264            "UpdateServiceRegistry change service config - error: 0x%x"
+   IDS_UPDATESERVICEREGISTRY_CHANGE_SER_OXTSERVICE_275            "UpdateServiceRegistry change service config 2 - error: 0x%x"
+   IDS_FAILED_TO_LOAD_XS2_LIBRARY___ERR_OXTSERVICE_413            "failed to load xs2 library - ERROR: %d"
+   IDS_FAILED_TO_START__SERVICE_SHOULD__OXTSERVICE_439            "Failed to start. Service should be started from the Service Control Manager, and not run directly as an executable"
+   IDS_FAILED_TO_START_SERVICE_OXTSERVICE_459                     "Failed to start service"
+   IDS_GETVERSIONEX_FAILED_____ERROR__z_OXTSERVICE_537            "GetVersionEx failed!! - ERROR: %d"
+END
+STRINGTABLE DISCARDABLE
+BEGIN
+   IDS_FAILED_TO_CREATE_SHUTDOWN_EVENT__OXTSERVICE_545            "failed to create shutdown event - ERROR: %d"
+   IDS_FAILED_TO_CREATE_VMS_EVENT___ERR_OXTSERVICE_553            "failed to create VMS event - ERROR: %d"
+   IDS_FAILED_TO_CREATE_VMS_VECTOR_LOCK_OXTSERVICE_561            "failed to create VMS vector lock - ERROR: %d"
+   IDS_FAILED_TO_CREATE_ALERTS_VECTOR_L_OXTSERVICE_569            "failed to create Alerts vector lock - ERROR: %d"
+   IDS_XS2OPEN_FAILED_FOR_START__NOT_RU_OXTSERVICE_689            "XS2Open failed for Start (Not running on Xen?) - ERROR: %d"
+   IDS_XS2READ_FAILED_FOR_VM___ERROR__z_OXTSERVICE_697            "XS2Read failed for vm - ERROR: %d"
+   IDS_FAILED_TO_START_TASK_THREAD___ER_OXTSERVICE_730            "failed to start Task thread - ERRORNO: %d"
+   IDS_FAILED_TO_START_VMS_WATCH_THREAD_OXTSERVICE_739            "failed to start VMS watch thread - ERRORNO: %d"
+   IDS_FAILED_TO_START_ALERTS_WATCH_THR_OXTSERVICE_748            "failed to start Alerts watch thread - ERRORNO: %d"
+   IDS_XS2OPEN_FAILED_FOR_LOADVMS___ERR_OXTSERVICE_1090           "XS2Open failed for LoadVms - ERROR: %d"
+   IDS_XS2DIRECTORY_NO_VMS_RETURNED____OXTSERVICE_1101            "XS2Directory no VMs returned???"
+   IDS_FAILED_TO_RETURN_SYSTEM_DIRECTOR_OXTSERVICE_1248           "Failed to return system directory"
+   IDS_FAILED_TO_LAUNCH_POWERCFG_TOOL___OXTSERVICE_1261           "Failed to launch powercfg tool : Error: %d"
+   IDS_FAILURE_RETURNED_FROM_POWEROPTS__OXTSERVICE_1282           "Failure returned from poweropts - ERROR: %d"
+   IDS_WLANPROF__WLANAPI_DLL_NOT_FOUND_OXTSERVICE_1302            "WLANPROF: WLANAPI.DLL not found"
+   IDS_WLANPROF__ERROR_LOADING_WIFI_API_OXTSERVICE_1306           "WLANPROF: Error loading Wifi API procedure(s)"
+END
+STRINGTABLE DISCARDABLE
+BEGIN
+   IDS_WLANPROF__ERROR_GETTING_LIST_OF__OXTSERVICE_1310           "WLANPROF: Error getting list of device interfaces: WLAN Status = %d"
+   IDS_WLANPROF__ERROR_ADDING_AP__WLAN__OXTSERVICE_1314           "WLANPROF: Error adding AP: WLAN Status = %d"
+   IDS_WLANPROF__UNKNOWN_FAILURE_ENCOUN_OXTSERVICE_1318           "WLANPROF: Unknown failure encountered: %d"
+   IDS_XS2OPEN_FAILED_FOR_WATCHES___ERR_OXTSERVICE_1339           "XS2Open failed for watches - ERROR: %d"
+   IDS_FAILED_TO_OPEN_XENSTORE_VMS_WATC_OXTSERVICE_1349           "Failed to open XenStore VMS watch - ERROR: %d"
+   IDS_XS_WATCH_THREAD_SHUTTING_DOWN__OXTSERVICE_1359             "XS Watch thread shutting down."
+   IDS_WAIT_FAILED_DURING_XS_WATCH_WAIT_OXTSERVICE_1370           "WAIT_FAILED during XS watch WaitForMultipleObjects?? - ERROR: %d"
+   IDS_UNKNOWN_FAILURE_DURING_XS_WATCH__OXTSERVICE_1378           "Unknown failure during XS watch WaitForMultipleObjects?? - ERROR: %d"
+   IDS_RECEIVED_XCDIAG_REQUEST_OXTSERVICE_1414                    "Received xcdiag request"
+   IDS_FAILED_TO_LAUNCH_XCDIAG_TOOL___E_OXTSERVICE_1430           "Failed to launch xcdiag tool : Error: %d"
+   IDS_FAILED_TO_OPEN_XCDIAG_OUTPUT_FIL_OXTSERVICE_1465           "Failed to open xcdiag output file"
+   IDS_XCDIAG_OUTPUT_FILE_APPEARS_EMPTY_OXTSERVICE_1476           "xcdiag output file appears empty"
+   IDS_FAILED_TO_ALLOCATE_MEMORY_FOR_XC_OXTSERVICE_1486           "Failed to allocate memory for xcdiag output"
+   IDS_FAILED_TO_ACCESS_XCDIAG_FILE_OXTSERVICE_1502               "Failed to access xcdiag file"
+   IDS_FAILED_TO_VIEW_XCDIAG_OUTPUT_OXTSERVICE_1520               "Failed to view xcdiag output"
+   IDS_XCDIAG_ZIP_FILE_SENT__OXTSERVICE_1591                      "xcdiag zip file sent."
+END
+STRINGTABLE DISCARDABLE
+BEGIN
+   IDS_DOPOST___OPERATION_FAILED___ERRO_OXTSERVICE_1596           "DoPOST() operation failed - error: %d  HTTP code: %d"
+   IDS_DOGET___FAILED_TO_REGISTER_FOR_A_OXTSERVICE_1652           "DoGET() failed to register for alert signals - error: %d  HTTP code: %d. Interface: %s"
+   IDS_FAILED_TO_OPEN_V4V_CHANNEL_ON_FI_OXTSERVICE_1721           "Failed to open V4V channel on first attempt, will retry - HRESULT: 0x%x"
+   IDS_SAFEARRAYACCESSDATA___FAILED___H_OXTSERVICE_1800           "SafeArrayAccessData() failed - HRESULT: 0x%x"
+   IDS_ALERTS_THREAD_SHUTTING_DOWN__OXTSERVICE_1825               "Alerts thread shutting down."
+   IDS_DOGET___FAILED_TO_RECEIVE_SIGNAL_OXTSERVICE_1831           "DoGET() failed to receive signal - error: %d  HTTP code: %d"
+   IDS_FAILED_TO_RESET_SIGNAL_REGISTRAT_OXTSERVICE_1838           "Failed to reset signal registration"
+   IDS_SAFEARRAYCOPY___FAILED___HRESULT_OXTSERVICE_1875           "SafeArrayCopy() failed - HRESULT: 0x%x"
+   IDS_E_OUTOFMEMORY___HRESULT__0XzX_OXTSERVICE_1881              "E_OUTOFMEMORY - HRESULT: 0x%x"
+END
+STRINGTABLE DISCARDABLE
+BEGIN
+   IDS_SAFEARRAYACCESSDATA___FAILED___H_OXTGUESTSERVICES_230         "SafeArrayAccessData() failed - HRESULT: 0x%x"
+   IDS_SAFEARRAYACCESSDATA___RETRIEVED__OXTGUESTSERVICES_237         "SafeArrayAccessData() retrieved NULL data"
+   IDS_XS_WATCH_THREAD_SHUTTING_DOWN__OXTGUESTSERVICES_301           "XS Watch thread shutting down."
+   IDS_DOGET___FAILED___ERROR__zD_HTTP__OXTGUESTSERVICES_308         "DoGET() failed - error: %d  HTTP code: %d"
+   IDS_COCREATEINSTANCE_CLSID_XENVMINFO_OXTGUESTSERVICES_378         "CoCreateInstance(CLSID_XenVmInfo) failed - HRESULT: 0x%x"
+   IDS_QUERYINTERFACE_IXENVMINITIALIZE__OXTGUESTSERVICES_385         "QueryInterface(IXenVmInitialize) failed - HRESULT: 0x%x"
+   IDS_QUERYINTERFACE_IXENVMINITIALIZE__OXTGUESTSERVICES_391         "QueryInterface(IXenVmInitialize) did not return interface pointer - HRESULT: 0x%x"
+   IDS_LOADIMAGEUID_FAILED__IMAGE__zS___OXTGUESTSERVICES_406         "LoadImageUid failed, image: %s - HRESULT: 0x%x"
+   IDS_FAILED_TO_OPEN_XENINP_FILE_HANDL_OXTGUESTSERVICES_674         "Failed to open XenInp file handle - ERROR: %d"
+   IDS_FAILED_TO_SEND_XENINP_IOCTL_ACCE_OXTGUESTSERVICES_683         "Failed to send XENINP_IOCTL_ACCELERATION - ERROR: %d"
+   IDS_ARRAY                                                         "Array"
+   IDS_BOOL                                                          "Bool"
+END
