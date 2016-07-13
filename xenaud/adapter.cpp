@@ -25,7 +25,8 @@ static char STR_MODULENAME[] = "AC97 Adapter: ";
 #if DBG
 unsigned long ulDebugOut = (0xFFFFFFFF & (~DBG_REGS)) & (~DBG_PRINT);
 #else
-unsigned long ulDebugOut = DBG_WARNING | DBG_ERROR | DBG_SYSINFO;
+// WORKAROUND: Disable all logging since it's too verbose
+unsigned long ulDebugOut = 0; //DBG_WARNING | DBG_ERROR | DBG_SYSINFO;
 #endif
 
 #ifdef XEN
