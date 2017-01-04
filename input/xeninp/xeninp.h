@@ -15,6 +15,8 @@
 #define MOUSE_NUMBER_OF_BUTTONS 2
 #define MOUSE_SAMPLE_RATE       60
 
+#define WHEEL_DELTA		120
+
 typedef struct _XENINP_DEVICE_EXTENSION
 {
     // A backpointer to the device object for which this is the extension

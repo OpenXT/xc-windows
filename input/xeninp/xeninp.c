@@ -192,12 +192,12 @@ XenInpEventConvert(PMOUSE_INPUT_DATA pMouInpData, PXENMOU_EVENT pMouEvent)
     else if (XENMOU_TEST_FLAG(pMouEvent->RevFlags, XMOU_FLAG_HWHEEL))
     {
         pMouInpData->ButtonFlags = MOUSE_HWHEEL;
-        pMouInpData->ButtonData = XENMOU_GET_WDATA(pMouEvent->Data);
+        pMouInpData->ButtonData = XENMOU_GET_WDATA(pMouEvent->Data) * WHEEL_DELTA;
     }
     else if (XENMOU_TEST_FLAG(pMouEvent->RevFlags, XMOU_FLAG_VWHEEL))
     {
         pMouInpData->ButtonFlags = MOUSE_WHEEL;
-        pMouInpData->ButtonData = XENMOU_GET_WDATA(pMouEvent->Data);
+        pMouInpData->ButtonData = XENMOU_GET_WDATA(pMouEvent->Data) * WHEEL_DELTA;
     }
     else
         return FALSE;
