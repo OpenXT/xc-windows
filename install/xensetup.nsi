@@ -653,26 +653,17 @@ ${Endif}
 	File ${SIGN_PREFIX}\xenaud.inf
 
 !ifdef INSTALL_XENVESA
-!ifdef INSTALL_XENVESA8
-${If} "$OsType" == "8Plus"
-    File ${SIGN_PREFIX}\xenvesado.sys
-${Endif}
-!endif	
 ${If}  "$OsType" != "8Plus"
     File ${SIGN_PREFIX}\xenvesa-miniport.sys
     File ${SIGN_PREFIX}\xenvesa-display.dll
-${EndIf}    
-${If} "$OsType" == "XP"
-    File ${SIGN_PREFIX}\xenvesa-xp.inf
-    File /nonfatal ${SIGN_PREFIX}\xenvesa-xp.cat
-!ifdef INSTALL_XENVESA8
-${ElseIf} "$OsType" = "8Plus"
-    File ${SIGN_PREFIX}\xenvesado.inf
-    File /nonfatal ${SIGN_PREFIX}\xenvesado.cat
-!endif
-${Else} 
-    File ${SIGN_PREFIX}\xenvesa-lh.inf
-    File /nonfatal ${SIGN_PREFIX}\xenvesa-lh.cat
+
+    ${If} "$OsType" == "XP"
+        File ${SIGN_PREFIX}\xenvesa-xp.inf
+        File /nonfatal ${SIGN_PREFIX}\xenvesa-xp.cat
+    ${Else} 
+        File ${SIGN_PREFIX}\xenvesa-lh.inf
+        File /nonfatal ${SIGN_PREFIX}\xenvesa-lh.cat
+    ${EndIf}
 ${EndIf}
 !endif
 
@@ -741,26 +732,17 @@ ${EndIf}
 	File ${SIGN_PREFIX_64}\xenaud.inf
 	
 !ifdef INSTALL_XENVESA
-!ifdef INSTALL_XENVESA8
-${If} "$OsType"  == "8Plus"
-	File ${SIGN_PREFIX_64}\xenvesado.sys
-${Endif}
-!endif
 ${If} "$OsType" != "8Plus"
     File ${SIGN_PREFIX_64}\xenvesa-miniport.sys
-    File ${SIGN_PREFIX_64}\xenvesa-display.dll    
-${EndIf}    
-${If} "$OsType" == "XP"
-    File ${SIGN_PREFIX_64}\xenvesa-xp.inf
-    File /nonfatal ${SIGN_PREFIX_64}\xenvesa-xp.cat
-!ifdef INSTALL_XENVESA8
-${ElseIf} "$OsType" == "8Plus"
-    File ${SIGN_PREFIX_64}\xenvesado.inf
-	File /nonfatal ${SIGN_PREFIX_64}\xenvesado.cat
-!endif
-${Else}
-    File ${SIGN_PREFIX_64}\xenvesa-lh.inf
-    File ${SIGN_PREFIX_64}\xenvesa-lh.cat
+    File ${SIGN_PREFIX_64}\xenvesa-display.dll
+
+    ${If} "$OsType" == "XP"
+        File ${SIGN_PREFIX_64}\xenvesa-xp.inf
+        File /nonfatal ${SIGN_PREFIX_64}\xenvesa-xp.cat
+    ${Else}
+        File ${SIGN_PREFIX_64}\xenvesa-lh.inf
+        File ${SIGN_PREFIX_64}\xenvesa-lh.cat
+    ${EndIf}
 ${EndIf}
 !endif
 
@@ -905,10 +887,6 @@ InstallINFs:
 !ifdef INSTALL_XENVESA
 ${If} "$OsType" == "XP"
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvesa-xp.inf"' $0
-!ifdef INSTALL_XENVESA8
-${ElseIf} "$OsType" == "8Plus"
-  ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvesado.inf"' $0
-!endif
 ${Else}
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvesa-lh.inf"' $0
 ${EndIf}
@@ -1003,14 +981,6 @@ ${EndIf}
     ${else}
       ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "$VesaDeviceName" "$INSTDIR\xenvesa-xp.inf" "1"' $0
     ${endif}
-!ifdef INSTALL_XENVESA8
-  ${ElseIf} "$OsType" == "8Plus"
-    ${If} $R0 == "New"
-      ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "$VesaDeviceName" "$INSTDIR\xenvesado.inf" "0"' $0
-	${else}
-      ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "$VesaDeviceName" "$INSTDIR\xenvesado.inf" "1"' $0
-	${endif}
-!endif
   ${Else}
     ${If} $R0 == "New"
       ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "$VesaDeviceName" "$INSTDIR\xenvesa-lh.inf" "0"' $0
@@ -1306,13 +1276,6 @@ providerNotInstalled:
 !ifdef INSTALL_XENVESA
   ExecWait '"$INSTDIR\removedev.exe" "/d" "PCI\VEN_1234&DEV_1111&SUBSYS_00015853"' $0
   ExecWait '"$INSTDIR\removedev.exe" "/d" "PCI\VEN_1234&DEV_1111"' $0
-!ifdef INSTALL_XENVESA8
-${If} "$OsType" == "8Plus"
-  DeleteRegKey HKLM SYSTEM\CurrentControlSet\Services\xenvesado
-  Delete /REBOOTOK $REALSYSDIR\drivers\xenvesado.sys
-${Endif}
-!endif
-
 ${If} "$OsType" != "8Plus"
   DeleteRegKey HKLM SYSTEM\CurrentControlSet\Services\xenvesa-miniport
   Delete /REBOOTOK $REALSYSDIR\drivers\xenvesa-miniport.sys
@@ -1396,27 +1359,17 @@ ${EndIf}
   Delete /REBOOTOK $INSTDIR\xenaud.sys
   
 !ifdef INSTALL_XENVESA
-!ifdef INSTALL_XENVESA8
-  ${If} "$OsType"  == "8Plus"
-	Delete /REBOOTOK $INSTDIR\xenvesado.sys
-  ${EndIf}
-!endif
   ${If} "$OsType" != "8Plus"
 	Delete /REBOOTOK $INSTDIR\xenvesa-miniport.sys
-	Delete /REBOOTOK $INSTDIR\xenvesa-display.dll
-  ${EndIf}  
-  ${If} "$OsType" == "XP"
-    Delete /REBOOTOK $INSTDIR\xenvesa-xp.cat
-    Delete /REBOOTOK $INSTDIR\xenvesa-xp.inf
-!ifdef INSTALL_XENVESA8
-  ${ElseIf} "$OsType" == "8Plus"
-    Delete /REBOOTOK $INSTDIR\xenvesado.cat
-    Delete /REBOOTOK $INSTDIR\xenvesado.inf
-!endif
-  ${Else}
-    Delete /REBOOTOK $INSTDIR\xenvesa-lh.cat
-    Delete /REBOOTOK $INSTDIR\xenvesa-lh.inf
-  ${EndIF}
+	Delete /REBOOTOK $INSTDIR\xenvesa-display.dll  
+    ${If} "$OsType" == "XP"
+      Delete /REBOOTOK $INSTDIR\xenvesa-xp.cat
+      Delete /REBOOTOK $INSTDIR\xenvesa-xp.inf
+    ${Else}
+      Delete /REBOOTOK $INSTDIR\xenvesa-lh.cat
+      Delete /REBOOTOK $INSTDIR\xenvesa-lh.inf
+    ${EndIF}
+  ${EndIf}
 !endif
   
 	Delete /REBOOTOK $INSTDIR\xeninp.inf
