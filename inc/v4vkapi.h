@@ -1,3 +1,4 @@
+#ifdef USE_V4V
 //
 // v4vkm.h - Xen Windows XenGfx v4v
 //
@@ -582,4 +583,4 @@ XenV4VDestroy(PXEN_V4V pV4v)
         ExFreePoolWithTag(pV4v, XENV4V_TAG );
     }
 }
-
+#endif

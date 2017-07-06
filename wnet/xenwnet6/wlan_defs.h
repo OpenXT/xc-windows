@@ -45,7 +45,9 @@
 
 typedef struct _V4V_CONFIG {
 
+#ifdef USE_V4V
     PXEN_V4V V4v;
+#endif
 
     ULONG txSize;
     ULONG rxSize;
@@ -70,8 +72,8 @@ typedef struct _V4V_CONFIG {
             ULONG seqnum;
             ULONG seqrx;
             ULONG status;
-            BOOL ack;
-            BOOL done;
+            BOOLEAN ack;
+            BOOLEAN done;
         } dfile;
     } r; 
 } V4V_CONFIG, *PV4V_CONFIG;
