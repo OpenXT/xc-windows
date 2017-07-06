@@ -346,6 +346,7 @@ WlanAdapterDefaults (
                                    sizeof(DOT11_STATISTICS));
 }
 
+#ifdef USE_V4V
 NTSTATUS
 WlanV4vConnect(
     IN PADAPTER Adapter
@@ -606,6 +607,7 @@ WlanV4vWorkItem (
     TraceNotice (("V4VDG asynchronous datagram receiver exit\n"));
     PsTerminateSystemThread(STATUS_SUCCESS);
 }
+#endif
 
 NDIS_STATUS 
 WlanAdapterInitialize (
@@ -663,6 +665,7 @@ WlanAdapterInitialize (
     pwa->OperationModeCapability.uNumOfRXBuffers = 64;
     pwa->OperationModeCapability.uOpModeCapability = DOT11_OPERATION_MODE_EXTENSIBLE_STATION | DOT11_OPERATION_MODE_NETWORK_MONITOR;
 
+#ifdef USE_V4V
     //
     // V4V stuff
     //
@@ -671,6 +674,7 @@ WlanAdapterInitialize (
                             INVALID_HANDLE_VALUE, NULL,
                             WlanV4vWorkItem, Adapter);
     //
+#endif
 
     /* Setup the main 802.11 attributes */
     return WlanSet80211Attributes(Adapter);
@@ -690,6 +694,7 @@ WlanAdapterDelete (
         return;
     }
 
+#ifdef USE_V4V
     //
     // V4V stuff
     //
@@ -702,6 +707,7 @@ WlanAdapterDelete (
     if (pwa->V4vThread) ZwClose (pwa->V4vThread); pwa->V4vThread = NULL;
     TraceNotice (("[V4VDG]: V4VDG work item has cleaned up and exited\n"));
     //
+#endif
 
     do {
         NdisAcquireSpinLock(&(pwa->Lock));
