@@ -161,7 +161,9 @@ ReceiverReleaseNetBufferList (
     /* The net buffer will be automatically released when the net
        buffer list is, but we still need to clean it up. */
     mdl = NET_BUFFER_FIRST_MDL(buffer);
+#ifdef USE_V4V
     if ((mdl != Receiver->V4vRxBufMdl) && (mdl->Next != Receiver->V4vRxBufMdl))
+#endif
         ReceiverCommonReleaseMdlChain(&Receiver->Common,
                                   NET_BUFFER_FIRST_MDL(buffer));
 
@@ -752,11 +754,17 @@ ReceiverReceiveBufferList (
     }
     else
     {
+#ifdef USE_V4V
         Flags = 0;  //@@@ This seems like possibly a bad idea...
         buffer = Receiver->V4vRxBufMdl;
         totOctets = Receiver->V4vBytesReceived;
         totFrags = 1;
         buffer_length = Receiver->V4vBytesReceived;
+#else
+        XM_BUGCHECK_TYPE_ASSERT;
+        // Avoid compiler error:
+        buffer = &headRfd->Mdl;
+#endif
     }
     ethernetHeader = (struct ethhdr *)buffer->MappedSystemVa;
     if (!AdapterIsMacAddressInteresting(Receiver->Common.Adapter, 
@@ -802,6 +810,7 @@ discard:
     *BufferList = NULL;
 }
 
+#ifdef USE_V4V
 VOID
 ReceiverHandleV4vPacket (
     IN PRECEIVER Receiver
@@ -867,6 +876,7 @@ done:
 
     return;
 }
+#endif
 
 VOID
 ReceiverHandleNotification (

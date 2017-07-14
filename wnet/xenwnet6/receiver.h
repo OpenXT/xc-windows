@@ -47,8 +47,10 @@ typedef struct _RECEIVER {
     ULONG                   nRxTcpUdpCsumOffload;
     ULONG                   nRxTcpUdpCsumFixup;
 
+#ifdef USE_V4V
     ULONG                   V4vBytesReceived;
     PMDL                    V4vRxBufMdl;
+#endif
 
     /* Do we expect Windows to be able to handle a csum_blank
      * packet? */
@@ -121,10 +123,12 @@ ReceiverCleanup (
     BOOLEAN TearDown
     );
 
+#ifdef USE_V4V
 VOID
 ReceiverHandleV4vPacket (
     IN PRECEIVER Receiver
     );
+#endif
 
 VOID
 ReceiverHandleNotification (
