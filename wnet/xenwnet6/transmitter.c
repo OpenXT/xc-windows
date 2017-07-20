@@ -1342,6 +1342,8 @@ TransmitterSend (
     PXENNET_NET_BUFFER_RESERVED xennetBuffer;
     ULONG sent;
 
+    UNREFERENCED_PARAMETER(dpcLevel);
+
     sent = 0;
 
     entry = Transmitter->QueuedList.Flink;
@@ -1363,6 +1365,7 @@ TransmitterSend (
                     (ULONG_PTR)netBuffer, xennetBuffer->State);
 
             if (xennetBuffer->State == Prepared) {
+#ifdef USE_V4V
                 if (xennetBuffer->EapPacket)
                 {
                     NTSTATUS status;
@@ -1407,7 +1410,9 @@ TransmitterSend (
                     Transmitter->CompletedFrames++;
                     xennetBuffer->State = Completed;
                 }
-                else if (!TransmitterSendNetBuffer(Transmitter, netBuffer)) {
+                else
+#endif
+                  if (!TransmitterSendNetBuffer(Transmitter, netBuffer)) {
                     nbl_log(netBufferList, NBL_TRANSMITTER_SEND_FAILED,
                             (ULONG_PTR)netBuffer);
                     goto done;
