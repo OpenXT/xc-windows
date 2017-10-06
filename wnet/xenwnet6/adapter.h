@@ -116,6 +116,7 @@ struct _ADAPTER {
     PTRANSMITTER        Transmitter;
     /*XEN_WIRELESS*/
     PVOID               WlanAdapter;
+    BOOLEAN             Initialized;
     EVTCHN_DEBUG_CALLBACK DebugCallback;
     struct xenbus_watch_handler *MediaWatch;
     struct xenbus_watch_handler *WlanWatch;
