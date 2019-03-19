@@ -25,7 +25,6 @@ ${StrStr}
 !define OLD_REG_XENTOOLS_PATH "SOFTWARE\Xensource"
 
 !define REG_IDECDDB_PATH "SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\pci#VEN_8086&CC_0101"
-!define REG_XENVBDCDDB_PATH "SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\pci#VEN_5853&dev_0001&subsys_00015853"
 
 !define BUILD_PREFIX "..\build\i386"
 !define BUILD_PREFIX64 "..\build\amd64"
@@ -635,11 +634,6 @@ ${Endif}
     File ${SIGN_PREFIX}\xevtchn.inf
     File /nonfatal ${SIGN_PREFIX}\xevtchn.cat
 
-    File ${SIGN_PREFIX}\xenvbd.sys
-    File ${SIGN_PREFIX}\scsifilt.sys
-    File /nonfatal ${SIGN_PREFIX}\xenvbd.cat
-    File ${SIGN_PREFIX}\xenvbd.inf
-
     File ${SIGN_PREFIX}\xennet.sys
     File ${SIGN_PREFIX}\xennet6.sys
     File ${SIGN_PREFIX}\xenwnet.sys
@@ -706,7 +700,6 @@ ${EndIf}
     File ${BUILD_PREFIX}\getlogs.exe
     File ${BUILD_PREFIX}\query_balloon.exe
     File ${BUILD_PREFIX}\copyvif.exe
-    File ${BUILD_PREFIX}\fixdiskfilters.exe
 
 	File ${BUILD_PREFIX}\OxtService.exe
 	File ${BUILD_PREFIX}\OxtUserAgent.exe
@@ -722,11 +715,6 @@ ${EndIf}
     File ${SIGN_PREFIX_64}\xevtchn.sys
     File ${SIGN_PREFIX_64}\xevtchn.inf 
     File /nonfatal ${SIGN_PREFIX_64}\xevtchn.cat
-
-    File ${SIGN_PREFIX_64}\xenvbd.sys
-    File ${SIGN_PREFIX_64}\scsifilt.sys
-    File ${SIGN_PREFIX_64}\xenvbd.inf
-    File /nonfatal ${SIGN_PREFIX_64}\xenvbd.cat
 
     File ${SIGN_PREFIX_64}\xennet.sys
     File ${SIGN_PREFIX_64}\xennet6.sys
@@ -798,7 +786,6 @@ ${EndIf}
     File ${BUILD_PREFIX64}\getlogs.exe
     File ${BUILD_PREFIX64}\query_balloon.exe
     File ${BUILD_PREFIX64}\copyvif.exe
-    File ${BUILD_PREFIX64}\fixdiskfilters.exe
 
 	File ${BUILD_PREFIX}\OxtService.exe
 	File ${BUILD_PREFIX}\OxtUserAgent.exe
@@ -897,7 +884,6 @@ InstallINFs:
   ${LogText} "Installing INF files..."
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xeninp.inf"' $0
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xevtchn.inf"' $0
-  ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenvbd.inf"' $0
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xennet.inf"' $0
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenwnet.inf"' $0
   ExecWait '"$TEMP\installdriver.exe" "/i" "$HWNDPARENT" "$INSTDIR\xenaud.inf"' $0
@@ -954,21 +940,6 @@ ${EndIf}
     ${endif}
   ${endif}
   
-  IfErrors error
-  IntCmp "$0" 0 0 error
-
-  # scsiport defaults to a stupidly small queue size.  Crank it up to the
-  # maximum.  This will be ignored if we happen to be using storport, but
-  # setting it is harmless.
-  WriteRegDWORD HKLM "SYSTEM\CurrentControlSet\Services\xenvbd\parameters\Device0" "NumberOfRequests" 254
-
-  ${LogText} "Installing xenvbd driver..."
-  DetailPrint "Installing xenvbd driver..."
-  ${If} $R0 == "New"
-    ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "$PciDeviceName" "$INSTDIR\xenvbd.inf" "0"' $0
-  ${else}
-    ExecWait '"$TEMP\installdriver.exe" "/p" "$HWNDPARENT" "$PciDeviceName" "$INSTDIR\xenvbd.inf" "1"' $0
-  ${endif}
   IfErrors error
   IntCmp "$0" 0 0 error
 
@@ -1037,14 +1008,6 @@ ${EndIf}
     IntCmp "$0" 0 0 error
   ${EndIf}
   
-  ${If} $IsNativeWindows == "yes"
-    # Preinstall our disk drivers.  This is used when our drivers are installed in a non Xen
-    # environment, like on real hardware, so our disk driver can be used on the initial boot.
-    ExecWait '"$TEMP\installdriver.exe" "/d" "$HWNDPARENT" "$INSTDIR\xenvbd.inf" "xenvbd_inst" "xenvbd_inst.services"' $0
-    WriteRegStr HKLM ${REG_XENVBDCDDB_PATH} "Service" "xenvbd"
-    WriteRegStr HKLM ${REG_XENVBDCDDB_PATH} "ClassGUID" "{4D36E97B-E325-11CE-BFC1-08002BE10318}"
-  ${endif}
-
   # Check if the ServicesPipeTimeout is set for the machine
   ReadRegDWORD $InitialServicesPipeTimeout HKLM "SYSTEM\CurrentControlSet\Control" "ServicesPipeTimeout"
   IfErrors ChangeServicesPipeTimeout
@@ -1078,9 +1041,6 @@ DoneCheckingServicesTimeout:
   ${LogText} "Drivers/service installation done."
   DetailPrint "Drivers/service installation done."
 
-  ${LogText} "Verifying order of disk filter drivers..."
-  ExecWait '"$INSTDIR\FixDiskFilters.exe"'
-  
   ${LogText} "Generating uninstaller.exe..."
   DetailPrint "Generating uninstaller.exe..."
 
@@ -1136,9 +1096,6 @@ DoneCheckingServicesTimeout:
 !endif
       Delete /REBOOTOK $UpgradingFromPath\OxtService.exe
       Delete /REBOOTOK $UpgradingFromPath\OxtUserAgent.exe
-      Delete /REBOOTOK $UpgradingFromPath\xenvbd.inf
-      Delete /REBOOTOK $UpgradingFromPath\xenvbd.sys
-      Delete /REBOOTOK $UpgradingFromPath\xenvbd.cat
       Delete /REBOOTOK $UpgradingFromPath\xevtchn.inf
       Delete /REBOOTOK $UpgradingFromPath\xevtchn.sys
       Delete /REBOOTOK $UpgradingFromPath\xevtchn.cat
@@ -1154,11 +1111,6 @@ DoneCheckingServicesTimeout:
     DeleteRegKey HKLM "${OLD_REG_XENTOOLS_PATH}"
   ${EndIf}
   
-  # The default disk timeout of 10 seconds is a bit tight for us when
-  # dom0 is heavily loaded.  It's basically never useful for the domU
-  # to time out disk requests, so crank this up to two minutes.
-  WriteRegDWORD HKLM "SYSTEM\CurrentControlSet\Services\Disk" "TimeOutValue" 120
-
   # Magic flag that is easy to read in WiX
   WriteRegDWORD HKLM ${REG_XENTOOLS_PATH} "Installed" 1
 
@@ -1228,8 +1180,6 @@ Section "Uninstall"
   Goto end_uninstall 
   okUninstall:
   ${UnLogText} "Uninstalling..."
-  # Remove scsifilt
-  ExecWait '"rundll32.exe" "setupapi.dll,InstallHinfSection uninstall 128 $INSTDIR\xenvbd.inf"'
 
   # If something has been stored, then handle it else remove key and exit.
   ReadRegDWORD $InitialServicesPipeTimeout HKLM "SOFTWARE\Citrix\XenTools" "ServicesPipeTimeout"
@@ -1333,15 +1283,10 @@ ${EndIf}
     Push "PCI\VEN_5853&DEV_C110"
     Call un.DeleteInstalledOemInf
     
-
-  ExecWait '"$INSTDIR\removedev.exe" "/f" "{4D36E967-E325-11CE-BFC1-08002BE10318}" "LowerFilters" "scsifilt"' $0
   ExecWait '"$INSTDIR\removedev.exe" "/d" "PCI\VEN_5853&DEV_0001&SUBSYS_00015853"' $0
   ExecWait '"$INSTDIR\removedev.exe" "/d" "PCI\VEN_5853&DEV_0001"' $0
-  DeleteRegKey HKLM SYSTEM\CurrentControlSet\Services\xenvbd
   DeleteRegKey HKLM SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\pci#ven_5853&dev_0001&subsys_00015853
   DeleteRegKey HKLM SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\pci#ven_5853&dev_0001
-  Delete /REBOOTOK $REALSYSDIR\drivers\xenvbd.sys
-  Delete /REBOOTOK $REALSYSDIR\drivers\scsifilt.sys
   Push "PCI\VEN_5853&DEV_0001&SUBSYS_00015853"
   Call un.DeleteInstalledOemInf
 	Push "PCI\VEN_5853&DEV_0001"
@@ -1370,7 +1315,6 @@ ${EndIf}
   # from the disk.
   ExecWait '"$INSTDIR\sync.exe"'
 
-  Delete /REBOOTOK $INSTDIR\fixdiskfilters.exe
   Delete /REBOOTOK $INSTDIR\copyvif.exe
   Delete /REBOOTOK $INSTDIR\copyvif.log.txt
   Delete /REBOOTOK $INSTDIR\sync.exe
@@ -1382,7 +1326,6 @@ ${EndIf}
   Delete /REBOOTOK $INSTDIR\getlogs.exe
   Delete /REBOOTOK $INSTDIR\install.dll
   Delete /REBOOTOK $INSTDIR\install.log
-  Delete /REBOOTOK $INSTDIR\scsifilt.sys
   Delete /REBOOTOK $INSTDIR\xennet.inf
   Delete /REBOOTOK $INSTDIR\xennet.sys
   Delete /REBOOTOK $INSTDIR\xennet6.sys
@@ -1433,9 +1376,6 @@ ${EndIf}
 !endif
   Delete /REBOOTOK $INSTDIR\OxtService.exe
   Delete /REBOOTOK $INSTDIR\OxtUserAgent.exe
-  Delete /REBOOTOK $INSTDIR\xenvbd.inf
-  Delete /REBOOTOK $INSTDIR\xenvbd.sys
-  Delete /REBOOTOK $INSTDIR\xenvbd.cat
   Delete /REBOOTOK $INSTDIR\xevtchn.inf
   Delete /REBOOTOK $INSTDIR\xevtchn.sys
   Delete /REBOOTOK $INSTDIR\xevtchn.cat
