@@ -3,7 +3,6 @@ DIRS=removedev \
      xenevtchn \
      net \
      wnet \
-     xenvbd \
      xenuser \
      xenv4v \
      enableuninst \
@@ -11,13 +10,11 @@ DIRS=removedev \
      install \
      setloglevel \
      getlogs \
-     scsifilt \
      query_balloon \
      xenvesa \
      sync \
      sockpipe \
      uninst_pending \
      copyvif \
-     fixdiskfilters \
      input \
-	 xenaud
+     xenaud
