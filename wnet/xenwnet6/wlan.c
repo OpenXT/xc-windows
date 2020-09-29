@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2012 Citrix Systems, Inc.
+ * Copyright (c) 2017 Assured Information Security, Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -1127,6 +1128,50 @@ WlanReadBackend(PADAPTER Adapter, char *path)
     return tmp;
 }
 
+//
+// List xenstore node entries
+//
+PCHAR *
+WlanListBackend (PADAPTER Adapter, char *path)
+{
+    char **items;
+
+    UNREFERENCED_PARAMETER(Adapter);
+
+    if (!NT_SUCCESS(xenbus_ls(XBT_NIL, path, &items)))
+    {
+        return NULL;
+    }
+
+    if (items[0] == NULL)
+    {
+        XmFreeMemory(items);
+        return NULL;
+    }
+    else
+    {
+        return items;
+    }
+}
+
+//
+// Write data to Xenstore
+//
+BOOLEAN
+WlanWriteBackend(PADAPTER Adapter, char *path, char *value)
+{
+    UNREFERENCED_PARAMETER(Adapter);
+
+    if (!NT_SUCCESS(xenbus_write(XBT_NIL, path, value)))
+    {
+        return FALSE;
+    }
+    else
+    {
+        return TRUE;
+    }
+}
+
 static VOID
 ConvertMacAddr (
     char *tmp,
@@ -1787,6 +1832,103 @@ TranslateWlanGroupCipher (
     }
 }
 
+//
+// Restore the wlan node in the xenstore frontend area from the
+// cached version created earlier...hopefully!
+//
+// This idea is being used to workaround the NDVM restarting and
+// not recreating the wlan node. This leaves the guest not seeing
+// any available WLANs. So we are taking a best guess here to try
+// and restore the same SSIDs seen during the last scan.
+//
+NDIS_STATUS
+WlanRestoreXenstoreWlanNode(
+    IN PADAPTER Adapter
+    )
+{
+    int xenstore_index;
+    char path[128];
+    char cachepath[128];
+    char *str;
+
+    for (xenstore_index=0; xenstore_index < WLAN_BSSID_MAX_COUNT; xenstore_index++)
+    {
+        Xmsnprintf (cachepath, sizeof(path), "data/wlan/%d", xenstore_index);
+        Xmsnprintf (path, sizeof(path), "wlan/%d", xenstore_index);
+        str = WlanReadBackend (Adapter, cachepath);
+        if (str)
+        {
+            WlanWriteBackend (Adapter, path, str);
+            XmFreeMemory(str);
+        }
+
+        Xmsnprintf (cachepath, sizeof(path), "data/wlan/%d/mac", xenstore_index);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/mac", xenstore_index);
+        str = WlanReadBackend (Adapter, cachepath);
+        if (str)
+        {
+            WlanWriteBackend (Adapter, path, str);
+            XmFreeMemory(str);
+        }
+
+        Xmsnprintf (cachepath, sizeof(path), "data/wlan/%d/essid", xenstore_index);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/essid", xenstore_index);
+        str = WlanReadBackend (Adapter, cachepath);
+        if (str)
+        {
+            WlanWriteBackend (Adapter, path, str);
+            XmFreeMemory(str);
+        }
+
+        Xmsnprintf (cachepath, sizeof(path), "data/wlan/%d/quality", xenstore_index);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/quality", xenstore_index);
+        str = WlanReadBackend (Adapter, cachepath);
+        if (str)
+        {
+            WlanWriteBackend (Adapter, path, str);
+            XmFreeMemory(str);
+        }
+
+        Xmsnprintf (cachepath, sizeof(path), "data/wlan/%d/frequency", xenstore_index);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/frequency", xenstore_index);
+        str = WlanReadBackend (Adapter, cachepath);
+        if (str)
+        {
+            WlanWriteBackend (Adapter, path, str);
+            XmFreeMemory(str);
+        }
+
+        Xmsnprintf (cachepath, sizeof(path), "data/wlan/%d/maxbitrate", xenstore_index);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/maxbitrate", xenstore_index);
+        str = WlanReadBackend (Adapter, cachepath);
+        if (str)
+        {
+            WlanWriteBackend (Adapter, path, str);
+            XmFreeMemory(str);
+        }
+
+        Xmsnprintf (cachepath, sizeof(path), "data/wlan/%d/auth", xenstore_index);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/auth", xenstore_index);
+        str = WlanReadBackend (Adapter, cachepath);
+        if (str)
+        {
+            WlanWriteBackend (Adapter, path, str);
+            XmFreeMemory(str);
+        }
+/*
+        The following entries are not replicated since they are not currently used within OXT.
+        If "Native Experience" is ever attempted again, these will be required.
+
+        Xmsnprintf (path, sizeof(path), "wlan/%d/auth", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/cipher", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/cipher/%d", i, k);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/group-cipher", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%d/group-cipher/%d", i, k);
+*/
+    }
+    return STATUS_SUCCESS;
+}
+
 NDIS_STATUS
 WlanPerformScan (
     IN PADAPTER Adapter
@@ -1794,7 +1936,7 @@ WlanPerformScan (
 {
     PWLAN_ADAPTER WlanAdapter = Adapter->WlanAdapter;
     char *str;
-    int i, j;
+    int j;
     char path[256];
     int k;
     LARGE_INTEGER ts, hts;
@@ -1802,16 +1944,89 @@ WlanPerformScan (
     PDOT11_SSID pSSID;
     PSEC_ATTRIBUTES pSecAtt;
     DOT11_CAPABILITY Capability;
+    int x;
+    PCHAR *items;
+    BOOLEAN node_missing, node_empty;
 
     //
     // Read from Xenstore the list of BSSIDs and cache them in the
     // adapter extension.
     //
 
-    i = 0;
-    j = 0;
-    do
+    //
+    // First check to see if the wlan node is missing. If so, restore it from cached data.
+    //
+    // Noteworthy; the prior code would only scan for wlan/0, wlan/1, wlan/2, etc until
+    // it got to wlan/<WLAN_BSSID_MAX_COUNT>. It is not guranteed the wlan subnodes will
+    // be limited to sequential numbers, so now we use the xenstore-ls idea (by calling
+    // WlanListBackend() below) to find all nodes under 'wlan' and create up to
+    // WLAN_BSSID_MAX_COUNT entries.
+    //
+
+    node_missing = node_empty = FALSE;
+    items = WlanListBackend (Adapter, "wlan");
+    if (items == NULL)
     {
+         node_missing = TRUE;
+    }
+    else if ((items[0] == NULL) || (strlen(items[0]) == 0))
+    {
+         node_empty = TRUE;
+         XmFreeMemory(items);
+    }
+    //
+    // We only want to resurrect the wlan node when we come back from being reloaded (Adapter->Initialized = TRUE)
+    // and the wlan node is either empty or missing. If the NDVM is rebooted, the Windows PV driver is reloaded.
+    //
+    if (node_missing || node_empty)
+    {
+        //
+        // If items contains anything, we want to clean it up
+        // since we will be rescanning below.
+        //
+        if (!node_missing)
+        {
+            for (x = 0; items[x] && x< WLAN_BSSID_MAX_COUNT; x++)
+                XmFreeMemory(items[x]);
+            XmFreeMemory(items);
+        }
+        
+        if (Adapter->Initialized)
+        {
+            TraceWarning(("WlanPerformScan: wlan node empty/missing - Restoring from cache\n"));
+            WlanRestoreXenstoreWlanNode(Adapter);
+        }
+        else
+        {
+            TraceWarning(("WlanPerformScan: wlan node empty/missing while not connected\n"));
+            WlanAdapter->ScannedBssCount = 0;
+            WlanClearBss (&WlanAdapter->ScannedBss[0]);
+            return NDIS_STATUS_SUCCESS;
+        }
+
+        items = WlanListBackend (Adapter, "wlan");
+        if (items == NULL)
+        {
+            // We tried recreating the node and still we have an empty list.
+            // Either something went wrong or it really is empty. Either way, we're out.
+            TraceNotice(("WlanPerformScan: wlan cache node empty; Aborting scan\n"));
+            WlanAdapter->ScannedBssCount = 0;
+            WlanClearBss (&WlanAdapter->ScannedBss[0]);
+            return NDIS_STATUS_SUCCESS;
+        }
+    }
+
+    //
+    // At this point, the wlan node is present either by restoring it or being written
+    // by the NDVM. So we're good!
+    //
+    Adapter->Initialized = FALSE;
+
+    j = 0;
+    for (x = 0; items[x] && j < WLAN_BSSID_MAX_COUNT; x++)
+    {
+//        TraceWarning(("WlanPerformScan: wlan node %d = %s \n", x, items[x]));
+
         NdisGetCurrentSystemTime(&ts);
 
 //        NdisZeroMemory(&WlanAdapter->ScannedBss[j], sizeof(XEN_BSS_ENTRY));
@@ -1838,59 +2053,75 @@ WlanPerformScan (
         // Start reading all the xenstore entries that describe the
         // available SSIDs.
         //
-        Xmsnprintf (path, sizeof(path), "wlan/%d", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%s", items[x]);
         str = WlanReadBackend(Adapter, path);
         if (!str)
             continue;
         XmFreeMemory(str);
 
-        WlanAdapter->ScannedBss[j].XenStoreEntry = i;
+        WlanWriteBackend (Adapter, "data/wlan", "");
+        Xmsnprintf (path, sizeof(path), "data/wlan/%s", items[x]);
+        WlanWriteBackend (Adapter, path, "");
 
-        Xmsnprintf (path, sizeof(path), "wlan/%d/mac", i);
+        WlanAdapter->ScannedBss[j].XenStoreEntry = atoi(items[x]);
+
+        Xmsnprintf (path, sizeof(path), "wlan/%s/mac", items[x]);
         str = WlanReadBackend(Adapter, path);
         if (str)
         {
+            Xmsnprintf (path, sizeof(path), "data/wlan/%s/mac", items[x]);
+            WlanWriteBackend (Adapter, path, str);
             ConvertMacAddr (str, &pEntry->dot11BSSID);
             XmFreeMemory(str);
         }
-        Xmsnprintf (path, sizeof(path), "wlan/%d/essid", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%s/essid", items[x]);
         str = WlanReadBackend(Adapter, path);
         if (str)
         {
+            Xmsnprintf (path, sizeof(path), "data/wlan/%s/essid", items[x]);
+            WlanWriteBackend (Adapter, path, str);
             pSSID->uSSIDLength = (ULONG)min (NDIS_802_11_LENGTH_SSID, strlen(str));
             NdisMoveMemory(&pSSID->ucSSID, str, pSSID->uSSIDLength);
             XmFreeMemory(str);
         }
-        Xmsnprintf (path, sizeof(path), "wlan/%d/quality", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%s/quality", items[x]);
         str = WlanReadBackend(Adapter, path);
         if (str)
         {
             int quality;
+            Xmsnprintf (path, sizeof(path), "data/wlan/%s/quality", items[x]);
+            WlanWriteBackend (Adapter, path, str);
             quality = atoi(str);
             pEntry->lRSSI = (ULONG)((double)quality * 0.81) - 101;
             pEntry->uLinkQuality = quality;
             XmFreeMemory(str);
         }
-        Xmsnprintf (path, sizeof(path), "wlan/%d/frequency", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%s/frequency", items[x]);
         str = WlanReadBackend(Adapter, path);
         if (str)
         {
+            Xmsnprintf (path, sizeof(path), "data/wlan/%s/frequency", items[x]);
+            WlanWriteBackend (Adapter, path, str);
             pEntry->PhySpecificInfo.uChCenterFrequency = atol(str) / 1000;
             XmFreeMemory(str);
         }
-        Xmsnprintf (path, sizeof(path), "wlan/%d/auth", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%s/auth", items[x]);
         str = WlanReadBackend(Adapter, path);
         if (str)
         {
+            Xmsnprintf (path, sizeof(path), "data/wlan/%s/auth", items[x]);
+            WlanWriteBackend (Adapter, path, str);
             TranslateWlanAuth(WlanAdapter, j, str);
             XmFreeMemory(str);
         }
-        Xmsnprintf (path, sizeof(path), "wlan/%d/cipher", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%s/cipher", items[x]);
         str = WlanReadBackend(Adapter, path);
         if ((str) && (strlen(str)))
         {
             // Old style...
             //////////////////TraceVerbose(("Read from Xenstore/cipher: %s\n", str));
+            Xmsnprintf (path, sizeof(path), "data/wlan/%s/cipher", items[x]);
+            WlanWriteBackend (Adapter, path, str);
             TranslateWlanCipher(WlanAdapter, j, str);
             XmFreeMemory(str);
         }
@@ -1902,41 +2133,50 @@ WlanPerformScan (
             k = 0;
             do 
             {
-                Xmsnprintf (path, sizeof(path), "wlan/%d/cipher/%d", i, k);
+                Xmsnprintf (path, sizeof(path), "wlan/%s/cipher/%d", items[x], k);
                 str = WlanReadBackend(Adapter, path);
                 if (str)
                 {
 ///////////                    TraceVerbose(("Read from Xenstore/cipher/%d: %s\n", k, str));
+                    Xmsnprintf (path, sizeof(path), "data/wlan/%s/cipher/%d", items[x], k);
+                    WlanWriteBackend (Adapter, path, str);
                     TranslateWlanCipher(WlanAdapter, j, str);
                     XmFreeMemory(str);
                 }
             }
             while (++k < WLAN_MAX_CIPHER_COUNT);
         }
-        Xmsnprintf (path, sizeof(path), "wlan/%d/group-cipher", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%s/group-cipher", items[x]);
         str = WlanReadBackend(Adapter, path);
         if (str)
         {
+            Xmsnprintf (path, sizeof(path), "data/wlan/%s/group-cipher", items[x]);
+            WlanWriteBackend (Adapter, path, str);
+
             // For the null string we read up above
             XmFreeMemory(str);
 
             k = 0;
             do 
             {
-                Xmsnprintf (path, sizeof(path), "wlan/%d/group-cipher/%d", i, k);
+                Xmsnprintf (path, sizeof(path), "wlan/%s/group-cipher/%d", items[x], k);
                 str = WlanReadBackend(Adapter, path);
                 if (str)
                 {
+                    Xmsnprintf (path, sizeof(path), "data/wlan/%s/group-cipher/%d", items[x], k);
+                    WlanWriteBackend (Adapter, path, str);
                     TranslateWlanGroupCipher(WlanAdapter, j, str);
                     XmFreeMemory(str);
                 }
             }
             while (++k < WLAN_MAX_CIPHER_COUNT);
         }
-        Xmsnprintf (path, sizeof(path), "wlan/%d/maxbitrate", i);
+        Xmsnprintf (path, sizeof(path), "wlan/%s/maxbitrate", items[x]);
         str = WlanReadBackend(Adapter, path);
         if (str)
         {
+            Xmsnprintf (path, sizeof(path), "data/wlan/%s/maxbitrate", items[x]);
+            WlanWriteBackend (Adapter, path, str);
             SetSupportedDataRates(WlanAdapter, atol(str));
             XmFreeMemory(str);
         }
@@ -1967,9 +2207,11 @@ WlanPerformScan (
         WlanUpdateWpaIE(Adapter, j);
         pEntry->uBufferLength = WlanAdapter->ScannedBss[j].WpaInfoElementLen;
 
+        XmFreeMemory(items[x]);
         j++;
     }
-    while (i++ < 16 && j < WLAN_BSSID_MAX_COUNT);
+
+    XmFreeMemory(items);
 
     WlanAdapter->ScannedBssCount = j;
 

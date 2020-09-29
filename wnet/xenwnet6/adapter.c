@@ -1198,6 +1198,7 @@ AdapterInitialize (
         goto exit;
     }
 
+    Adapter->Initialized = TRUE;
     Adapter->RingConnected = FALSE;
     Adapter->MediaConnected = FALSE;
     Adapter->NdisAdapterHandle = AdapterHandle;
